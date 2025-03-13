@@ -40,7 +40,7 @@ create table meeting_room
 create table time_slot
 (
     id int(11) not null default 0 auto_increment primary key comment '主键id',
-    star_time time not null comment '起始时间',
+    start_time time not null comment '起始时间',
     end_time time not null comment '结束时间',
     create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='时间段管理表';
@@ -48,12 +48,49 @@ create table time_slot
 create table reservation
 (
     id int(11) not null default 0 auto_increment primary key comment '主键id',
-    booker_id int(11) not null default 0 comment '用户id',
+    topic varchar(50) not null default '' comment '会议主题',
+    description varchar(200) not null default '' comment '会议描述',
+    booker_id int(11) not null default 0 comment '预约用户id',
     room_id int(11) not null default 0 comment '会议室id',
     slot_id int(11) not null default 0 comment '时间段id',
     status tinyint(2) not null default 0 comment '预约状态（0待审核/1已通过/2已拒绝）',
     reserve_date date not null comment '预约日期',
-    voice_url varchar(200) not null default '' comment '语音地址',
-    summary varchar(200) not null default '' comment '会议总结',
     create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='预约表';
+
+create table participants
+(
+    id int(11) not null default 0 auto_increment primary key comment '主键id',
+    reservation_id int(11) not null default 0 comment '预约id',
+    user_id int(11) not null default 0 comment '用户id',
+    create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间'
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='参会用户表';
+
+create table subtopics
+(
+    id int(11) not null default 0 auto_increment primary key comment '主键id',
+    reservation_id int(11) not null default 0 comment '预约id',
+    subtopics varchar(50) not null default '' comment '子主题',
+    description varchar(200) not null default '' comment '子主题描述',
+    voice_url varchar(200) not null default '' comment '议题语音地址',
+    summary varchar(200) not null default '' comment '议题会议总结',
+    create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间'
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='子主题表';
+
+create table subtopics_file
+(
+    id int(11) not null default 0 auto_increment primary key comment '主键id',
+    subtopics_id int(11) not null default 0 comment '议题id',
+    file_name varchar(50) not null default '' comment '文件名',
+    file_url varchar(200) not null default '' comment '文件地址',
+    create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间'
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='议题文件表';
+
+
+-- 防止会议室时段重复预约
+ALTER TABLE reservation
+    ADD UNIQUE uniq_room_slot_date (room_id, slot_id, reserve_date);
+
+-- 防止重复添加参会人
+ALTER TABLE participants
+    ADD UNIQUE uniq_reservation_user (reservation_id, user_id);
