@@ -7,7 +7,6 @@ create table user(
     password varchar(60) not null default '' comment '密码',
     avatar_url varchar(200) not null default '' comment '头像地址',
     is_active tinyint(2) not null default 0 comment '账号状态（0启用/1禁用）',
-    last_login_time datetime not null default CURRENT_TIMESTAMP comment '最后登录时间',
     create_time datetime not null default CURRENT_TIMESTAMP comment '注册时间',
     update_time datetime not null default CURRENT_TIMESTAMP comment '修改时间'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='用户基本信息表';
@@ -37,14 +36,6 @@ create table meeting_room
      create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='会议室基础信息表';
 
-create table time_slot
-(
-    id int(11) not null default 0 auto_increment primary key comment '主键id',
-    start_time time not null comment '起始时间',
-    end_time time not null comment '结束时间',
-    create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间'
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='时间段管理表';
-
 create table reservation
 (
     id int(11) not null default 0 auto_increment primary key comment '主键id',
@@ -52,7 +43,8 @@ create table reservation
     description varchar(200) not null default '' comment '会议描述',
     booker_id int(11) not null default 0 comment '预约用户id',
     room_id int(11) not null default 0 comment '会议室id',
-    slot_id int(11) not null default 0 comment '时间段id',
+    start_time time not null comment '起始时间',
+    end_time time not null comment '结束时间',
     status tinyint(2) not null default 0 comment '预约状态（0待审核/1已通过/2已拒绝）',
     reserve_date date not null comment '预约日期',
     create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间'
@@ -89,7 +81,7 @@ create table subtopics_file
 
 -- 防止会议室时段重复预约
 ALTER TABLE reservation
-    ADD UNIQUE uniq_room_slot_date (room_id, slot_id, reserve_date);
+    ADD UNIQUE uniq_room_slot_date (room_id, reserve_date, start_time, end_time);
 
 -- 防止重复添加参会人
 ALTER TABLE participants
