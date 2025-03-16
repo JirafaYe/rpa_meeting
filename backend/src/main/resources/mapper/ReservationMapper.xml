@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.cuit.meeting.dao.ReservationMapper">
+
+    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.Reservation">
+            <id property="id" column="id" />
+            <result property="topic" column="topic" />
+            <result property="description" column="description" />
+            <result property="bookerId" column="booker_id" />
+            <result property="roomId" column="room_id" />
+            <result property="voiceUrl" column="voice_url" />
+            <result property="summary" column="summary" />
+            <result property="startTime" column="start_time" />
+            <result property="endTime" column="end_time" />
+            <result property="status" column="status" />
+            <result property="reserveDate" column="reserve_date" />
+            <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,topic,description,booker_id,room_id,voice_url,
+        summary,start_time,end_time,status,reserve_date,
+        create_time
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from reservation
+        where  id = #{id} 
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from reservation
+        where  id = #{id} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.Reservation" useGeneratedKeys="true">
+        insert into reservation
+        ( id,topic,description,booker_id,room_id,voice_url,
+        summary,start_time,end_time,status,reserve_date,
+        create_time)
+        values (#{id},#{topic},#{description},#{bookerId},#{roomId},#{voiceUrl},
+        #{summary},#{startTime},#{endTime},#{status},#{reserveDate},
+        #{createTime})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.Reservation" useGeneratedKeys="true">
+        insert into reservation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="topic != null">topic,</if>
+                <if test="description != null">description,</if>
+                <if test="bookerId != null">booker_id,</if>
+                <if test="roomId != null">room_id,</if>
+                <if test="voiceUrl != null">voice_url,</if>
+                <if test="summary != null">summary,</if>
+                <if test="startTime != null">start_time,</if>
+                <if test="endTime != null">end_time,</if>
+                <if test="status != null">status,</if>
+                <if test="reserveDate != null">reserve_date,</if>
+                <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id},</if>
+                <if test="topic != null">#{topic},</if>
+                <if test="description != null">#{description},</if>
+                <if test="bookerId != null">#{bookerId},</if>
+                <if test="roomId != null">#{roomId},</if>
+                <if test="voiceUrl != null">#{voiceUrl},</if>
+                <if test="summary != null">#{summary},</if>
+                <if test="startTime != null">#{startTime},</if>
+                <if test="endTime != null">#{endTime},</if>
+                <if test="status != null">#{status},</if>
+                <if test="reserveDate != null">#{reserveDate},</if>
+                <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.Reservation">
+        update reservation
+        <set>
+                <if test="topic != null">
+                    topic = #{topic},
+                </if>
+                <if test="description != null">
+                    description = #{description},
+                </if>
+                <if test="bookerId != null">
+                    booker_id = #{bookerId},
+                </if>
+                <if test="roomId != null">
+                    room_id = #{roomId},
+                </if>
+                <if test="voiceUrl != null">
+                    voice_url = #{voiceUrl},
+                </if>
+                <if test="summary != null">
+                    summary = #{summary},
+                </if>
+                <if test="startTime != null">
+                    start_time = #{startTime},
+                </if>
+                <if test="endTime != null">
+                    end_time = #{endTime},
+                </if>
+                <if test="status != null">
+                    status = #{status},
+                </if>
+                <if test="reserveDate != null">
+                    reserve_date = #{reserveDate},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime},
+                </if>
+        </set>
+        where   id = #{id} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.Reservation">
+        update reservation
+        set 
+            topic =  #{topic},
+            description =  #{description},
+            booker_id =  #{bookerId},
+            room_id =  #{roomId},
+            voice_url =  #{voiceUrl},
+            summary =  #{summary},
+            start_time =  #{startTime},
+            end_time =  #{endTime},
+            status =  #{status},
+            reserve_date =  #{reserveDate},
+            create_time =  #{createTime}
+        where   id = #{id} 
+    </update>
+</mapper>

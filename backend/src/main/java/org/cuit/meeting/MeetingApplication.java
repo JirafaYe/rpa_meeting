@@ -1,0 +1,20 @@
+package org.cuit.meeting;
+
+
+import org.mybatis.spring.annotation.MapperScan;
+import org.mybatis.spring.annotation.MapperScans;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * @description: 会议管理系统启动类
+ * @author Devildyw
+ * @date 2025/03/16 21:00
+ */
+@MapperScan("org.cuit.meeting.dao")
+@SpringBootApplication
+public class MeetingApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MeetingApplication.class, args);
+    }
+}

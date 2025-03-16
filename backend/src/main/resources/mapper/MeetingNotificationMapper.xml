@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.cuit.meeting.dao.MeetingNotificationMapper">
+
+    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.MeetingNotification">
+            <id property="id" column="id" />
+            <result property="reservationId" column="reservation_id" />
+            <result property="notifyType" column="notify_type" />
+            <result property="title" column="title" />
+            <result property="content" column="content" />
+            <result property="senderId" column="sender_id" />
+            <result property="createTime" column="create_time" />
+            <result property="scheduleTime" column="schedule_time" />
+            <result property="status" column="status" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,reservation_id,notify_type,title,content,sender_id,
+        create_time,schedule_time,status
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from meeting_notification
+        where  id = #{id} 
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from meeting_notification
+        where  id = #{id} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.MeetingNotification" useGeneratedKeys="true">
+        insert into meeting_notification
+        ( id,reservation_id,notify_type,title,content,sender_id,
+        create_time,schedule_time,status)
+        values (#{id},#{reservationId},#{notifyType},#{title},#{content},#{senderId},
+        #{createTime},#{scheduleTime},#{status})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.MeetingNotification" useGeneratedKeys="true">
+        insert into meeting_notification
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="reservationId != null">reservation_id,</if>
+                <if test="notifyType != null">notify_type,</if>
+                <if test="title != null">title,</if>
+                <if test="content != null">content,</if>
+                <if test="senderId != null">sender_id,</if>
+                <if test="createTime != null">create_time,</if>
+                <if test="scheduleTime != null">schedule_time,</if>
+                <if test="status != null">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id},</if>
+                <if test="reservationId != null">#{reservationId},</if>
+                <if test="notifyType != null">#{notifyType},</if>
+                <if test="title != null">#{title},</if>
+                <if test="content != null">#{content},</if>
+                <if test="senderId != null">#{senderId},</if>
+                <if test="createTime != null">#{createTime},</if>
+                <if test="scheduleTime != null">#{scheduleTime},</if>
+                <if test="status != null">#{status},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.MeetingNotification">
+        update meeting_notification
+        <set>
+                <if test="reservationId != null">
+                    reservation_id = #{reservationId},
+                </if>
+                <if test="notifyType != null">
+                    notify_type = #{notifyType},
+                </if>
+                <if test="title != null">
+                    title = #{title},
+                </if>
+                <if test="content != null">
+                    content = #{content},
+                </if>
+                <if test="senderId != null">
+                    sender_id = #{senderId},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime},
+                </if>
+                <if test="scheduleTime != null">
+                    schedule_time = #{scheduleTime},
+                </if>
+                <if test="status != null">
+                    status = #{status},
+                </if>
+        </set>
+        where   id = #{id} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.MeetingNotification">
+        update meeting_notification
+        set 
+            reservation_id =  #{reservationId},
+            notify_type =  #{notifyType},
+            title =  #{title},
+            content =  #{content},
+            sender_id =  #{senderId},
+            create_time =  #{createTime},
+            schedule_time =  #{scheduleTime},
+            status =  #{status}
+        where   id = #{id} 
+    </update>
+</mapper>
