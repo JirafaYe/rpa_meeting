@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.cuit.meeting.dao.SubtopicsFileMapper">
 
-    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.SubtopicsFile">
+    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.entity.SubtopicsFile">
             <id property="id" column="id" />
             <result property="subtopicsId" column="subtopics_id" />
             <result property="fileName" column="file_name" />
@@ -27,12 +27,12 @@
         delete from subtopics_file
         where  id = #{id} 
     </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.SubtopicsFile" useGeneratedKeys="true">
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.SubtopicsFile" useGeneratedKeys="true">
         insert into subtopics_file
         ( id,subtopics_id,file_name,file_url,create_time)
         values (#{id},#{subtopicsId},#{fileName},#{fileUrl},#{createTime})
     </insert>
-    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.SubtopicsFile" useGeneratedKeys="true">
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.SubtopicsFile" useGeneratedKeys="true">
         insert into subtopics_file
         <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="id != null">id,</if>
@@ -49,7 +49,7 @@
                 <if test="createTime != null">#{createTime},</if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.SubtopicsFile">
+    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.entity.SubtopicsFile">
         update subtopics_file
         <set>
                 <if test="subtopicsId != null">
@@ -67,7 +67,7 @@
         </set>
         where   id = #{id} 
     </update>
-    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.SubtopicsFile">
+    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.entity.SubtopicsFile">
         update subtopics_file
         set 
             subtopics_id =  #{subtopicsId},

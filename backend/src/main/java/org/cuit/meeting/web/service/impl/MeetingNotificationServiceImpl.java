@@ -3,7 +3,7 @@ package org.cuit.meeting.web.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import org.cuit.meeting.dao.MeetingNotificationMapper;
-import org.cuit.meeting.domain.MeetingNotification;
+import org.cuit.meeting.domain.entity.MeetingNotification;
 import org.cuit.meeting.web.service.MeetingNotificationService;
 import org.springframework.stereotype.Service;
 

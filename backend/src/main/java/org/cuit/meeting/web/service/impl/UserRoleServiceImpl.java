@@ -3,7 +3,7 @@ package org.cuit.meeting.web.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import org.cuit.meeting.dao.UserRoleMapper;
-import org.cuit.meeting.domain.UserRole;
+import org.cuit.meeting.domain.entity.UserRole;
 import org.cuit.meeting.web.service.UserRoleService;
 import org.springframework.stereotype.Service;
 

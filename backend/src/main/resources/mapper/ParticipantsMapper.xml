@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.cuit.meeting.dao.ParticipantsMapper">
 
-    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.Participants">
+    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.entity.Participants">
             <id property="id" column="id" />
             <result property="reservationId" column="reservation_id" />
             <result property="userId" column="user_id" />
@@ -27,12 +27,12 @@
         delete from participants
         where  id = #{id} 
     </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.Participants" useGeneratedKeys="true">
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.Participants" useGeneratedKeys="true">
         insert into participants
         ( id,reservation_id,user_id,status,create_time)
         values (#{id},#{reservationId},#{userId},#{status},#{createTime})
     </insert>
-    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.Participants" useGeneratedKeys="true">
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.Participants" useGeneratedKeys="true">
         insert into participants
         <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="id != null">id,</if>
@@ -49,7 +49,7 @@
                 <if test="createTime != null">#{createTime},</if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.Participants">
+    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.entity.Participants">
         update participants
         <set>
                 <if test="reservationId != null">
@@ -67,7 +67,7 @@
         </set>
         where   id = #{id} 
     </update>
-    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.Participants">
+    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.entity.Participants">
         update participants
         set 
             reservation_id =  #{reservationId},

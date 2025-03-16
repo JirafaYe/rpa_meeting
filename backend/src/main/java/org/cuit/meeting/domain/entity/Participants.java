@@ -1,4 +1,4 @@
-package org.cuit.meeting.domain;
+package org.cuit.meeting.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -10,12 +10,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 用户角色关联表
- * @TableName user_role
+ * 参会用户表
+ * @TableName participants
  */
-@TableName(value ="user_role")
+@TableName(value ="participants")
 @Data
-public class UserRole implements Serializable {
+public class Participants implements Serializable {
     /**
      * 主键id
      */
@@ -23,14 +23,19 @@ public class UserRole implements Serializable {
     private Integer id;
 
     /**
+     * 预约id
+     */
+    private Integer reservationId;
+
+    /**
      * 用户id
      */
     private Integer userId;
 
     /**
-     * 角色id
+     * 状态(0:待处理 1:已接受 2:已拒绝)
      */
-    private Integer roleId;
+    private Integer status;
 
     /**
      * 创建时间
@@ -51,10 +56,11 @@ public class UserRole implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        UserRole other = (UserRole) that;
+        Participants other = (Participants) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
+            && (this.getReservationId() == null ? other.getReservationId() == null : this.getReservationId().equals(other.getReservationId()))
             && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
-            && (this.getRoleId() == null ? other.getRoleId() == null : this.getRoleId().equals(other.getRoleId()))
+            && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()));
     }
 
@@ -63,8 +69,9 @@ public class UserRole implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
+        result = prime * result + ((getReservationId() == null) ? 0 : getReservationId().hashCode());
         result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
-        result = prime * result + ((getRoleId() == null) ? 0 : getRoleId().hashCode());
+        result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
         return result;
     }
@@ -76,8 +83,9 @@ public class UserRole implements Serializable {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
+        sb.append(", reservationId=").append(reservationId);
         sb.append(", userId=").append(userId);
-        sb.append(", roleId=").append(roleId);
+        sb.append(", status=").append(status);
         sb.append(", createTime=").append(createTime);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");

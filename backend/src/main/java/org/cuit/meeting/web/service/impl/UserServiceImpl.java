@@ -3,7 +3,7 @@ package org.cuit.meeting.web.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import org.cuit.meeting.dao.UserMapper;
-import org.cuit.meeting.domain.User;
+import org.cuit.meeting.domain.entity.User;
 import org.cuit.meeting.web.service.UserService;
 import org.springframework.stereotype.Service;
 

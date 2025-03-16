@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.cuit.meeting.dao.UserRoleMapper">
 
-    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.UserRole">
+    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.entity.UserRole">
             <id property="id" column="id" />
             <result property="userId" column="user_id" />
             <result property="roleId" column="role_id" />
@@ -26,12 +26,12 @@
         delete from user_role
         where  id = #{id} 
     </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.UserRole" useGeneratedKeys="true">
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.UserRole" useGeneratedKeys="true">
         insert into user_role
         ( id,user_id,role_id,create_time)
         values (#{id},#{userId},#{roleId},#{createTime})
     </insert>
-    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.UserRole" useGeneratedKeys="true">
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.UserRole" useGeneratedKeys="true">
         insert into user_role
         <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="id != null">id,</if>
@@ -46,7 +46,7 @@
                 <if test="createTime != null">#{createTime},</if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.UserRole">
+    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.entity.UserRole">
         update user_role
         <set>
                 <if test="userId != null">
@@ -61,7 +61,7 @@
         </set>
         where   id = #{id} 
     </update>
-    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.UserRole">
+    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.entity.UserRole">
         update user_role
         set 
             user_id =  #{userId},

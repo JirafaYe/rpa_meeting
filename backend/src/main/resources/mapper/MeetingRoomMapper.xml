@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.cuit.meeting.dao.MeetingRoomMapper">
 
-    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.MeetingRoom">
+    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.entity.MeetingRoom">
             <id property="id" column="id" />
             <result property="name" column="name" />
             <result property="location" column="location" />
@@ -30,14 +30,14 @@
         delete from meeting_room
         where  id = #{id} 
     </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.MeetingRoom" useGeneratedKeys="true">
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.MeetingRoom" useGeneratedKeys="true">
         insert into meeting_room
         ( id,name,location,capacity,equipment,role_id,
         create_time)
         values (#{id},#{name},#{location},#{capacity},#{equipment},#{roleId},
         #{createTime})
     </insert>
-    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.MeetingRoom" useGeneratedKeys="true">
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.MeetingRoom" useGeneratedKeys="true">
         insert into meeting_room
         <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="id != null">id,</if>
@@ -58,7 +58,7 @@
                 <if test="createTime != null">#{createTime},</if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.MeetingRoom">
+    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.entity.MeetingRoom">
         update meeting_room
         <set>
                 <if test="name != null">
@@ -82,7 +82,7 @@
         </set>
         where   id = #{id} 
     </update>
-    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.MeetingRoom">
+    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.entity.MeetingRoom">
         update meeting_room
         set 
             name =  #{name},

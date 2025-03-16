@@ -2,7 +2,7 @@ package org.cuit.meeting.dao;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.cuit.meeting.domain.UserRole;
+import org.cuit.meeting.domain.entity.UserRole;
 
 /**
 * @author 18425

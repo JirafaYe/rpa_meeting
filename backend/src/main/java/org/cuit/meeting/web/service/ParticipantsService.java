@@ -2,7 +2,7 @@ package org.cuit.meeting.web.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.cuit.meeting.domain.Participants;
+import org.cuit.meeting.domain.entity.Participants;
 
 /**
 * @author 18425

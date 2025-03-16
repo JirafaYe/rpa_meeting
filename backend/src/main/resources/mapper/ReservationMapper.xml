@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.cuit.meeting.dao.ReservationMapper">
 
-    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.Reservation">
+    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.entity.Reservation">
             <id property="id" column="id" />
             <result property="topic" column="topic" />
             <result property="description" column="description" />
@@ -36,7 +36,7 @@
         delete from reservation
         where  id = #{id} 
     </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.Reservation" useGeneratedKeys="true">
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.Reservation" useGeneratedKeys="true">
         insert into reservation
         ( id,topic,description,booker_id,room_id,voice_url,
         summary,start_time,end_time,status,reserve_date,
@@ -45,7 +45,7 @@
         #{summary},#{startTime},#{endTime},#{status},#{reserveDate},
         #{createTime})
     </insert>
-    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.Reservation" useGeneratedKeys="true">
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.Reservation" useGeneratedKeys="true">
         insert into reservation
         <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="id != null">id,</if>
@@ -76,7 +76,7 @@
                 <if test="createTime != null">#{createTime},</if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.Reservation">
+    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.entity.Reservation">
         update reservation
         <set>
                 <if test="topic != null">
@@ -115,7 +115,7 @@
         </set>
         where   id = #{id} 
     </update>
-    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.Reservation">
+    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.entity.Reservation">
         update reservation
         set 
             topic =  #{topic},

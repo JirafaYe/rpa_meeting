@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.cuit.meeting.dao.SubtopicsMapper">
 
-    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.Subtopics">
+    <resultMap id="BaseResultMap" type="org.cuit.meeting.domain.entity.Subtopics">
             <id property="id" column="id" />
             <result property="reservationId" column="reservation_id" />
             <result property="subtopics" column="subtopics" />
@@ -27,12 +27,12 @@
         delete from subtopics
         where  id = #{id} 
     </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.Subtopics" useGeneratedKeys="true">
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.Subtopics" useGeneratedKeys="true">
         insert into subtopics
         ( id,reservation_id,subtopics,description,create_time)
         values (#{id},#{reservationId},#{subtopics},#{description},#{createTime})
     </insert>
-    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.Subtopics" useGeneratedKeys="true">
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.Subtopics" useGeneratedKeys="true">
         insert into subtopics
         <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="id != null">id,</if>
@@ -49,7 +49,7 @@
                 <if test="createTime != null">#{createTime},</if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.Subtopics">
+    <update id="updateByPrimaryKeySelective" parameterType="org.cuit.meeting.domain.entity.Subtopics">
         update subtopics
         <set>
                 <if test="reservationId != null">
@@ -67,7 +67,7 @@
         </set>
         where   id = #{id} 
     </update>
-    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.Subtopics">
+    <update id="updateByPrimaryKey" parameterType="org.cuit.meeting.domain.entity.Subtopics">
         update subtopics
         set 
             reservation_id =  #{reservationId},

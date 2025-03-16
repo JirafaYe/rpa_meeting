@@ -3,7 +3,7 @@ package org.cuit.meeting.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
-import org.cuit.meeting.domain.Role;
+import org.cuit.meeting.domain.entity.Role;
 
 /**
 * @author 18425

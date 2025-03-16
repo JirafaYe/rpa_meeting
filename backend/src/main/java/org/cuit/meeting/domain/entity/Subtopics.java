@@ -1,4 +1,4 @@
-package org.cuit.meeting.domain;
+package org.cuit.meeting.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -10,12 +10,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 议题文件表
- * @TableName subtopics_file
+ * 子主题表
+ * @TableName subtopics
  */
-@TableName(value ="subtopics_file")
+@TableName(value ="subtopics")
 @Data
-public class SubtopicsFile implements Serializable {
+public class Subtopics implements Serializable {
     /**
      * 主键id
      */
@@ -23,19 +23,19 @@ public class SubtopicsFile implements Serializable {
     private Integer id;
 
     /**
-     * 议题id
+     * 预约id
      */
-    private Integer subtopicsId;
+    private Integer reservationId;
 
     /**
-     * 文件名
+     * 子主题
      */
-    private String fileName;
+    private String subtopics;
 
     /**
-     * 文件地址
+     * 子主题描述
      */
-    private String fileUrl;
+    private String description;
 
     /**
      * 创建时间
@@ -56,11 +56,11 @@ public class SubtopicsFile implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        SubtopicsFile other = (SubtopicsFile) that;
+        Subtopics other = (Subtopics) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getSubtopicsId() == null ? other.getSubtopicsId() == null : this.getSubtopicsId().equals(other.getSubtopicsId()))
-            && (this.getFileName() == null ? other.getFileName() == null : this.getFileName().equals(other.getFileName()))
-            && (this.getFileUrl() == null ? other.getFileUrl() == null : this.getFileUrl().equals(other.getFileUrl()))
+            && (this.getReservationId() == null ? other.getReservationId() == null : this.getReservationId().equals(other.getReservationId()))
+            && (this.getSubtopics() == null ? other.getSubtopics() == null : this.getSubtopics().equals(other.getSubtopics()))
+            && (this.getDescription() == null ? other.getDescription() == null : this.getDescription().equals(other.getDescription()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()));
     }
 
@@ -69,9 +69,9 @@ public class SubtopicsFile implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-        result = prime * result + ((getSubtopicsId() == null) ? 0 : getSubtopicsId().hashCode());
-        result = prime * result + ((getFileName() == null) ? 0 : getFileName().hashCode());
-        result = prime * result + ((getFileUrl() == null) ? 0 : getFileUrl().hashCode());
+        result = prime * result + ((getReservationId() == null) ? 0 : getReservationId().hashCode());
+        result = prime * result + ((getSubtopics() == null) ? 0 : getSubtopics().hashCode());
+        result = prime * result + ((getDescription() == null) ? 0 : getDescription().hashCode());
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
         return result;
     }
@@ -83,9 +83,9 @@ public class SubtopicsFile implements Serializable {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
-        sb.append(", subtopicsId=").append(subtopicsId);
-        sb.append(", fileName=").append(fileName);
-        sb.append(", fileUrl=").append(fileUrl);
+        sb.append(", reservationId=").append(reservationId);
+        sb.append(", subtopics=").append(subtopics);
+        sb.append(", description=").append(description);
         sb.append(", createTime=").append(createTime);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");

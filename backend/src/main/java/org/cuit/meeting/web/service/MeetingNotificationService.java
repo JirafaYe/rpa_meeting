@@ -1,7 +1,7 @@
 package org.cuit.meeting.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.cuit.meeting.domain.MeetingNotification;
+import org.cuit.meeting.domain.entity.MeetingNotification;
 
 /**
 * @author 18425
