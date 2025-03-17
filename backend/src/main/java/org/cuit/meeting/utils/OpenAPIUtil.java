@@ -1,9 +1,11 @@
 package org.cuit.meeting.utils;
 
+import com.alibaba.fastjson2.JSON;
 import org.cuit.meeting.domain.ChatRequest;
 import org.cuit.meeting.domain.CompletionResponse;
 import org.cuit.meeting.domain.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -34,12 +36,15 @@ public class OpenAPIUtil {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + apiKey);
         headers.add("Content-Type", "application/json");
+
         ChatRequest chatRequest = new ChatRequest();
         Message message = Message.builder().role("user").content(prompt).build();
         chatRequest.setMessages(Arrays.asList(message));
         chatRequest.setModel("deepseek-v3");
 
-        ResponseEntity<CompletionResponse> completionResponseResponseEntity = restTemplate.postForEntity(baseUrl, chatRequest, CompletionResponse.class);
+        HttpEntity<ChatRequest> httpEntity = new HttpEntity<>(chatRequest, headers);
+
+        ResponseEntity<CompletionResponse> completionResponseResponseEntity = restTemplate.postForEntity(baseUrl, httpEntity, CompletionResponse.class);
         return completionResponseResponseEntity.getBody();
     }
 

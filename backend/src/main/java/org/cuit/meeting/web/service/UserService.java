@@ -2,6 +2,7 @@ package org.cuit.meeting.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.cuit.meeting.domain.entity.User;
+import org.cuit.meeting.domain.request.RegisterBody;
 
 
 /**
@@ -11,4 +12,7 @@ import org.cuit.meeting.domain.entity.User;
 */
 public interface UserService extends IService<User> {
 
+    String register(RegisterBody registerBody);
+
+    String login(String username, String password, String code, String uuid);
 }
