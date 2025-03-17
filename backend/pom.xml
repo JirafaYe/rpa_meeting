@@ -62,7 +62,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
-            <version>1.2.23</version>
+            <version>1.2.24</version>
         </dependency>
         <!-- io常用工具类 -->
         <dependency>

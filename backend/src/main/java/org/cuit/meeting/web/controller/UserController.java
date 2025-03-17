@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -25,7 +26,8 @@ import java.util.concurrent.TimeUnit;
  * @author Devildyw
  * @date 2025/03/16 22:03
  **/
-@RestController("/user")
+@RestController
+@RequestMapping("/user")
 public class UserController {
 
     @Resource(name = "captchaProducer")
@@ -40,6 +42,7 @@ public class UserController {
     /**
      * 生成验证码
      */
+
     @GetMapping("/captchaImage")
     public AjaxResult getCode(HttpServletResponse response) throws IOException
     {
