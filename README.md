@@ -3,4 +3,4 @@
 
 ## 开发规范
 接口定义请遵守 Restful 风格
-https://editor.csdn.net/md/?articleId=124001581
+https://blog.csdn.net/D1842501760/article/details/124001581
