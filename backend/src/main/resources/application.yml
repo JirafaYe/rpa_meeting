@@ -63,3 +63,6 @@ mybatis-plus:
       id-type: auto
   mapper-locations: classpath*:/mapper/**/*.xml
   type-aliases-package: org.cuit.domain.entity
+
+openai:
+  apiKey:

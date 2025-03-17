@@ -88,6 +88,11 @@
             <artifactId>kaptcha</artifactId>
             <version>2.3.3</version>
         </dependency>
+        <!-- Maven 示例 -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+        </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
