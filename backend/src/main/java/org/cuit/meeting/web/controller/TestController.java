@@ -5,6 +5,7 @@ import org.cuit.meeting.domain.CompletionResponse;
 import org.cuit.meeting.utils.OpenAPIUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -25,8 +26,8 @@ public class TestController {
 //    private
 //
     @RequestMapping("/test")
-    public String test() throws IOException {
-        CompletionResponse completion = openAIClient.getCompletion("你好");
+    public String test(@RequestParam String prompt) throws IOException {
+        CompletionResponse completion = openAIClient.getCompletion(prompt);
         return JSON.toJSONString(completion);
     }
 

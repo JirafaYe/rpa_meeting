@@ -1,6 +1,7 @@
 package org.cuit.meeting.web.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
@@ -28,6 +29,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -56,8 +58,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User user = new User();
         user.setUsername(username);
 
-        // 验证码开关
-        validateCaptcha(registerBody.getCode(), registerBody.getUuid());
+        // 验证码开关 todo 开发阶段注册不需要验证码
+//        validateCaptcha(registerBody.getCode(), registerBody.getUuid());
 
         if (StringUtils.isEmpty(username))
         {
@@ -84,6 +86,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         else
         {
             user.setPassword(SecurityUtils.encryptPassword(password));
+            // 设置默认头像
+            user.setAvatarUrl("https://ding-blog.oss-cn-chengdu.aliyuncs.com/images/%E7%94%A8%E6%88%B7.png");
+            // 默认有效
+            user.setIsActive(0);
+            user.setCreateTime(new Date());
+            user.setUpdateTime(new Date());
             boolean regFlag = this.registerUser(user);
             if (!regFlag)
             {
@@ -95,8 +103,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Override
     public String login(String username, String password, String code, String uuid) {
-        // 验证码校验
-        validateCaptcha(code, uuid);
+        // 验证码校验 开发环境暂时不用验证码
+//        validateCaptcha(code, uuid);
         // 登录前置校验
         loginPreCheck(username, password);
         // 用户验证
@@ -110,14 +118,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         catch (Exception e)
         {
-            if (e instanceof BadCredentialsException)
-            {
-                throw new RuntimeException("密码错误");
-            }
-            else
-            {
-                throw new RuntimeException(e.getMessage());
-            }
+            e.printStackTrace();
+//            if (e instanceof BadCredentialsException)
+//            {
+//                throw new RuntimeException("密码错误");
+//            }
         }
         finally
         {
@@ -160,7 +165,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     private boolean checkUserNameUnique(User user) {
         Integer userId = Objects.isNull(user.getId()) ? -1 : user.getId();
-        User info = this.getOne(query().eq("username", user.getUsername()));
+        User info = this.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername()).last("limit 1"));;
         if (Objects.nonNull(info) && info.getId().equals(userId))
         {
             return UserConstants.NOT_UNIQUE;

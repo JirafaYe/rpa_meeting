@@ -1,10 +1,9 @@
-package org.cuit.meeting.config;
+package org.cuit.meeting.config.security;
 
-import org.cuit.meeting.config.security.JwtAuthenticationTokenFilter;
-import org.cuit.meeting.config.security.PermitAllUrlProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -39,14 +38,14 @@ public class SecurityConfig
     /**
      * 认证失败处理类
      */
-//    @Autowired
-//    private AuthenticationEntryPointImpl unauthorizedHandler;
+    @Autowired
+    private AuthenticationEntryPointImpl unauthorizedHandler;
 
-//    /**
-//     * 退出处理类
-//     */
-//    @Autowired
-//    private LogoutSuccessHandlerImpl logoutSuccessHandler;
+    /**
+     * 退出处理类
+     */
+    @Autowired
+    private LogoutSuccessHandlerImpl logoutSuccessHandler;
 
     /**
      * token认证过滤器
@@ -57,6 +56,7 @@ public class SecurityConfig
     /**
      * 跨域过滤器
      */
+    @Lazy
     @Autowired
     private CorsFilter corsFilter;
 
@@ -104,14 +104,14 @@ public class SecurityConfig
                     headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());
                 })
                 // 认证失败处理类
-//                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 // 基于token，所以不需要session
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 注解标记允许匿名访问的url
                 .authorizeHttpRequests((requests) -> {
                     permitAllUrl.getUrls().forEach(url -> requests.antMatchers(url).permitAll());
                     // 对于登录login 注册register 验证码captchaImage 允许匿名访问
-                    requests.antMatchers("/login", "/register", "/captchaImage").permitAll()
+                    requests.antMatchers("/user/login", "/user/register", "/user/captchaImage","/test/**").permitAll()
                             // 静态资源，可匿名访问
                             .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()
                             .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/druid/**").permitAll()
@@ -119,7 +119,7 @@ public class SecurityConfig
                             .anyRequest().authenticated();
                 })
                 // 添加Logout filter
-//                .logout(logout -> logout.logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler))
+                .logout(logout -> logout.logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler))
                 // 添加JWT filter
                 .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 // 添加CORS filter

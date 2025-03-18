@@ -115,7 +115,6 @@ public class TokenService
     {
         String token = UUID.fastUUID().toString();
         loginUser.setToken(token);
-        setUserAgent(loginUser);
         refreshToken(loginUser);
 
         Map<String, Object> claims = new HashMap<>();
@@ -178,9 +177,9 @@ public class TokenService
     private Claims parseToken(String token)
     {
         return Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody();
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     /**
