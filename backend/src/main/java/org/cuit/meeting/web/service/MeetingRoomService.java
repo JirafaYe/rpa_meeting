@@ -1,6 +1,8 @@
 package org.cuit.meeting.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.cuit.meeting.domain.PageQuery;
+import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.entity.MeetingRoom;
 import org.cuit.meeting.domain.request.MeetingRoomBody;
 
@@ -17,4 +19,6 @@ public interface MeetingRoomService extends IService<MeetingRoom> {
     String updateMeetingRoom(MeetingRoomBody body);
 
     String deleteMeetingRoom(int id);
+
+    PageDTO<MeetingRoom> getPageMeetingRoom(PageQuery query);
 }

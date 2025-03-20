@@ -2,12 +2,16 @@ package org.cuit.meeting.web.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import org.cuit.meeting.constant.MeetingRoomConstants;
 import org.cuit.meeting.constant.UserConstants;
 import org.cuit.meeting.dao.MeetingRoomMapper;
 import org.cuit.meeting.dao.ReservationMapper;
+import org.cuit.meeting.domain.PageQuery;
+import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.entity.MeetingRoom;
 import org.cuit.meeting.domain.entity.Reservation;
 import org.cuit.meeting.domain.entity.User;
@@ -89,6 +93,12 @@ public class MeetingRoomServiceImpl extends ServiceImpl<MeetingRoomMapper, Meeti
         }
 
         return msg;
+    }
+
+    @Override
+    public PageDTO<MeetingRoom> getPageMeetingRoom(PageQuery query) {
+        Page<MeetingRoom> page = mapper.selectPage(query.toMpPage(), new QueryWrapper<>());
+        return new PageDTO<>(page);
     }
 
     private String checkBody(MeetingRoomBody body){
