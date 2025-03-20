@@ -2,6 +2,7 @@ package org.cuit.meeting.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.cuit.meeting.domain.entity.MeetingRoom;
+import org.cuit.meeting.domain.request.MeetingRoomBody;
 
 
 /**
@@ -11,4 +12,9 @@ import org.cuit.meeting.domain.entity.MeetingRoom;
 */
 public interface MeetingRoomService extends IService<MeetingRoom> {
 
+    String creatMeetingRoom(MeetingRoomBody body, int roleId);
+
+    String updateMeetingRoom(MeetingRoomBody body);
+
+    String deleteMeetingRoom(int id);
 }
