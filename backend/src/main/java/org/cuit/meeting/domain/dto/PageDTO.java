@@ -33,7 +33,7 @@ public class PageDTO<T> {
 
     public PageDTO(Page<T> page) {
         this.total = page.getTotal();
-        this.pages=page.getTotal();
+        this.pages=page.getPages();
         this.list=page.getRecords();
     }
 }
