@@ -100,11 +100,6 @@ public class UserController {
         return StringUtils.isEmpty(msg) ? success() : error(msg);
     }
 
-    @PostMapping("/logout")
-    public void logout() {
-        System.out.println("logout");
-    }
-
     @GetMapping("/captcha")
     public void captcha() {
         System.out.println("captcha");

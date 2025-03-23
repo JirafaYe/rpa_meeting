@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
-    implements UserService, UserDetailsService {
+    implements UserService {
 
     @Autowired
     private RedisCache redisCache;
@@ -195,49 +195,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         {
             throw new RuntimeException("验证码错误");
         }
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = this.getOne(query().eq("username", username));
-        if (Objects.isNull(user))
-        {
-            log.info("登录用户：{} 不存在.", username);
-            throw new RuntimeException("用户不存在");
-        }
-        else if (user.getIsActive().equals(1))
-        {
-            log.info("登录用户：{} 已被禁用.", username);
-            throw new RuntimeException("用户已被禁用");
-        }
-
-        this.validate(user);
-
-        return createLoginUser(user);
-    }
-
-
-    public void validate(User user)
-    {
-        Authentication usernamePasswordAuthenticationToken = AuthenticationContextHolder.getContext();
-        String password = usernamePasswordAuthenticationToken.getCredentials().toString();
-
-        if (!matches(user, password))
-        {
-            throw new RuntimeException("密码错误");
-        }
-    }
-
-    public boolean matches(User user, String rawPassword)
-    {
-        return SecurityUtils.matchesPassword(rawPassword, user.getPassword());
-    }
-
-    public UserDetails createLoginUser(User user)
-    {
-        //todo 补全权限
-//        permissionService.getMenuPermission(user)
-        return new LoginUser(user.getId(), user.getUsername(), user, null);
     }
 
 }

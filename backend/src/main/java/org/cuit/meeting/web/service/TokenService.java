@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 
 import cn.hutool.core.lang.UUID;
 import cn.hutool.http.useragent.UserAgent;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import io.jsonwebtoken.security.Keys;
 import org.cuit.meeting.config.CacheConstants;
 import org.cuit.meeting.config.Constants;
 import org.cuit.meeting.domain.LoginUser;
@@ -162,9 +164,13 @@ public class TokenService
      */
     private String createToken(Map<String, Object> claims)
     {
+        // 生成一个安全的密钥
+        SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+
         String token = Jwts.builder()
                 .setClaims(claims)
-                .signWith(SignatureAlgorithm.HS512, secret).compact();
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
         return token;
     }
 

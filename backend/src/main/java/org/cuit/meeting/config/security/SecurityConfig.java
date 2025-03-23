@@ -1,10 +1,12 @@
 package org.cuit.meeting.config.security;
 
+import org.cuit.meeting.web.service.impl.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -56,7 +58,6 @@ public class SecurityConfig
     /**
      * 跨域过滤器
      */
-    @Lazy
     @Autowired
     private CorsFilter corsFilter;
 
@@ -119,7 +120,7 @@ public class SecurityConfig
                             .anyRequest().authenticated();
                 })
                 // 添加Logout filter
-                .logout(logout -> logout.logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler))
+                .logout(logout -> logout.logoutUrl("/user/logout").logoutSuccessHandler(logoutSuccessHandler))
                 // 添加JWT filter
                 .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 // 添加CORS filter
@@ -135,27 +136,5 @@ public class SecurityConfig
     public BCryptPasswordEncoder bCryptPasswordEncoder()
     {
         return new BCryptPasswordEncoder();
-    }
-
-    /**
-     * 跨域配置
-     */
-    @Bean
-    public CorsFilter corsFilter()
-    {
-        CorsConfiguration config = new CorsConfiguration();
-        // 设置访问源地址
-        config.addAllowedOriginPattern("*");
-        // 设置访问源请求头
-        config.addAllowedHeader("*");
-        // 设置访问源请求方法
-        config.addAllowedMethod("*");
-        // 有效期 1800秒
-        config.setMaxAge(1800L);
-        // 添加映射路径，拦截一切请求
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        // 返回新的CorsFilter
-        return new CorsFilter(source);
     }
 }
