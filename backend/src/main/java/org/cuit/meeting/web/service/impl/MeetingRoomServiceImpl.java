@@ -1,11 +1,11 @@
 package org.cuit.meeting.web.service.impl;
 
-import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.constant.MeetingRoomConstants;
 import org.cuit.meeting.constant.UserConstants;
 import org.cuit.meeting.dao.MeetingRoomMapper;
@@ -41,7 +41,7 @@ public class MeetingRoomServiceImpl extends ServiceImpl<MeetingRoomMapper, Meeti
     @Override
     public String creatMeetingRoom(MeetingRoomBody body, int roleId) {
         String msg = checkBody(body);
-        if(msg.isEmpty()){
+        if(StringUtils.isBlank(msg)){
             MeetingRoom room = new MeetingRoom();
             room.setCapacity(body.getCapacity());
             room.setEquipment(body.getEquipment());
