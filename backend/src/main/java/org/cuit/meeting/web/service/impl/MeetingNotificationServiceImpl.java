@@ -2,10 +2,14 @@ package org.cuit.meeting.web.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import org.cuit.meeting.constant.NotificationConstants;
 import org.cuit.meeting.dao.MeetingNotificationMapper;
 import org.cuit.meeting.domain.entity.MeetingNotification;
+import org.cuit.meeting.domain.entity.Reservation;
 import org.cuit.meeting.web.service.MeetingNotificationService;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
 * @author 18425
@@ -16,6 +20,27 @@ import org.springframework.stereotype.Service;
 public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificationMapper, MeetingNotification>
     implements MeetingNotificationService {
 
+    @Override
+    public boolean notifyApprove(Reservation reservation, boolean isAllowed) {
+        MeetingNotification notification = new MeetingNotification();
+        notification.setReservationId(reservation.getId());
+        //非定时通知直接写已发送状态
+        notification.setStatus(NotificationConstants.SENDING_SUCCESS);
+        if(isAllowed){
+            notification.setNotifyType(NotificationConstants.SUCCESS);
+            notification.setTitle(NotificationConstants.SUCCESS_RESERVATION);
+        }else {
+            notification.setNotifyType(NotificationConstants.CANCELED);
+            notification.setTitle(NotificationConstants.FAILED_RESERVATION);
+        }
+        notification.setContent(String.format(notification.getTitle()+"会议:%s\n会议时间%s"
+                ,reservation.getTopic(),NotificationConstants.formatter.format(reservation.getStartTime()))
+        );
+        notification.setSenderId(reservation.getBookerId());
+        notification.setCreateTime(new Date());
+
+        return save(notification);
+    }
 }
 
 

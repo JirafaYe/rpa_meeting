@@ -2,6 +2,7 @@ package org.cuit.meeting.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.cuit.meeting.domain.entity.MeetingNotification;
+import org.cuit.meeting.domain.entity.Reservation;
 
 /**
 * @author 18425
@@ -9,5 +10,6 @@ import org.cuit.meeting.domain.entity.MeetingNotification;
 * @createDate 2025-03-16 21:56:32
 */
 public interface MeetingNotificationService extends IService<MeetingNotification> {
-
+    //审批通过or拒绝时通知
+    boolean notifyApprove(Reservation reservation, boolean isAllowed);
 }

@@ -5,6 +5,7 @@ import org.cuit.meeting.domain.PageQuery;
 import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.dto.ReservationDTO;
 import org.cuit.meeting.domain.entity.Reservation;
+import org.cuit.meeting.domain.request.ReservationPageQuery;
 
 
 /**
@@ -16,6 +17,6 @@ public interface ReservationService extends IService<Reservation>{
 
     String approve(int id, boolean isAllowed);
 
-    //审批时的分页查询，只提供大概信息
-    PageDTO<ReservationDTO> approvePage(PageQuery page);
+    //分页查询，只提供大概信息
+    PageDTO<ReservationDTO> summaryPage(ReservationPageQuery page);
 }
