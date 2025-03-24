@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.cuit.meeting.domain.entity.Role;
 
+import java.util.List;
+import java.util.Set;
+
 /**
 * @author 18425
 * @description 针对表【role(角色表)】的数据库操作Mapper
@@ -24,4 +27,5 @@ public interface RoleMapper extends BaseMapper<Role> {
 
     int updateByPrimaryKey(Role record);
 
+    List<Role> selectRolesByUserId(Integer userId);
 }

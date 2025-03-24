@@ -10,6 +10,7 @@ import org.cuit.meeting.domain.AjaxResult;
 import org.cuit.meeting.domain.request.LoginBody;
 import org.cuit.meeting.domain.request.RegisterBody;
 import org.cuit.meeting.utils.RedisCache;
+import org.cuit.meeting.utils.SecurityUtils;
 import org.cuit.meeting.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,7 +50,7 @@ public class UserController {
      */
 
     @GetMapping("/captchaImage")
-    public AjaxResult getCode(HttpServletResponse response) throws IOException
+    public AjaxResult getCode() throws IOException
     {
         AjaxResult ajax = success();
 
@@ -83,7 +84,6 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    @PreAuthorize("ss.hasAnyRoles('admin')")
     public AjaxResult login(@RequestBody LoginBody loginBody)
     {
         AjaxResult ajax = AjaxResult.success();

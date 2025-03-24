@@ -1,14 +1,19 @@
 package org.cuit.meeting.domain;
 
+import com.alibaba.fastjson2.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.cuit.meeting.domain.entity.Role;
 import org.cuit.meeting.domain.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -18,6 +23,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LoginUser implements UserDetails {
     private String token;
 
@@ -31,16 +38,17 @@ public class LoginUser implements UserDetails {
 
     private Integer id;
 
-    private Set<String> permissions;
+    private List<Role> roles;
 
-    public LoginUser(Integer id, String username, User user, Set<String> permissions) {
+    public LoginUser(Integer id, String username, User user, List<Role> roles) {
         this.user = user;
-        this.permissions = permissions;
+        this.roles = roles;
         this.id = id;
         this.username = username;
     }
 
     @Override
+    @JSONField(serialize = false)
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }

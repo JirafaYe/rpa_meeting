@@ -15,14 +15,20 @@
         id,role_code,name,description
     </sql>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from role
         where  id = #{id} 
     </select>
+    <select id="selectRolesByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select r.id,r.role_code,r.name,r.description
+        from role r
+        left join user_role ur on r.id = ur.role_id
+        where ur.user_id = #{userId}
+    </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete from role
         where  id = #{id} 
     </delete>

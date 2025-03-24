@@ -2,11 +2,16 @@ package org.cuit.meeting.web.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
+import org.cuit.meeting.dao.RoleMapper;
 import org.cuit.meeting.dao.UserMapper;
+import org.cuit.meeting.dao.UserRoleMapper;
 import org.cuit.meeting.domain.LoginUser;
+import org.cuit.meeting.domain.entity.Role;
 import org.cuit.meeting.domain.entity.User;
 import org.cuit.meeting.utils.AuthenticationContextHolder;
 import org.cuit.meeting.utils.SecurityUtils;
+import org.cuit.meeting.web.service.RoleService;
 import org.cuit.meeting.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -16,7 +21,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Devildyw
@@ -27,6 +35,9 @@ import java.util.Objects;
 public class UserDetailServiceImpl implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private RoleMapper roleMapper;
 
     public void validate(User user)
     {
@@ -46,11 +57,10 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     public UserDetails createLoginUser(User user)
     {
-        //todo 补全权限
-//        permissionService.getMenuPermission(user)
-        HashSet<String> set = new HashSet<String>();
-        set.add("1");
-        return new LoginUser(user.getId(), user.getUsername(), user, set);
+        //将权限预载进去 角色本身不是一个经常变更的东西 所以这里缓存到内存中 当然集群服务这里肯定事存到redis中
+        //在代码修改角色处进行更新
+        List<Role> roles = roleMapper.selectRolesByUserId(user.getId());
+        return new LoginUser(user.getId(), user.getUsername(), user, roles);
     }
 
     @Override

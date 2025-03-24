@@ -1,9 +1,13 @@
 package org.cuit.meeting.web.service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,6 +15,7 @@ import cn.hutool.core.lang.UUID;
 import cn.hutool.http.useragent.UserAgent;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecretKeyBuilder;
 import org.cuit.meeting.config.CacheConstants;
 import org.cuit.meeting.config.Constants;
 import org.cuit.meeting.domain.LoginUser;
@@ -35,15 +40,22 @@ public class TokenService
 {
     private static final Logger log = LoggerFactory.getLogger(TokenService.class);
 
-    // 令牌自定义标识
+    /**
+     * 令牌自定义标识
+     */
+
     @Value("${token.header}")
     private String header;
 
-    // 令牌秘钥
+    /**
+     *  令牌秘钥
+     */
     @Value("${token.secret}")
     private String secret;
 
-    // 令牌有效期（默认30分钟）
+    /**
+     * 令牌有效期（默认30分钟）
+     */
     @Value("${token.expireTime}")
     private int expireTime;
 
@@ -55,6 +67,12 @@ public class TokenService
 
     @Autowired
     private RedisCache redisCache;
+
+
+    private SecretKey getSecretKey()
+    {
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
 
     /**
      * 获取用户身份信息
@@ -141,6 +159,17 @@ public class TokenService
         }
     }
 
+    public static void main(String[] args) {
+        // 生成 256 位（32 字节）的随机密钥
+        byte[] key = new byte[64];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(key);
+
+        // 将密钥转换为 Base64 编码的字符串
+        String base64Key = Base64.getEncoder().encodeToString(key);
+        System.out.println("Generated 256-bit secret key: " + base64Key);
+    }
+
     /**
      * 刷新令牌有效期
      * 
@@ -164,12 +193,9 @@ public class TokenService
      */
     private String createToken(Map<String, Object> claims)
     {
-        // 生成一个安全的密钥
-        SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-
         String token = Jwts.builder()
                 .setClaims(claims)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .signWith(this.getSecretKey(), SignatureAlgorithm.HS512)
                 .compact();
         return token;
     }
@@ -180,12 +206,12 @@ public class TokenService
      * @param token 令牌
      * @return 数据声明
      */
-    private Claims parseToken(String token)
-    {
+    private Claims parseToken(String token) {
         return Jwts.parser()
+                .setSigningKey(this.getSecretKey()) // 设置用于验证签名的密钥
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     /**

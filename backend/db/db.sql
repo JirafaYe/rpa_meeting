@@ -37,7 +37,7 @@ create table meeting_room
     location varchar(50) not null default '' comment '所在位置',
     capacity int(11) not null default 0 comment '容纳人数',
     equipment varchar(200) not null default '' comment '设备',
-    role_id int(11) not null default 0 comment '角色id',
+    user_id int(11) not null default 0 comment '用户id',
     create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='会议室基础信息表';
 

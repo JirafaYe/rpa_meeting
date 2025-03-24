@@ -10,8 +10,10 @@ import org.cuit.meeting.config.CacheConstants;
 import org.cuit.meeting.config.Constants;
 import org.cuit.meeting.constant.UserConstants;
 import org.cuit.meeting.dao.UserMapper;
+import org.cuit.meeting.dao.UserRoleMapper;
 import org.cuit.meeting.domain.LoginUser;
 import org.cuit.meeting.domain.entity.User;
+import org.cuit.meeting.domain.entity.UserRole;
 import org.cuit.meeting.domain.request.RegisterBody;
 import org.cuit.meeting.utils.AuthenticationContextHolder;
 import org.cuit.meeting.utils.RedisCache;
@@ -27,6 +29,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -51,6 +54,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Resource
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserRoleMapper userRoleMapper;
 
     @Override
     public String register(RegisterBody registerBody) {
@@ -118,11 +124,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-//            if (e instanceof BadCredentialsException)
-//            {
-//                throw new RuntimeException("密码错误");
-//            }
+            if (e instanceof BadCredentialsException)
+            {
+                throw new RuntimeException("密码错误");
+            } else {
+                throw new RuntimeException(e.getMessage());
+            }
         }
         finally
         {
@@ -159,8 +166,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
     }
 
-    private boolean registerUser(User user) {
-        return this.save(user);
+    @Transactional(rollbackFor = Exception.class)
+    public boolean registerUser(User user) {
+        boolean save = this.save(user);
+        UserRole userRole = new UserRole();
+        userRole.setUserId(user.getId());
+        //普通用户
+        userRole.setRoleId(2);
+        return save && userRoleMapper.insert(userRole) > 0;
     }
 
     private boolean checkUserNameUnique(User user) {

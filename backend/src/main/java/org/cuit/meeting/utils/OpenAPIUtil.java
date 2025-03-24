@@ -57,7 +57,6 @@ public class OpenAPIUtil {
         GenerationParam param = GenerationParam.builder()
                 .apiKey(apiKey)
                 .model("deepseek-v3")
-                .topP()
                 .messages(Arrays.asList(userMessage))
                 .resultFormat(GenerationParam.ResultFormat.MESSAGE)
                 .build();

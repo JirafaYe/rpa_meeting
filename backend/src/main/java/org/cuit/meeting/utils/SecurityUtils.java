@@ -1,10 +1,19 @@
 package org.cuit.meeting.utils;
 
+import org.cuit.meeting.config.Constants;
 import org.cuit.meeting.constant.HttpStatus;
 import org.cuit.meeting.domain.LoginUser;
+import org.cuit.meeting.domain.entity.Role;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.PatternMatchUtils;
+import org.springframework.util.StringUtils;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -94,64 +103,29 @@ public class SecurityUtils
     }
 
     /**
-     * 是否为管理员
-     * 
-     * @param userId 用户ID
-     * @return 结果
+     * 验证用户是否拥有某个角色
+     *
+     * @param role 角色标识
+     * @return 用户是否具备某角色
      */
-    public static boolean isAdmin(Long userId)
+    public static boolean hasRole(String role)
     {
-        return userId != null && 1L == userId;
+        List<Role> roleList = getLoginUser().getRoles();
+        Collection<String> roles = roleList.stream().map(Role::getRoleCode).collect(Collectors.toSet());
+        return hasRole(roles, role);
     }
 
-//    /**
-//     * 验证用户是否具备某权限
-//     *
-//     * @param permission 权限字符串
-//     * @return 用户是否具备某权限
-//     */
-//    public static boolean hasPermi(String permission)
-//    {
-//        return hasPermi(getLoginUser().getPermissions(), permission);
-//    }
-//
-//    /**
-//     * 判断是否包含权限
-//     *
-//     * @param authorities 权限列表
-//     * @param permission 权限字符串
-//     * @return 用户是否具备某权限
-//     */
-//    public static boolean hasPermi(Collection<String> authorities, String permission)
-//    {
-//        return authorities.stream().filter(StringUtils::hasText)
-//                .anyMatch(x -> Constants.ALL_PERMISSION.equals(x) || PatternMatchUtils.simpleMatch(x, permission));
-//    }
-//
-//    /**
-//     * 验证用户是否拥有某个角色
-//     *
-//     * @param role 角色标识
-//     * @return 用户是否具备某角色
-//     */
-//    public static boolean hasRole(String role)
-//    {
-//        List<SysRole> roleList = getLoginUser().getUser().getRoles();
-//        Collection<String> roles = roleList.stream().map(SysRole::getRoleKey).collect(Collectors.toSet());
-//        return hasRole(roles, role);
-//    }
-//
-//    /**
-//     * 判断是否包含角色
-//     *
-//     * @param roles 角色列表
-//     * @param role 角色
-//     * @return 用户是否具备某角色权限
-//     */
-//    public static boolean hasRole(Collection<String> roles, String role)
-//    {
-//        return roles.stream().filter(StringUtils::hasText)
-//                .anyMatch(x -> Constants.SUPER_ADMIN.equals(x) || PatternMatchUtils.simpleMatch(x, role));
-//    }
+    /**
+     * 判断是否包含角色
+     *
+     * @param roles 角色列表
+     * @param role 角色
+     * @return 用户是否具备某角色权限
+     */
+    public static boolean hasRole(Collection<String> roles, String role)
+    {
+        return roles.stream().filter(StringUtils::hasText)
+                .anyMatch(x -> Constants.SUPER_ADMIN.equals(x) || PatternMatchUtils.simpleMatch(x, role));
+    }
 
 }
