@@ -12,4 +12,6 @@ import org.cuit.meeting.domain.entity.Reservation;
 public interface MeetingNotificationService extends IService<MeetingNotification> {
     //审批通过or拒绝时通知
     boolean notifyApprove(Reservation reservation, boolean isAllowed);
+    //一般通知，如：取消，会前提醒，变更
+    boolean notify(Reservation reservation, int type);
 }

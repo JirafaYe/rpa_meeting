@@ -19,4 +19,7 @@ public interface ReservationService extends IService<Reservation>{
 
     //分页查询，只提供大概信息
     PageDTO<ReservationDTO> summaryPage(ReservationPageQuery page);
+
+    //取消会议
+    String cancel(int id, int userId);
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import org.cuit.meeting.constant.NotificationConstants;
 import org.cuit.meeting.constant.ReservationConstants;
 import org.cuit.meeting.dao.ReservationMapper;
 import org.cuit.meeting.domain.PageQuery;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -44,8 +46,7 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
         }else {
             meeting.setStatus(isAllowed?ReservationConstants.ALLOW
                     :ReservationConstants.REFUSED);
-            boolean flag = updateById(meeting);
-            if(!flag){
+            if(!updateById(meeting)){
                 msg="审批失败";
             }else {
                 if(!notificationService.notifyApprove(meeting,isAllowed)){
@@ -78,6 +79,32 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
             res.setList(records.stream().map(this::convert).collect(Collectors.toList()));
         }
         return res;
+    }
+
+    @Override
+    public String cancel(int id, int userID) {
+        //todo：通知是否需要事务?
+        Reservation reservation = getById(id);
+        String msg="";
+        if(Objects.isNull(reservation)){
+            msg="会议id不存在";
+        } else if (reservation.getStatus() == ReservationConstants.REFUSED) {
+            msg="会议已失效";
+        } else if (reservation.getStartTime().before(new Date())) {
+            msg="会议已开始";
+        }else if (userID!= NotificationConstants.SYS_ADMIN &&reservation.getBookerId()!=userID) {
+            msg="非本人预约，无权限";
+        }else {
+            reservation.setStatus(ReservationConstants.REFUSED);
+            if(!updateById(reservation)){
+                msg="取消失败，会议id:"+id;
+            }else {
+                if(!notificationService.notify(reservation,ReservationConstants.REFUSED)){
+                    msg="通知记录失败";
+                }
+            }
+        }
+        return msg;
     }
 
     private ReservationDTO convert(Reservation record){

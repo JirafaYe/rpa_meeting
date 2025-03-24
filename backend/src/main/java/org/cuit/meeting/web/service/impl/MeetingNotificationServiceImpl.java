@@ -33,10 +33,42 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
             notification.setNotifyType(NotificationConstants.CANCELED);
             notification.setTitle(NotificationConstants.FAILED_RESERVATION);
         }
-        notification.setContent(String.format(notification.getTitle()+"会议:%s\n会议时间%s"
+        notification.setContent(String.format(notification.getTitle()+":%s\n会议时间:%s"
                 ,reservation.getTopic(),NotificationConstants.formatter.format(reservation.getStartTime()))
         );
         notification.setSenderId(reservation.getBookerId());
+        notification.setCreateTime(new Date());
+
+        return save(notification);
+    }
+
+    @Override
+    public boolean notify(Reservation reservation, int type) {
+        MeetingNotification notification = new MeetingNotification();
+        notification.setReservationId(reservation.getId());
+        //非定时通知直接写已发送状态
+        notification.setStatus(NotificationConstants.SENDING_SUCCESS);
+
+        //根据类型设置标题
+        switch (type){
+            case NotificationConstants.CANCELED:
+                notification.setNotifyType(NotificationConstants.CANCELED);
+                notification.setTitle(NotificationConstants.CANCELED_RESERVATION);
+                break;
+            case NotificationConstants.NOTIFICATION:
+                notification.setNotifyType(NotificationConstants.NOTIFICATION);
+                notification.setTitle(NotificationConstants.NOTIFICATION_RESERVATION);
+                break;
+            case NotificationConstants.MODIFICATION:
+                notification.setNotifyType(NotificationConstants.MODIFICATION);
+                notification.setTitle(NotificationConstants.MODIFY_RESERVATION);
+                break;
+        }
+
+        notification.setContent(String.format(notification.getTitle()+":%s\n会议时间:%s"
+                ,reservation.getTopic(),NotificationConstants.formatter.format(reservation.getStartTime()))
+        );
+        notification.setSenderId(NotificationConstants.SYS_ADMIN);
         notification.setCreateTime(new Date());
 
         return save(notification);
