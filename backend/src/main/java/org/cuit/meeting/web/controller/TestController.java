@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 /**
  * @author Devildyw
@@ -39,13 +39,33 @@ public class TestController {
     private FileService  fileService;
     @RequestMapping("/upload")
     public String upload(String fileName, MultipartFile file) throws IOException {
-        String s = "";
+        String url = "";
         try {
-            s = fileService.uploadFile(fileName, file.getInputStream());
+            url = fileService.uploadFile(file.getOriginalFilename(), file.getInputStream());
         } catch (Exception e) {
             System.out.println(e);
         }
-        return s;
+        return url;
+    }
+
+    @RequestMapping("/getUrl")
+    public String upload(String fileName) throws IOException {
+        String url = "";
+        try {
+            url = fileService.getPresignedObjectUrl(fileName);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return url;
+    }
+
+    @RequestMapping("/downLoadFile")
+    public void downLoadFile(String fileName, HttpServletResponse response) {
+        try {
+            fileService.downloadFile(fileName, response);
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
