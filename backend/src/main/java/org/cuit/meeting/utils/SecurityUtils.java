@@ -1,5 +1,7 @@
 package org.cuit.meeting.utils;
 
+import org.cuit.meeting.constant.HttpStatus;
+import org.cuit.meeting.domain.LoginUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,65 +15,50 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class SecurityUtils
 {
 
-//    /**
-//     * 用户ID
-//     **/
-//    public static Long getUserId()
-//    {
-//        try
-//        {
-//            return getLoginUser().getUserId();
-//        }
-//        catch (Exception e)
-//        {
-//            throw new ServiceException("获取用户ID异常", HttpStatus.UNAUTHORIZED);
-//        }
-//    }
-//
-//    /**
-//     * 获取部门ID
-//     **/
-//    public static Long getDeptId()
-//    {
-//        try
-//        {
-//            return getLoginUser().getDeptId();
-//        }
-//        catch (Exception e)
-//        {
-//            throw new ServiceException("获取部门ID异常", HttpStatus.UNAUTHORIZED);
-//        }
-//    }
-//
-//    /**
-//     * 获取用户账户
-//     **/
-//    public static String getUsername()
-//    {
-//        try
-//        {
-//            return getLoginUser().getUsername();
-//        }
-//        catch (Exception e)
-//        {
-//            throw new ServiceException("获取用户账户异常", HttpStatus.UNAUTHORIZED);
-//        }
-//    }
-//
-//    /**
-//     * 获取用户
-//     **/
-//    public static LoginUser getLoginUser()
-//    {
-//        try
-//        {
-//            return (LoginUser) getAuthentication().getPrincipal();
-//        }
-//        catch (Exception e)
-//        {
-//            throw new ServiceException("获取用户信息异常", HttpStatus.UNAUTHORIZED);
-//        }
-//    }
+    /**
+     * 用户ID
+     **/
+    public static Integer getUserId()
+    {
+        try
+        {
+            return getLoginUser().getId();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("获取用户ID异常");
+        }
+    }
+
+    /**
+     * 获取用户账户
+     **/
+    public static String getUsername()
+    {
+        try
+        {
+            return getLoginUser().getUsername();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("获取用户账户异常");
+        }
+    }
+
+    /**
+     * 获取用户
+     **/
+    public static LoginUser getLoginUser()
+    {
+        try
+        {
+            return (LoginUser) getAuthentication().getPrincipal();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("获取用户信息异常");
+        }
+    }
 
     /**
      * 获取Authentication
