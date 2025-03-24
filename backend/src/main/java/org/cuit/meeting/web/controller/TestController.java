@@ -1,7 +1,7 @@
 package org.cuit.meeting.web.controller;
 
+import com.alibaba.dashscope.aigc.generation.GenerationResult;
 import com.alibaba.fastjson2.JSON;
-import org.cuit.meeting.domain.CompletionResponse;
 import org.cuit.meeting.utils.OpenAPIUtil;
 import org.cuit.meeting.web.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class TestController {
 //
     @RequestMapping("/test")
     public String test(@RequestParam String prompt) throws IOException {
-        CompletionResponse completion = openAIClient.getCompletion(prompt);
+        GenerationResult completion = openAIClient.getCompletion(prompt);
         return JSON.toJSONString(completion);
     }
 
