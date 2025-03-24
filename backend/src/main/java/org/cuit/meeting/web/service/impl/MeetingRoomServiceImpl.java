@@ -7,14 +7,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.constant.MeetingRoomConstants;
-import org.cuit.meeting.constant.UserConstants;
 import org.cuit.meeting.dao.MeetingRoomMapper;
 import org.cuit.meeting.dao.ReservationMapper;
 import org.cuit.meeting.domain.PageQuery;
 import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.entity.MeetingRoom;
 import org.cuit.meeting.domain.entity.Reservation;
-import org.cuit.meeting.domain.entity.User;
 import org.cuit.meeting.domain.request.MeetingRoomBody;
 import org.cuit.meeting.web.service.MeetingRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +45,7 @@ public class MeetingRoomServiceImpl extends ServiceImpl<MeetingRoomMapper, Meeti
             room.setEquipment(body.getEquipment());
             room.setName(body.getName());
             room.setLocation(body.getLocation());
-            room.setRoleId(roleId);
+            room.setUserId(roleId);
             room.setCreateTime(new Date());
             if (this.checkRoomNameUnique(room)) {
                 msg="名称重复";

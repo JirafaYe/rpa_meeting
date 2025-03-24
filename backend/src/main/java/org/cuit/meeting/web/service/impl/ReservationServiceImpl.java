@@ -1,5 +1,6 @@
 package org.cuit.meeting.web.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
@@ -9,7 +10,12 @@ import org.cuit.meeting.domain.PageQuery;
 import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.dto.ReservationDTO;
 import org.cuit.meeting.domain.entity.Reservation;
+import org.cuit.meeting.domain.request.ReservationPageQuery;
+import org.cuit.meeting.web.service.MeetingNotificationService;
 import org.cuit.meeting.web.service.ReservationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,26 +31,45 @@ import java.util.stream.Collectors;
 public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reservation>
     implements ReservationService {
 
+    @Autowired
+    MeetingNotificationService notificationService;
+
     @Override
     public String approve(int id, boolean isAllowed) {
         String msg="";
-        //todo 判断权限,通知
+        //todo 判断权限
         Reservation meeting = getById(id);
         if(Objects.isNull(meeting)){
             msg="预约id错误";
         }else {
             meeting.setStatus(isAllowed?ReservationConstants.ALLOW
                     :ReservationConstants.REFUSED);
-            if(!updateById(meeting)){
+            boolean flag = updateById(meeting);
+            if(!flag){
                 msg="审批失败";
+            }else {
+                if(!notificationService.notifyApprove(meeting,isAllowed)){
+                    msg="通知失败";
+                }
             }
         }
         return msg;
     }
 
     @Override
-    public PageDTO<ReservationDTO> approvePage(PageQuery query) {
-        Page<Reservation> page = page(query.toMpPage());
+    public PageDTO<ReservationDTO> summaryPage(ReservationPageQuery query) {
+        LambdaQueryWrapper<Reservation> wrapper = new LambdaQueryWrapper<>();
+
+        //两种只能存在一种
+        if(!Objects.isNull(query.getReserveDate())){
+            wrapper.eq(Reservation::getReserveDate,query.getReserveDate());
+        }else if(!Objects.isNull(query.getStartTime())&&!Objects.isNull(query.getEndTime())){
+            //查询开始时间在范围内的会议
+            wrapper.ge(Reservation::getStartTime,query.getStartTime());
+            wrapper.le(Reservation::getStartTime,query.getEndTime());
+        }
+
+        Page<Reservation> page = page(query.toMpPage(),wrapper);
         PageDTO<ReservationDTO> res = new PageDTO<>();
         res.setPages(page.getPages());
         res.setTotal(page.getTotal());

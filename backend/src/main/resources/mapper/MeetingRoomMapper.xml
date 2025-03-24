@@ -10,7 +10,7 @@
             <result property="location" column="location" />
             <result property="capacity" column="capacity" />
             <result property="equipment" column="equipment" />
-            <result property="roleId" column="role_id" />
+            <result property="userId" column="user_id" />
             <result property="createTime" column="create_time" />
     </resultMap>
 

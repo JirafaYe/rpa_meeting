@@ -45,7 +45,7 @@ public class MeetingRoom implements Serializable {
     /**
      * 角色id
      */
-    private Integer roleId;
+    private Integer userId;
 
     /**
      * 创建时间
@@ -72,7 +72,7 @@ public class MeetingRoom implements Serializable {
             && (this.getLocation() == null ? other.getLocation() == null : this.getLocation().equals(other.getLocation()))
             && (this.getCapacity() == null ? other.getCapacity() == null : this.getCapacity().equals(other.getCapacity()))
             && (this.getEquipment() == null ? other.getEquipment() == null : this.getEquipment().equals(other.getEquipment()))
-            && (this.getRoleId() == null ? other.getRoleId() == null : this.getRoleId().equals(other.getRoleId()))
+            && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()));
     }
 
@@ -85,7 +85,7 @@ public class MeetingRoom implements Serializable {
         result = prime * result + ((getLocation() == null) ? 0 : getLocation().hashCode());
         result = prime * result + ((getCapacity() == null) ? 0 : getCapacity().hashCode());
         result = prime * result + ((getEquipment() == null) ? 0 : getEquipment().hashCode());
-        result = prime * result + ((getRoleId() == null) ? 0 : getRoleId().hashCode());
+        result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
         return result;
     }
@@ -101,7 +101,7 @@ public class MeetingRoom implements Serializable {
         sb.append(", location=").append(location);
         sb.append(", capacity=").append(capacity);
         sb.append(", equipment=").append(equipment);
-        sb.append(", roleId=").append(roleId);
+        sb.append(", roleId=").append(userId);
         sb.append(", createTime=").append(createTime);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
