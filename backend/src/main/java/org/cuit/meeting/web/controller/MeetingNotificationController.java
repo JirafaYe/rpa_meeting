@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 通知操作
+ */
 @RestController
 @RequestMapping("/notify")
 public class MeetingNotificationController {
@@ -19,6 +22,11 @@ public class MeetingNotificationController {
     @Autowired
     MeetingNotificationService service;
 
+    /**
+     * 分页查询通知
+     * @param query
+     * @return
+     */
     //只返回大概信息，详细信息通过id查看
     @GetMapping("")
     public AjaxResult pageQuery(PageQuery query){
@@ -26,6 +34,11 @@ public class MeetingNotificationController {
         return AjaxResult.success(service.pageQuery(query,userId));
     }
 
+    /**
+     * 通过id查看通知
+     * @param id
+     * @return
+     */
     //通过id查看细节
     @GetMapping("{id}")
     public AjaxResult queryDetailsById(@PathVariable("id") int id){
@@ -33,6 +46,11 @@ public class MeetingNotificationController {
         return AjaxResult.success(service.selectById(userId,id));
     }
 
+    /**
+     * 管理员通过id查看通知
+     * @param id
+     * @return
+     */
     //管理员通过id查看通知（可查看所有通知）
     @GetMapping("/admin/{id}")
     @PreAuthorize("ss.hasAnyRoles('admin')")

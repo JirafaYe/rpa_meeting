@@ -173,6 +173,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         userRole.setUserId(user.getId());
         //普通用户
         userRole.setRoleId(2);
+        userRole.setCreateTime(user.getCreateTime());
         return save && userRoleMapper.insert(userRole) > 0;
     }
 

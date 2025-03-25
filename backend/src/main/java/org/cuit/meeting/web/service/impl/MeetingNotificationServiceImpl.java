@@ -116,11 +116,12 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
     public NotificationDetailsDTO selectById(int userId, int notificationId) {
         MeetingNotification notify = getById(notificationId);
         LambdaQueryWrapper<Participants> wrapper = new LambdaQueryWrapper<>();
-        //判断是否有权限
-        wrapper.eq(Participants::getReservationId, notify.getReservationId())
-                .eq(Participants::getUserId, userId);
+
         if(userId!=NotificationConstants.SYS_ADMIN){
-            wrapper.ne(Participants::getStatus,ParticipantsConstants.REFUSED);
+            //判断是否有权限（自己是参与者）
+            wrapper.eq(Participants::getReservationId, notify.getReservationId())
+                    .eq(Participants::getUserId, userId)
+                    .ne(Participants::getStatus,ParticipantsConstants.REFUSED);
         }
 
         long count = participantsService.count(wrapper);
