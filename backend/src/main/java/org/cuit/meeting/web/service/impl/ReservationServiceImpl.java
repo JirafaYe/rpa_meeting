@@ -93,6 +93,7 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
         } else if (reservation.getStartTime().before(new Date())) {
             msg="会议已开始";
         }else if (userID!= NotificationConstants.SYS_ADMIN &&reservation.getBookerId()!=userID) {
+            //管理员和预约人可以取消
             msg="非本人预约，无权限";
         }else {
             reservation.setStatus(ReservationConstants.REFUSED);

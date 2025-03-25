@@ -1,15 +1,28 @@
 package org.cuit.meeting.web.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import org.cuit.meeting.constant.NotificationConstants;
+import org.cuit.meeting.constant.ParticipantsConstants;
 import org.cuit.meeting.dao.MeetingNotificationMapper;
+import org.cuit.meeting.domain.PageQuery;
+import org.cuit.meeting.domain.dto.NotificationDTO;
+import org.cuit.meeting.domain.dto.NotificationDetailsDTO;
+import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.entity.MeetingNotification;
+import org.cuit.meeting.domain.entity.Participants;
 import org.cuit.meeting.domain.entity.Reservation;
 import org.cuit.meeting.web.service.MeetingNotificationService;
+import org.cuit.meeting.web.service.ParticipantsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
 * @author 18425
@@ -19,6 +32,9 @@ import java.util.Date;
 @Service
 public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificationMapper, MeetingNotification>
     implements MeetingNotificationService {
+
+    @Autowired
+    ParticipantsService participantsService;
 
     @Override
     public boolean notifyApprove(Reservation reservation, boolean isAllowed) {
@@ -72,6 +88,65 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
         notification.setCreateTime(new Date());
 
         return save(notification);
+    }
+
+    @Override
+    public PageDTO<NotificationDTO> pageQuery(PageQuery query, int userId) {
+        LambdaQueryWrapper<Participants> participants = new LambdaQueryWrapper<>();
+        //查找个人参加的会议
+        participants.eq(Participants::getUserId,userId).ne(Participants::getStatus, ParticipantsConstants.REFUSED);
+        List<Integer> reservations = participantsService.list(participants)
+                .stream().map(Participants::getReservationId).collect(Collectors.toList());
+        //根据会议id查找通知
+        LambdaQueryWrapper<MeetingNotification> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(MeetingNotification::getReservationId,reservations);
+        Page<MeetingNotification> result = this.page(query.toMpPage(), wrapper);
+
+        PageDTO<NotificationDTO> pageDTO = new PageDTO<>();
+        pageDTO.setPages(result.getPages());
+        pageDTO.setTotal(result.getTotal());
+        if(!Objects.isNull(result.getRecords())){
+            pageDTO.setList(result.getRecords().stream().map(this::convert).collect(Collectors.toList()));
+        }
+
+        return pageDTO;
+    }
+
+    @Override
+    public NotificationDetailsDTO selectById(int userId, int notificationId) {
+        MeetingNotification notify = getById(notificationId);
+        LambdaQueryWrapper<Participants> wrapper = new LambdaQueryWrapper<>();
+        //判断是否有权限
+        wrapper.eq(Participants::getReservationId, notify.getReservationId())
+                .eq(Participants::getUserId, userId);
+        if(userId!=NotificationConstants.SYS_ADMIN){
+            wrapper.ne(Participants::getStatus,ParticipantsConstants.REFUSED);
+        }
+
+        long count = participantsService.count(wrapper);
+        if(count==0){
+            throw new RuntimeException("无读取权限");
+        }
+
+        NotificationDetailsDTO dto = new NotificationDetailsDTO();
+        dto.setId(notify.getId());
+        dto.setNotifyType(notify.getNotifyType());
+        dto.setTitle(notify.getTitle());
+        dto.setContent(notify.getContent());
+        //todo:是否需要转换为用户名
+        dto.setSenderId(notify.getSenderId());
+        dto.setCreateTime(notify.getCreateTime());
+
+
+        return dto;
+    }
+
+    private NotificationDTO convert(MeetingNotification notify){
+        NotificationDTO dto = new NotificationDTO();
+        dto.setId(notify.getId());
+        dto.setNotifyType(notify.getNotifyType());
+        dto.setTitle(notify.getTitle());
+        return dto;
     }
 }
 
