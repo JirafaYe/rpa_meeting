@@ -156,7 +156,7 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
             // 语音转文字
             String text = String.valueOf(multiModalConversationResult.getOutput().getChoices().get(0).getMessage().getContent().get(0).get("text"));
             // 生成摘要
-            String prompt = "帮我总结下面的话 生成一个会议室总结 字数控制在1000字左右 根据实际内容量决定 最多不可超过1000字\n" + text;
+            String prompt = "帮我总结下面的话 生成一个会议总结 字数控制在1000字左右 根据实际内容量决定 最多不可超过1000字\n" + text;
             GenerationResult completion = openAPIUtil.getCompletion(prompt);
             String content = completion.getOutput().getChoices().get(0).getMessage().getContent();
             reservation.setSummary(content);
