@@ -37,7 +37,7 @@ public class MeetingRoomServiceImpl extends ServiceImpl<MeetingRoomMapper, Meeti
     ReservationMapper reservationMapper;
 
     @Override
-    public String creatMeetingRoom(MeetingRoomBody body, int roleId) {
+    public String creatMeetingRoom(MeetingRoomBody body, int userId) {
         String msg = checkBody(body);
         if(StringUtils.isBlank(msg)){
             MeetingRoom room = new MeetingRoom();
@@ -45,7 +45,7 @@ public class MeetingRoomServiceImpl extends ServiceImpl<MeetingRoomMapper, Meeti
             room.setEquipment(body.getEquipment());
             room.setName(body.getName());
             room.setLocation(body.getLocation());
-            room.setUserId(roleId);
+            room.setUserId(userId);
             room.setCreateTime(new Date());
             if (this.checkRoomNameUnique(room)) {
                 msg="名称重复";

@@ -1,6 +1,10 @@
 package org.cuit.meeting.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.cuit.meeting.domain.PageQuery;
+import org.cuit.meeting.domain.dto.NotificationDTO;
+import org.cuit.meeting.domain.dto.NotificationDetailsDTO;
+import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.entity.MeetingNotification;
 import org.cuit.meeting.domain.entity.Reservation;
 
@@ -12,4 +16,10 @@ import org.cuit.meeting.domain.entity.Reservation;
 public interface MeetingNotificationService extends IService<MeetingNotification> {
     //审批通过or拒绝时通知
     boolean notifyApprove(Reservation reservation, boolean isAllowed);
+    //一般通知，如：取消，会前提醒，变更
+    boolean notify(Reservation reservation, int type);
+
+    PageDTO<NotificationDTO> pageQuery(PageQuery query, int userId);
+
+    NotificationDetailsDTO selectById(int userId, int notificationId);
 }

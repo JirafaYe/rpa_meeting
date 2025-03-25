@@ -14,7 +14,7 @@ import org.cuit.meeting.domain.request.MeetingRoomBody;
 */
 public interface MeetingRoomService extends IService<MeetingRoom> {
 
-    String creatMeetingRoom(MeetingRoomBody body, int roleId);
+    String creatMeetingRoom(MeetingRoomBody body, int userId);
 
     String updateMeetingRoom(MeetingRoomBody body);
 

@@ -22,6 +22,10 @@ public class NotificationConstants {
     public static final String FAILED_RESERVATION="会议预约失败";
     //会议取消标题
     public static final String CANCELED_RESERVATION="会议取消";
+    //会议提醒标题
+    public static final String NOTIFICATION_RESERVATION="会议提醒";
+    //会议更改标题
+    public static final String MODIFY_RESERVATION="会议更改";
 
     //发送状态
     //已发送
