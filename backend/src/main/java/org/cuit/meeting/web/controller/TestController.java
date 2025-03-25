@@ -1,6 +1,7 @@
 package org.cuit.meeting.web.controller;
 
 import com.alibaba.dashscope.aigc.generation.GenerationResult;
+import com.alibaba.dashscope.aigc.multimodalconversation.MultiModalConversationResult;
 import com.alibaba.fastjson2.JSON;
 import org.cuit.meeting.utils.OpenAPIUtil;
 import org.cuit.meeting.web.service.FileService;
@@ -32,7 +33,24 @@ public class TestController {
     @RequestMapping("/test")
     public String test(@RequestParam String prompt) throws IOException {
         GenerationResult completion = openAIClient.getCompletion(prompt);
-        return JSON.toJSONString(completion);
+        String content = completion.getOutput().getChoices().get(0).getMessage().getContent();
+        return content;
+    }
+
+    @RequestMapping("/testAudio")
+    public String testAudio(@RequestParam String fileName, @RequestParam MultipartFile file) {
+//        GenerationResult completion = openAIClient.getCompletion(prompt);
+        String filename = "";
+        MultiModalConversationResult multiModalConversationResult = null;
+        try {
+            filename = fileService.uploadFile(file.getOriginalFilename(), file.getInputStream());
+            String fileUrl = fileService.getPresignedObjectUrl(filename);
+            multiModalConversationResult = openAIClient.analysisAudio(fileUrl);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return JSON.toJSONString(multiModalConversationResult);
     }
 
     @Autowired

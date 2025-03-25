@@ -1,5 +1,7 @@
 package org.cuit.meeting.web.service.impl;
 
+import com.alibaba.dashscope.aigc.generation.GenerationResult;
+import com.alibaba.dashscope.aigc.multimodalconversation.MultiModalConversationResult;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,13 +14,20 @@ import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.dto.ReservationDTO;
 import org.cuit.meeting.domain.entity.Reservation;
 import org.cuit.meeting.domain.request.ReservationPageQuery;
+import org.cuit.meeting.utils.OpenAPIUtil;
+import org.cuit.meeting.web.service.FileService;
 import org.cuit.meeting.web.service.MeetingNotificationService;
 import org.cuit.meeting.web.service.ReservationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +44,12 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
 
     @Autowired
     MeetingNotificationService notificationService;
+
+    @Autowired
+    private FileService fileService;
+
+    @Autowired
+    private OpenAPIUtil openAPIUtil;
 
     @Override
     public String approve(int id, boolean isAllowed) {
@@ -106,6 +121,51 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
             }
         }
         return msg;
+    }
+
+    @Override
+    public void uploadAudioAndSummary(int reservationId, MultipartFile file) {
+        // 先上传文件
+        try {
+            // 获取会议
+            Reservation reservation = this.getById(reservationId);
+            if (Objects.isNull(reservation)) {
+                throw new RuntimeException("会议不存在");
+            }
+
+
+            String key = fileService.uploadFile(file.getOriginalFilename(), file.getInputStream());
+            reservation.setVoiceUrl(key);
+            this.updateById(reservation);
+
+            // 生成总结
+            getSummary(reservation, key);
+            return;
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+            log.error("上传文件失败", e);
+            throw new RuntimeException("上传文件失败");
+        }
+
+    }
+
+    @Async
+    public void getSummary(Reservation reservation, String key) {
+        try {
+            String fileUrl = fileService.getPresignedObjectUrl(key);
+            MultiModalConversationResult multiModalConversationResult = openAPIUtil.analysisAudio(fileUrl);
+            // 语音转文字
+            String text = String.valueOf(multiModalConversationResult.getOutput().getChoices().get(0).getMessage().getContent().get(0).get("text"));
+            // 生成摘要
+            String prompt = "帮我总结下面的话 生成一个会议室总结 字数控制在1000字左右 根据实际内容量决定 最多不可超过1000字\n" + text;
+            GenerationResult completion = openAPIUtil.getCompletion(prompt);
+            String content = completion.getOutput().getChoices().get(0).getMessage().getContent();
+            reservation.setSummary(content);
+            // 更新会议
+            this.updateById(reservation);
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+            log.error("生成摘要失败", e);
+            throw new RuntimeException("生成摘要失败");
+        }
     }
 
     private ReservationDTO convert(Reservation record){

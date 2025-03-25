@@ -6,6 +6,7 @@ import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.dto.ReservationDTO;
 import org.cuit.meeting.domain.entity.Reservation;
 import org.cuit.meeting.domain.request.ReservationPageQuery;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -22,4 +23,11 @@ public interface ReservationService extends IService<Reservation>{
 
     //取消会议
     String cancel(int id, int userId);
+
+    /**
+     * 上传音频文件并生成总结
+     * @param reservationId 会议id
+     * @param file 音频文件
+     */
+    void uploadAudioAndSummary(int reservationId, MultipartFile file);
 }

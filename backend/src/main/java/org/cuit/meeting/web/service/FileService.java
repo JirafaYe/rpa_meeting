@@ -43,7 +43,7 @@ public class FileService {
         try {
             //校验bucket是否存在
             String bucket = this.getBucketName();
-            bucketExists(bucket);
+//            bucketExists(bucket);
 //            fileName = getFileName(fileName);
             minioClient
                     .putObject(PutObjectArgs.builder()
