@@ -5,6 +5,7 @@ import org.cuit.meeting.domain.PageQuery;
 import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.dto.ReservationDTO;
 import org.cuit.meeting.domain.entity.Reservation;
+import org.cuit.meeting.domain.request.ReservationBody;
 import org.cuit.meeting.domain.request.ReservationPageQuery;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,10 +19,19 @@ public interface ReservationService extends IService<Reservation>{
 
     String approve(int id, boolean isAllowed);
 
-    //分页查询，只提供大概信息
+    /**
+     * 分页查询，只提供大概信息
+     * @param page
+     * @return
+     */
     PageDTO<ReservationDTO> summaryPage(ReservationPageQuery page);
 
-    //取消会议
+    /**
+     * 取消会议
+     * @param id 会议id
+     * @param userId 用户id
+     * @return
+     */
     String cancel(int id, int userId);
 
     /**
@@ -30,4 +40,6 @@ public interface ReservationService extends IService<Reservation>{
      * @param file 音频文件
      */
     void uploadAudioAndSummary(int reservationId, MultipartFile file);
+
+    String book(ReservationBody body, int userId);
 }

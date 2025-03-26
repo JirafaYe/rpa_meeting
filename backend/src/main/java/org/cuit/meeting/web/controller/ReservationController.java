@@ -5,6 +5,7 @@ import org.cuit.meeting.constant.NotificationConstants;
 import org.cuit.meeting.domain.AjaxResult;
 import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.dto.ReservationDTO;
+import org.cuit.meeting.domain.request.ReservationBody;
 import org.cuit.meeting.domain.request.ReservationPageQuery;
 import org.cuit.meeting.utils.SecurityUtils;
 import org.cuit.meeting.web.service.ReservationService;
@@ -73,6 +74,19 @@ public class ReservationController {
         String msg = reservationService.cancel(id
                 , NotificationConstants.SYS_ADMIN);
         return StringUtils.isBlank(msg)
+                ?AjaxResult.success():AjaxResult.error(msg);
+    }
+
+    /**
+     * 预约会议
+     * @param body
+     * @return
+     */
+    @PostMapping("/book")
+    public AjaxResult book(@RequestBody ReservationBody body){
+        Integer userId = SecurityUtils.getUserId();
+        String msg = reservationService.book(body, userId);
+        return StringUtils.isEmpty(msg)
                 ?AjaxResult.success():AjaxResult.error(msg);
     }
 }

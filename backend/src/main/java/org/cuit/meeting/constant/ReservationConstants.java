@@ -18,4 +18,10 @@ public class ReservationConstants {
 
     /** 拒绝状态 */
     public static final String RESP_REFUSED = "拒绝";
+
+    /** 普通字符串长度 */
+    public static final int NORMAL_LENGTH=200;
+
+    /** 会议标题长度 */
+    public static final int topic_LENGTH=50;
 }

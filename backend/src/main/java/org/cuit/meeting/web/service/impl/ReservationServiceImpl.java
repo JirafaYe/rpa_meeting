@@ -6,28 +6,41 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.constant.NotificationConstants;
+import org.cuit.meeting.constant.ParticipantsConstants;
 import org.cuit.meeting.constant.ReservationConstants;
+import org.cuit.meeting.dao.MeetingRoomMapper;
+import org.cuit.meeting.dao.ParticipantsMapper;
 import org.cuit.meeting.dao.ReservationMapper;
+import org.cuit.meeting.dao.UserMapper;
 import org.cuit.meeting.domain.PageQuery;
 import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.dto.ReservationDTO;
+import org.cuit.meeting.domain.entity.MeetingRoom;
+import org.cuit.meeting.domain.entity.Participants;
 import org.cuit.meeting.domain.entity.Reservation;
+import org.cuit.meeting.domain.entity.User;
+import org.cuit.meeting.domain.request.ReservationBody;
 import org.cuit.meeting.domain.request.ReservationPageQuery;
 import org.cuit.meeting.utils.OpenAPIUtil;
 import org.cuit.meeting.web.service.FileService;
 import org.cuit.meeting.web.service.MeetingNotificationService;
+import org.cuit.meeting.web.service.ParticipantsService;
 import org.cuit.meeting.web.service.ReservationService;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -50,6 +63,15 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
 
     @Autowired
     private OpenAPIUtil openAPIUtil;
+
+    @Autowired
+    UserMapper userMapper;
+
+    @Autowired
+    MeetingRoomMapper roomMapper;
+
+    @Autowired
+    private ParticipantsService participantsService;
 
     @Override
     public String approve(int id, boolean isAllowed) {
@@ -146,6 +168,74 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
             throw new RuntimeException("上传文件失败");
         }
 
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String book(ReservationBody body, int userId) {
+        String msg="";
+        if(StringUtils.isBlank(body.getTopic())){
+            msg="标题不得为空";
+        } else if (StringUtils.isBlank(body.getDescription())) {
+            msg="描述不得为空";
+        } else if (Objects.isNull(body.getRoomId())) {
+            msg="会议室id不得为空";
+        } else if (Objects.isNull(body.getStartTime()) || Objects.isNull(body.getEndTime())) {
+            msg="开始或结束时间不得为空";
+        } else if (Objects.isNull(body.getReserveDate())) {
+            msg="预约日期不得为空";
+        } else if (body.getTopic().length() > ReservationConstants.topic_LENGTH) {
+            msg="标题长度大于50";
+        } else if (body.getDescription().length() > ReservationConstants.NORMAL_LENGTH) {
+            msg="描述长度大于200";
+        }
+        if(msg.isEmpty()){
+            //验证用户id有效
+            List<Integer> list = body.getParticipants();
+            LambdaQueryWrapper<User> w = new LambdaQueryWrapper<>();
+            w.in(User::getId,list);
+            if(list.size()!=userMapper.selectCount(w)){
+                msg="存在无效用户id";
+            } else if (roomMapper.exists(new LambdaQueryWrapper<MeetingRoom>().eq(MeetingRoom::getId,body.getRoomId()))) {
+                msg="room id不存在";
+            } else {
+                //生成会议
+                Reservation reservation = getReservation(body, userId);
+
+                save(reservation);
+                Integer reservationId = reservation.getId();
+
+                //插入participants
+                Date date = new Date();
+                List<Participants> participants = body.getParticipants().stream()
+                        .map(id -> {
+                            Participants participant = new Participants();
+                            participant.setStatus(ParticipantsConstants.NORMAl);
+                            participant.setReservationId(reservationId);
+                            participant.setUserId(id);
+                            participant.setCreateTime(date);
+                            return participant;
+                        })
+                        .collect(Collectors.toList());
+
+                participantsService.saveBatch(participants);
+            }
+        }
+        return msg;
+    }
+
+    private Reservation getReservation(ReservationBody body, int userId) {
+        Reservation reservation = new Reservation();
+        reservation.setTopic(body.getTopic());
+        reservation.setDescription(body.getDescription());
+        reservation.setRoomId(body.getRoomId());
+        reservation.setBookerId(userId);
+        reservation.setStartTime(body.getStartTime());
+        reservation.setEndTime(body.getEndTime());
+        reservation.setStatus(ReservationConstants.NORMAL);
+        reservation.setReserveDate(body.getReserveDate());
+        reservation.setCreateTime(new Date());
+        return reservation;
     }
 
     @Async
