@@ -26,6 +26,7 @@ import org.cuit.meeting.web.service.FileService;
 import org.cuit.meeting.web.service.MeetingNotificationService;
 import org.cuit.meeting.web.service.ParticipantsService;
 import org.cuit.meeting.web.service.ReservationService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -169,58 +170,72 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String book(ReservationBody body, int userId) {
-        String msg="";
+        StringBuffer msg = new StringBuffer();
+        boolean checkResult = checkParam(body, msg);
+
+        if(!checkResult){
+            return msg.toString();
+        }
+        //验证用户id有效
+        List<Integer> list = body.getParticipants();
+        LambdaQueryWrapper<User> w = new LambdaQueryWrapper<>();
+        w.in(User::getId,list);
+        if(list.size()!=userMapper.selectCount(w)){
+            msg.append("存在无效用户id");
+            return msg.toString();
+        } else if (!roomMapper.exists(new LambdaQueryWrapper<MeetingRoom>().eq(MeetingRoom::getId,body.getRoomId()))) {
+            msg.append("room id不存在");
+            return msg.toString();
+        } else if (!isValid(body)) {
+            msg.append("时间段冲突");
+            return msg.toString();
+        }
+
+        //需要上锁
+        synchronized (body.getRoomId()){
+            Reservation reservation = getReservation(body, userId);
+            reservationMapper.insert(reservation);
+            Integer reservationId = reservation.getId();
+            //插入participants
+            Date date = new Date();
+            body.getParticipants().add(userId);
+            List<Participants> participants = body.getParticipants().stream()
+                    .map(id -> {
+                        Participants participant = new Participants();
+                        participant.setStatus(ParticipantsConstants.NORMAl);
+                        participant.setReservationId(reservationId);
+                        participant.setUserId(id);
+                        participant.setCreateTime(date);
+                        return participant;
+                    })
+                    .collect(Collectors.toList());
+
+            participantsService.saveBatch(participants);
+        }
+        return msg.toString();
+    }
+
+    @NotNull
+    private static boolean checkParam(ReservationBody body, StringBuffer msg) {
         if(StringUtils.isBlank(body.getTopic())){
-            msg="标题不得为空";
+            msg.append("标题不得为空");
+            return false;
         } else if (StringUtils.isBlank(body.getDescription())) {
-            msg="描述不得为空";
+            body.setDescription("");
         } else if (Objects.isNull(body.getRoomId())) {
-            msg="会议室id不得为空";
+            msg.append("会议室id不得为空");
+            return false;
         } else if (Objects.isNull(body.getStartTime()) || Objects.isNull(body.getEndTime())) {
-            msg="开始或结束时间不得为空";
+            msg.append("开始或结束时间不得为空");
+            return false;
         } else if (Objects.isNull(body.getReserveDate())) {
-            msg="预约日期不得为空";
+            msg.append("预约日期不得为空");
+            return false;
         } else if (body.getTopic().length() > ReservationConstants.topic_LENGTH) {
-            msg="标题长度大于50";
-        } else if (body.getDescription().length() > ReservationConstants.NORMAL_LENGTH) {
-            msg="描述长度大于200";
+            msg.append("标题长度大于5");
+            return false;
         }
-        if(msg.isEmpty()){
-            //验证用户id有效
-            List<Integer> list = body.getParticipants();
-            LambdaQueryWrapper<User> w = new LambdaQueryWrapper<>();
-            w.in(User::getId,list);
-            if(list.size()!=userMapper.selectCount(w)){
-                msg="存在无效用户id";
-            } else if (!roomMapper.exists(new LambdaQueryWrapper<MeetingRoom>().eq(MeetingRoom::getId,body.getRoomId()))) {
-                msg="room id不存在";
-            } else if (!isValid(body)) {
-                msg="时间段冲突";
-            } else {
-                //生成会议
-                Reservation reservation = getReservation(body, userId);
-
-                reservationMapper.insert(reservation);
-                Integer reservationId = reservation.getId();
-
-                //插入participants
-                Date date = new Date();
-                body.getParticipants().add(userId);
-                List<Participants> participants = body.getParticipants().stream()
-                        .map(id -> {
-                            Participants participant = new Participants();
-                            participant.setStatus(ParticipantsConstants.NORMAl);
-                            participant.setReservationId(reservationId);
-                            participant.setUserId(id);
-                            participant.setCreateTime(date);
-                            return participant;
-                        })
-                        .collect(Collectors.toList());
-
-                participantsService.saveBatch(participants);
-            }
-        }
-        return msg;
+        return true;
     }
 
     /**

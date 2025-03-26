@@ -23,5 +23,5 @@ public class ReservationConstants {
     public static final int NORMAL_LENGTH=200;
 
     /** 会议标题长度 */
-    public static final int topic_LENGTH=50;
+    public static final int topic_LENGTH=5;
 }

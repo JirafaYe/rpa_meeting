@@ -3,6 +3,7 @@ package org.cuit.meeting.web.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.constant.NotificationConstants;
 import org.cuit.meeting.domain.AjaxResult;
+import org.cuit.meeting.domain.Result;
 import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.dto.ReservationDTO;
 import org.cuit.meeting.domain.request.ReservationBody;
@@ -83,10 +84,10 @@ public class ReservationController {
      * @return
      */
     @PostMapping("/book")
-    public AjaxResult book(@RequestBody ReservationBody body){
+    public Result<String> book(@RequestBody ReservationBody body){
         Integer userId = SecurityUtils.getUserId();
         String msg = reservationService.book(body, userId);
-        return StringUtils.isEmpty(msg)
-                ?AjaxResult.success():AjaxResult.error(msg);
+        return StringUtils.isBlank(msg)
+                ?Result.ok():Result.fail(msg);
     }
 }
