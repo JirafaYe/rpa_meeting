@@ -47,7 +47,7 @@ public class MeetingRoomServiceImpl extends ServiceImpl<MeetingRoomMapper, Meeti
             room.setLocation(body.getLocation());
             room.setUserId(userId);
             room.setCreateTime(new Date());
-            if (this.checkRoomNameUnique(room)) {
+            if (!this.checkRoomNameUnique(room)) {
                 msg="名称重复";
             }else if(!save(room)){
                 msg="创建会议室失败";

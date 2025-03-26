@@ -71,6 +71,9 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
     MeetingRoomMapper roomMapper;
 
     @Autowired
+    ReservationMapper reservationMapper;
+
+    @Autowired
     private ParticipantsService participantsService;
 
     @Override
@@ -173,6 +176,7 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String book(ReservationBody body, int userId) {
+        //todo: 增加时间重复的判断
         String msg="";
         if(StringUtils.isBlank(body.getTopic())){
             msg="标题不得为空";
@@ -196,17 +200,18 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
             w.in(User::getId,list);
             if(list.size()!=userMapper.selectCount(w)){
                 msg="存在无效用户id";
-            } else if (roomMapper.exists(new LambdaQueryWrapper<MeetingRoom>().eq(MeetingRoom::getId,body.getRoomId()))) {
+            } else if (!roomMapper.exists(new LambdaQueryWrapper<MeetingRoom>().eq(MeetingRoom::getId,body.getRoomId()))) {
                 msg="room id不存在";
             } else {
                 //生成会议
                 Reservation reservation = getReservation(body, userId);
 
-                save(reservation);
+                reservationMapper.insert(reservation);
                 Integer reservationId = reservation.getId();
 
                 //插入participants
                 Date date = new Date();
+                body.getParticipants().add(userId);
                 List<Participants> participants = body.getParticipants().stream()
                         .map(id -> {
                             Participants participant = new Participants();

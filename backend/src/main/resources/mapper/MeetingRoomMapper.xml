@@ -15,7 +15,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,location,capacity,equipment,role_id,
+        id,name,location,capacity,equipment,user_id,
         create_time
     </sql>
 
@@ -32,9 +32,9 @@
     </delete>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.MeetingRoom" useGeneratedKeys="true">
         insert into meeting_room
-        ( id,name,location,capacity,equipment,role_id,
+        ( id,name,location,capacity,equipment,user_id,
         create_time)
-        values (#{id},#{name},#{location},#{capacity},#{equipment},#{roleId},
+        values (#{id},#{name},#{location},#{capacity},#{equipment},#{userId},
         #{createTime})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.cuit.meeting.domain.entity.MeetingRoom" useGeneratedKeys="true">
@@ -45,7 +45,7 @@
                 <if test="location != null">location,</if>
                 <if test="capacity != null">capacity,</if>
                 <if test="equipment != null">equipment,</if>
-                <if test="roleId != null">role_id,</if>
+                <if test="userId != null">user_id,</if>
                 <if test="createTime != null">create_time,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -54,7 +54,7 @@
                 <if test="location != null">#{location},</if>
                 <if test="capacity != null">#{capacity},</if>
                 <if test="equipment != null">#{equipment},</if>
-                <if test="roleId != null">#{roleId},</if>
+                <if test="userId != null">#{userId},</if>
                 <if test="createTime != null">#{createTime},</if>
         </trim>
     </insert>
@@ -74,7 +74,7 @@
                     equipment = #{equipment},
                 </if>
                 <if test="roleId != null">
-                    role_id = #{roleId},
+                    user_id = #{userId},
                 </if>
                 <if test="createTime != null">
                     create_time = #{createTime},
@@ -89,7 +89,7 @@
             location =  #{location},
             capacity =  #{capacity},
             equipment =  #{equipment},
-            role_id =  #{roleId},
+            user_id =  #{userId},
             create_time =  #{createTime}
         where   id = #{id} 
     </update>

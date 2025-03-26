@@ -28,7 +28,7 @@ public class MeetingRoomController {
      * @return
      */
     @PostMapping("/create")
-    @PreAuthorize("ss.hasAnyRoles('ADMIN')")
+    @PreAuthorize("@ss.hasAnyRoles('ADMIN')")
     public AjaxResult createRoom(@RequestBody MeetingRoomBody body){
         String res = meetingRoomService
                 .creatMeetingRoom(body, SecurityUtils.getUserId());
@@ -54,7 +54,7 @@ public class MeetingRoomController {
      * @return
      */
     @PutMapping("/update")
-    @PreAuthorize("ss.hasAnyRoles('ADMIN')")
+    @PreAuthorize("@ss.hasAnyRoles('ADMIN')")
     public AjaxResult updateRoom(@RequestBody MeetingRoomBody body){
         String msg = meetingRoomService.updateMeetingRoom(body);
         return StringUtils.isBlank(msg)
@@ -67,7 +67,7 @@ public class MeetingRoomController {
      * @return
      */
     @DeleteMapping("{id}")
-    @PreAuthorize("ss.hasAnyRoles('ADMIN')")
+    @PreAuthorize("@ss.hasAnyRoles('ADMIN')")
     public AjaxResult deleteById(@PathVariable("id") int id){
         String msg = meetingRoomService.deleteMeetingRoom(id);
         return StringUtils.isBlank(msg)

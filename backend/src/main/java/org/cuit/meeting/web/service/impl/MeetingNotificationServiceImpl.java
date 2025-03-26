@@ -49,6 +49,8 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
             notification.setNotifyType(NotificationConstants.CANCELED);
             notification.setTitle(NotificationConstants.FAILED_RESERVATION);
         }
+        //增加通知标题信息
+        notification.setTitle(String.format("[%s]",notification.getTitle())+reservation.getTopic());
         notification.setContent(String.format(notification.getTitle()+":%s\n会议时间:%s"
                 ,reservation.getTopic(),NotificationConstants.formatter.format(reservation.getStartTime()))
         );
@@ -81,6 +83,9 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
                 break;
         }
 
+        //增加通知标题信息
+        notification.setTitle(String.format("[%s]",notification.getTitle())+reservation.getTopic());
+
         notification.setContent(String.format(notification.getTitle()+":%s\n会议时间:%s"
                 ,reservation.getTopic(),NotificationConstants.formatter.format(reservation.getStartTime()))
         );
@@ -99,7 +104,10 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
                 .stream().map(Participants::getReservationId).collect(Collectors.toList());
         //根据会议id查找通知
         LambdaQueryWrapper<MeetingNotification> wrapper = new LambdaQueryWrapper<>();
-        wrapper.in(MeetingNotification::getReservationId,reservations);
+        //判断是否有参加的会议
+        if(!reservations.isEmpty()) {
+            wrapper.in(MeetingNotification::getReservationId, reservations);
+        }
         Page<MeetingNotification> result = this.page(query.toMpPage(), wrapper);
 
         PageDTO<NotificationDTO> pageDTO = new PageDTO<>();

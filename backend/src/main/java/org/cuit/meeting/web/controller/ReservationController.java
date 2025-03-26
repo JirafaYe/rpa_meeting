@@ -42,7 +42,7 @@ public class ReservationController {
      * @return
      */
     @PutMapping("/approve")
-    @PreAuthorize("ss.hasAnyRoles('ADMIN')")
+    @PreAuthorize("@ss.hasAnyRoles('ADMIN')")
     public AjaxResult approve(@RequestParam("id") int id
             ,@RequestParam("isAllowed") boolean isAllowed){
         String msg = reservationService.approve(id, isAllowed);
@@ -69,7 +69,7 @@ public class ReservationController {
      * @return
      */
     @PutMapping("/admin/{id}")
-    @PreAuthorize("ss.hasAnyRoles('ADMIN')")
+    @PreAuthorize("@ss.hasAnyRoles('ADMIN')")
     public AjaxResult cancelByAdmin(@PathVariable("id") int id){
         String msg = reservationService.cancel(id
                 , NotificationConstants.SYS_ADMIN);

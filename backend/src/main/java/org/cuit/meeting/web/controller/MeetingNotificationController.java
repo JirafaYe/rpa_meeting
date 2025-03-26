@@ -53,7 +53,7 @@ public class MeetingNotificationController {
      */
     //管理员通过id查看通知（可查看所有通知）
     @GetMapping("/admin/{id}")
-    @PreAuthorize("ss.hasAnyRoles('admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
     public AjaxResult queryDetailsByAdmin(@PathVariable("id") int id){
         return AjaxResult
                 .success(service.selectById(NotificationConstants.SYS_ADMIN,id));
