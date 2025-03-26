@@ -11,10 +11,8 @@ import org.cuit.meeting.constant.NotificationConstants;
 import org.cuit.meeting.constant.ParticipantsConstants;
 import org.cuit.meeting.constant.ReservationConstants;
 import org.cuit.meeting.dao.MeetingRoomMapper;
-import org.cuit.meeting.dao.ParticipantsMapper;
 import org.cuit.meeting.dao.ReservationMapper;
 import org.cuit.meeting.dao.UserMapper;
-import org.cuit.meeting.domain.PageQuery;
 import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.dto.ReservationDTO;
 import org.cuit.meeting.domain.entity.MeetingRoom;
@@ -28,9 +26,6 @@ import org.cuit.meeting.web.service.FileService;
 import org.cuit.meeting.web.service.MeetingNotificationService;
 import org.cuit.meeting.web.service.ParticipantsService;
 import org.cuit.meeting.web.service.ReservationService;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -40,10 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -101,13 +93,14 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
     public PageDTO<ReservationDTO> summaryPage(ReservationPageQuery query) {
         LambdaQueryWrapper<Reservation> wrapper = new LambdaQueryWrapper<>();
 
-        //两种只能存在一种
+        //日期+时间
         if(!Objects.isNull(query.getReserveDate())){
-            wrapper.eq(Reservation::getReserveDate,query.getReserveDate());
-        }else if(!Objects.isNull(query.getStartTime())&&!Objects.isNull(query.getEndTime())){
-            //查询开始时间在范围内的会议
-            wrapper.ge(Reservation::getStartTime,query.getStartTime());
-            wrapper.le(Reservation::getStartTime,query.getEndTime());
+            wrapper.eq(Reservation::getReserveDate,getDate(query.getReserveDate()));
+            if(!Objects.isNull(query.getStartTime())&&!Objects.isNull(query.getEndTime())) {
+                //查询开始时间在范围内的会议
+                wrapper.ge(Reservation::getStartTime, query.getStartTime());
+                wrapper.le(Reservation::getStartTime, query.getEndTime());
+            }
         }
 
         Page<Reservation> page = page(query.toMpPage(),wrapper);
@@ -176,7 +169,6 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String book(ReservationBody body, int userId) {
-        //todo: 增加时间重复的判断
         String msg="";
         if(StringUtils.isBlank(body.getTopic())){
             msg="标题不得为空";
@@ -202,6 +194,8 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
                 msg="存在无效用户id";
             } else if (!roomMapper.exists(new LambdaQueryWrapper<MeetingRoom>().eq(MeetingRoom::getId,body.getRoomId()))) {
                 msg="room id不存在";
+            } else if (!isValid(body)) {
+                msg="时间段冲突";
             } else {
                 //生成会议
                 Reservation reservation = getReservation(body, userId);
@@ -227,6 +221,33 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
             }
         }
         return msg;
+    }
+
+    /**
+     * 时间段是否可用
+     */
+    private boolean isValid(ReservationBody body){
+        Date endTime = body.getEndTime();
+        Date startTime = body.getStartTime();
+
+        LambdaQueryWrapper<Reservation> w = new LambdaQueryWrapper<>();
+        //新会议的 start_time 必须小于已有会议的 end_time，且已有会议的 start_time 必须小于新会议的 end_time
+        w.eq(Reservation::getRoomId,body.getRoomId()).eq(Reservation::getReserveDate, getDate(body.getReserveDate()))
+                .lt(Reservation::getStartTime, endTime)
+                .gt(Reservation::getEndTime, startTime);
+
+        return this.count(w)==0L;
+    }
+
+    /**
+     * 格式化之后是8：00，要转换成0：00
+     * @return
+     */
+    private Date getDate(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY,0);
+        return calendar.getTime();
     }
 
     private Reservation getReservation(ReservationBody body, int userId) {
