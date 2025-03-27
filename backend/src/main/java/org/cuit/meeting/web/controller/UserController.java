@@ -2,11 +2,13 @@ package org.cuit.meeting.web.controller;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.lang.UUID;
-import com.alibaba.druid.util.StringUtils;
 import com.google.code.kaptcha.Producer;
+import com.google.common.collect.ImmutableMultimap;
+import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.config.CacheConstants;
 import org.cuit.meeting.config.Constants;
 import org.cuit.meeting.domain.AjaxResult;
+import org.cuit.meeting.domain.Result;
 import org.cuit.meeting.domain.request.LoginBody;
 import org.cuit.meeting.domain.request.RegisterBody;
 import org.cuit.meeting.utils.RedisCache;
@@ -22,6 +24,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import static org.cuit.meeting.domain.AjaxResult.error;
@@ -48,12 +51,9 @@ public class UserController {
     /**
      * 生成验证码
      */
-
     @GetMapping("/captchaImage")
-    public AjaxResult getCode() throws IOException
+    public Result<Object> getCode() throws IOException
     {
-        AjaxResult ajax = success();
-
         // 保存验证码信息
         String uuid = UUID.fastUUID().toString();
         String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + uuid;
@@ -75,35 +75,39 @@ public class UserController {
         }
         catch (IOException e)
         {
-            return error(e.getMessage());
+            return Result.fail(e.getMessage());
         }
 
-        ajax.put("uuid", uuid);
-        ajax.put("img", Base64.encode(os.toByteArray()));
-        return ajax;
+        return Result.ok(ImmutableMultimap
+                .of("uuid", uuid,
+                    "img", Base64.encode(os.toByteArray())));
     }
 
+    /**
+     * 登录
+     * @param loginBody
+     * @return
+     */
     @PostMapping("/login")
-    public AjaxResult login(@RequestBody LoginBody loginBody)
+    public Result<Object> login(@RequestBody LoginBody loginBody)
     {
-        AjaxResult ajax = AjaxResult.success();
         // 生成令牌
         String token = userService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
                 loginBody.getUuid());
-        ajax.put(Constants.TOKEN, token);
-        return ajax;
+        return Result.ok(ImmutableMultimap
+                .of("token", token));
     }
 
+    /**
+     * 注册
+     * @param user
+     * @return
+     */
     @PostMapping("/register")
-    public AjaxResult register(@RequestBody RegisterBody user)
+    public Result<Object> register(@RequestBody RegisterBody user)
     {
         String msg = userService.register(user);
-        return StringUtils.isEmpty(msg) ? success() : error(msg);
-    }
-
-    @GetMapping("/captcha")
-    public void captcha() {
-        System.out.println("captcha");
+        return StringUtils.isBlank(msg) ? Result.ok() : Result.fail(msg);
     }
 
 
