@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.constant.NotificationConstants;
 import org.cuit.meeting.constant.ParticipantsConstants;
+import org.cuit.meeting.constant.RedisConstants;
 import org.cuit.meeting.constant.ReservationConstants;
 import org.cuit.meeting.dao.MeetingRoomMapper;
 import org.cuit.meeting.dao.ReservationMapper;
@@ -27,6 +28,8 @@ import org.cuit.meeting.web.service.MeetingNotificationService;
 import org.cuit.meeting.web.service.ParticipantsService;
 import org.cuit.meeting.web.service.ReservationService;
 import org.jetbrains.annotations.NotNull;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -68,6 +71,9 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
 
     @Autowired
     private ParticipantsService participantsService;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     @Override
     public String approve(int id, boolean isAllowed) {
@@ -199,7 +205,12 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
         }
 
         //需要上锁
-        synchronized (body.getRoomId()){
+        String key = RedisConstants.RESERVATION_LOCK_PREFIX + body.getRoomId();
+        RLock lock = redissonClient.getLock(key);
+        if (!lock.tryLock()) {
+            return "预约失败，会议室已被占用";
+        }
+        try {
             Reservation reservation = getReservation(body, userId);
             reservationMapper.insert(reservation);
             Integer reservationId = reservation.getId();
@@ -218,8 +229,10 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
                     .collect(Collectors.toList());
 
             participantsService.saveBatch(participants);
+            return msg.toString();
+        } finally {
+            lock.unlock();
         }
-        return msg.toString();
     }
 
     @NotNull
