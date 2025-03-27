@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.cuit.meeting.constant.NotificationConstants;
 import org.cuit.meeting.constant.ParticipantsConstants;
 import org.cuit.meeting.dao.MeetingNotificationMapper;
+import org.cuit.meeting.dao.UserMapper;
 import org.cuit.meeting.domain.PageQuery;
 import org.cuit.meeting.domain.dto.NotificationDTO;
 import org.cuit.meeting.domain.dto.NotificationDetailsDTO;
@@ -35,6 +36,9 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
 
     @Autowired
     ParticipantsService participantsService;
+
+    @Autowired
+    UserMapper userMapper;
 
     @Override
     public boolean notifyApprove(Reservation reservation, boolean isAllowed) {
@@ -113,7 +117,7 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
         PageDTO<NotificationDTO> pageDTO = new PageDTO<>();
         pageDTO.setPages(result.getPages());
         pageDTO.setTotal(result.getTotal());
-        if(!Objects.isNull(result.getRecords())){
+        if(!result.getRecords().isEmpty()){
             pageDTO.setList(result.getRecords().stream().map(this::convert).collect(Collectors.toList()));
         }
 
@@ -142,12 +146,21 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
         dto.setNotifyType(notify.getNotifyType());
         dto.setTitle(notify.getTitle());
         dto.setContent(notify.getContent());
-        //todo:是否需要转换为用户名
-        dto.setSenderId(notify.getSenderId());
+        dto.setSender(getUserName(notify.getSenderId()));
         dto.setCreateTime(notify.getCreateTime());
 
 
         return dto;
+    }
+
+    private String getUserName(int userID){
+        String user;
+        if(userID==NotificationConstants.SYS_ADMIN){
+            user="ADMIN";
+        }else {
+            user=userMapper.selectById(userID).getUsername();
+        }
+        return user;
     }
 
     private NotificationDTO convert(MeetingNotification notify){

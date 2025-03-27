@@ -3,6 +3,10 @@ package org.cuit.meeting.web.controller;
 import org.cuit.meeting.constant.NotificationConstants;
 import org.cuit.meeting.domain.AjaxResult;
 import org.cuit.meeting.domain.PageQuery;
+import org.cuit.meeting.domain.Result;
+import org.cuit.meeting.domain.dto.NotificationDTO;
+import org.cuit.meeting.domain.dto.NotificationDetailsDTO;
+import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.utils.SecurityUtils;
 import org.cuit.meeting.web.service.MeetingNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +33,9 @@ public class MeetingNotificationController {
      */
     //只返回大概信息，详细信息通过id查看
     @GetMapping("")
-    public AjaxResult pageQuery(PageQuery query){
+    public Result<PageDTO<NotificationDTO>> pageQuery(PageQuery query){
         Integer userId = SecurityUtils.getUserId();
-        return AjaxResult.success(service.pageQuery(query,userId));
+        return Result.ok(service.pageQuery(query,userId));
     }
 
     /**
@@ -41,9 +45,10 @@ public class MeetingNotificationController {
      */
     //通过id查看细节
     @GetMapping("{id}")
-    public AjaxResult queryDetailsById(@PathVariable("id") int id){
+    public Result<NotificationDetailsDTO> queryDetailsById(@PathVariable("id") int id){
         Integer userId = SecurityUtils.getUserId();
-        return AjaxResult.success(service.selectById(userId,id));
+        NotificationDetailsDTO dto = service.selectById(userId, id);
+        return Result.ok(dto);
     }
 
     /**
@@ -54,8 +59,8 @@ public class MeetingNotificationController {
     //管理员通过id查看通知（可查看所有通知）
     @GetMapping("/admin/{id}")
     @PreAuthorize("@ss.hasAnyRoles('admin')")
-    public AjaxResult queryDetailsByAdmin(@PathVariable("id") int id){
-        return AjaxResult
-                .success(service.selectById(NotificationConstants.SYS_ADMIN,id));
+    public Result<NotificationDetailsDTO> queryDetailsByAdmin(@PathVariable("id") int id){
+        NotificationDetailsDTO dto = service.selectById(NotificationConstants.SYS_ADMIN, id);
+        return Result.ok(dto);
     }
 }

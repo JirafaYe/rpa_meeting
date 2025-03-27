@@ -32,7 +32,7 @@ public class NotificationDetailsDTO {
     /**
      * 发送人(系统用户填0)
      */
-    private Integer senderId;
+    private String  sender;
 
     /**
      *

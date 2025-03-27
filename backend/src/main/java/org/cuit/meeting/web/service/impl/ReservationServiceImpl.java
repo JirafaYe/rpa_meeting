@@ -72,7 +72,6 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
     @Override
     public String approve(int id, boolean isAllowed) {
         String msg="";
-        //todo 判断权限
         Reservation meeting = getById(id);
         if(Objects.isNull(meeting)){
             msg="预约id错误";
@@ -108,9 +107,16 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
         PageDTO<ReservationDTO> res = new PageDTO<>();
         res.setPages(page.getPages());
         res.setTotal(page.getTotal());
-        if(!Objects.isNull(page.getRecords())){
+        if(!page.getRecords().isEmpty()){
             List<Reservation> records = page.getRecords();
-            res.setList(records.stream().map(this::convert).collect(Collectors.toList()));
+            //获取用户名
+            List<Integer> ids = records.stream().map(Reservation::getBookerId).collect(Collectors.toList());
+            Map<Integer, String> usersName = getUsersName(ids);
+            //获取会议室名字
+            ids = records.stream().map(Reservation::getRoomId).collect(Collectors.toList());
+            Map<Integer, String> roomsName = getRoomsName(ids);
+
+            res.setList(records.stream().map(r->convert(r,usersName,roomsName)).collect(Collectors.toList()));
         }
         return res;
     }
@@ -299,7 +305,7 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
         }
     }
 
-    private ReservationDTO convert(Reservation record){
+    private ReservationDTO convert(Reservation record, Map<Integer,String> users, Map<Integer,String> rooms){
         ReservationDTO dto = new ReservationDTO();
         dto.setId(record.getId());
         dto.setDescription(record.getDescription());
@@ -318,10 +324,30 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
         dto.setStatus(status);
         dto.setStartTime(record.getStartTime());
         dto.setEndTime(record.getEndTime());
-        dto.setBookerId(record.getBookerId());
+        dto.setBooker(users.get(record.getBookerId()));
         dto.setTopic(record.getTopic());
-        dto.setRoomId(record.getRoomId());
+        dto.setRoom(rooms.get(record.getRoomId()));
         return dto;
+    }
+
+    /**
+     * 获取user id：name
+     * 使用前需判断id list是否为空
+     */
+    private Map<Integer,String> getUsersName(List<Integer> ids){
+        //record存在时，userid肯定不为空，所以不用判断
+        return userMapper.selectList(new LambdaQueryWrapper<User>().in(User::getId, ids))
+                .stream().collect(Collectors.toMap(User::getId, User::getUsername));
+    }
+
+    /**
+     * 获取room id：name
+     * 使用前需判断id list是否为空
+     */
+    private Map<Integer,String> getRoomsName(List<Integer> ids){
+        //record存在时，userid肯定不为空，所以不用判断
+        return roomMapper.selectList(new LambdaQueryWrapper<MeetingRoom>().in(MeetingRoom::getId, ids))
+                .stream().collect(Collectors.toMap(MeetingRoom::getId, MeetingRoom::getName));
     }
 }
 

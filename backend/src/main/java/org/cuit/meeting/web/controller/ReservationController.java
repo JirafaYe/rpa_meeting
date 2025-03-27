@@ -31,9 +31,9 @@ public class ReservationController {
      * @return
      */
     @GetMapping("")
-    public AjaxResult pageQuerySummary(ReservationPageQuery page){
+    public Result<PageDTO<ReservationDTO>> pageQuerySummary(ReservationPageQuery page){
         PageDTO<ReservationDTO> res = reservationService.summaryPage(page);
-        return AjaxResult.success(res);
+        return Result.ok(res);
     }
 
     /**
@@ -44,11 +44,11 @@ public class ReservationController {
      */
     @PutMapping("/approve")
     @PreAuthorize("@ss.hasAnyRoles('ADMIN')")
-    public AjaxResult approve(@RequestParam("id") int id
-            ,@RequestParam("isAllowed") boolean isAllowed){
+    public Result<String> approve(@RequestParam("id") int id
+            , @RequestParam("isAllowed") boolean isAllowed){
         String msg = reservationService.approve(id, isAllowed);
         return StringUtils.isBlank(msg)
-                ?AjaxResult.success():AjaxResult.error(msg);
+                ?Result.ok():Result.fail(msg);
     }
 
     /**
@@ -57,11 +57,11 @@ public class ReservationController {
      * @return
      */
     @PutMapping("{id}")
-    public AjaxResult cancelById(@PathVariable("id") int id){
+    public Result<String > cancelById(@PathVariable("id") int id){
         Integer userId = SecurityUtils.getUserId();
         String msg = reservationService.cancel(id, userId);
         return StringUtils.isBlank(msg)
-                ?AjaxResult.success():AjaxResult.error(msg);
+                ?Result.ok():Result.fail(msg);
     }
 
     /**
@@ -71,11 +71,11 @@ public class ReservationController {
      */
     @PutMapping("/admin/{id}")
     @PreAuthorize("@ss.hasAnyRoles('ADMIN')")
-    public AjaxResult cancelByAdmin(@PathVariable("id") int id){
+    public Result<String > cancelByAdmin(@PathVariable("id") int id){
         String msg = reservationService.cancel(id
                 , NotificationConstants.SYS_ADMIN);
         return StringUtils.isBlank(msg)
-                ?AjaxResult.success():AjaxResult.error(msg);
+                ?Result.ok():Result.fail(msg);
     }
 
     /**

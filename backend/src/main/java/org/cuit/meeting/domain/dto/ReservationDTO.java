@@ -25,14 +25,14 @@ public class ReservationDTO {
     private String description;
 
     /**
-     * 预约用户id
+     * 预约用户
      */
-    private Integer bookerId;
+    private String  booker;
 
     /**
-     * 会议室id
+     * 会议室名字
      */
-    private Integer roomId;
+    private String  room;
 
     /**
      * 起始时间

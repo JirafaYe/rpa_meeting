@@ -19,7 +19,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
             throws IOException, ServletException {
         int code = HttpServletResponse.SC_FORBIDDEN;
-        String msg = String.format("请求访问：{}，认证失败，无权限", request.getRequestURI());
+        String msg = String.format("请求访问：{%s}，认证失败，无权限", request.getRequestURI());
         ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.error(code, msg)));
     }
 }
