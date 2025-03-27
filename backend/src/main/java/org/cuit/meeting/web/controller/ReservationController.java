@@ -71,7 +71,7 @@ public class ReservationController {
      */
     @PutMapping("/admin/{id}")
     @PreAuthorize("@ss.hasAnyRoles('ADMIN')")
-    public Result<String > cancelByAdmin(@PathVariable("id") int id){
+    public Result<String> cancelByAdmin(@PathVariable("id") int id){
         String msg = reservationService.cancel(id
                 , NotificationConstants.SYS_ADMIN);
         return StringUtils.isBlank(msg)

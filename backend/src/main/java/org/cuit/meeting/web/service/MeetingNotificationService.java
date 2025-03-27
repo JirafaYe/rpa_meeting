@@ -22,4 +22,11 @@ public interface MeetingNotificationService extends IService<MeetingNotification
     PageDTO<NotificationDTO> pageQuery(PageQuery query, int userId);
 
     NotificationDetailsDTO selectById(int userId, int notificationId);
+
+    /**
+     * 会前提醒
+     * @param reservationId 会议id
+     * @return
+     */
+    String notifyBefore(int reservationId);
 }

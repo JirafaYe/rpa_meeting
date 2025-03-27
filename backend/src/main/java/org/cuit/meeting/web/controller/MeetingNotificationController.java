@@ -1,7 +1,7 @@
 package org.cuit.meeting.web.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.constant.NotificationConstants;
-import org.cuit.meeting.domain.AjaxResult;
 import org.cuit.meeting.domain.PageQuery;
 import org.cuit.meeting.domain.Result;
 import org.cuit.meeting.domain.dto.NotificationDTO;
@@ -11,10 +11,7 @@ import org.cuit.meeting.utils.SecurityUtils;
 import org.cuit.meeting.web.service.MeetingNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 通知操作
@@ -52,15 +49,27 @@ public class MeetingNotificationController {
     }
 
     /**
-     * 管理员通过id查看通知
+     * 管理员通过id查看通知（可查看所有通知）
      * @param id
      * @return
      */
-    //管理员通过id查看通知（可查看所有通知）
     @GetMapping("/admin/{id}")
-    @PreAuthorize("@ss.hasAnyRoles('admin')")
+    @PreAuthorize("@ss.hasAnyRoles('ADMIN')")
     public Result<NotificationDetailsDTO> queryDetailsByAdmin(@PathVariable("id") int id){
         NotificationDetailsDTO dto = service.selectById(NotificationConstants.SYS_ADMIN, id);
         return Result.ok(dto);
+    }
+
+    /**
+     * 管理员会前提醒
+     * @param id
+     * @return
+     */
+    @PostMapping("{id}")
+    @PreAuthorize("@ss.hasAnyRoles('ADMIN')")
+    public Result<String> notify(@PathVariable("id") int id){
+        String msg = service.notifyBefore(id);
+        return StringUtils.isBlank(msg)
+                ? Result.ok():Result.fail(msg);
     }
 }

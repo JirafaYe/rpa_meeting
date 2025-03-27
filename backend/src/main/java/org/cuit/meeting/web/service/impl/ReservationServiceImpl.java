@@ -109,6 +109,7 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
         res.setTotal(page.getTotal());
         if(!page.getRecords().isEmpty()){
             List<Reservation> records = page.getRecords();
+            //record存在时，userid、roomsId肯定不为空，所以不用判断
             //获取用户名
             List<Integer> ids = records.stream().map(Reservation::getBookerId).collect(Collectors.toList());
             Map<Integer, String> usersName = getUsersName(ids);
@@ -335,7 +336,6 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
      * 使用前需判断id list是否为空
      */
     private Map<Integer,String> getUsersName(List<Integer> ids){
-        //record存在时，userid肯定不为空，所以不用判断
         return userMapper.selectList(new LambdaQueryWrapper<User>().in(User::getId, ids))
                 .stream().collect(Collectors.toMap(User::getId, User::getUsername));
     }
@@ -345,7 +345,6 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
      * 使用前需判断id list是否为空
      */
     private Map<Integer,String> getRoomsName(List<Integer> ids){
-        //record存在时，userid肯定不为空，所以不用判断
         return roomMapper.selectList(new LambdaQueryWrapper<MeetingRoom>().in(MeetingRoom::getId, ids))
                 .stream().collect(Collectors.toMap(MeetingRoom::getId, MeetingRoom::getName));
     }

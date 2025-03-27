@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import org.cuit.meeting.constant.NotificationConstants;
 import org.cuit.meeting.constant.ParticipantsConstants;
+import org.cuit.meeting.constant.ReservationConstants;
 import org.cuit.meeting.dao.MeetingNotificationMapper;
+import org.cuit.meeting.dao.ReservationMapper;
 import org.cuit.meeting.dao.UserMapper;
 import org.cuit.meeting.domain.PageQuery;
 import org.cuit.meeting.domain.dto.NotificationDTO;
@@ -39,6 +41,8 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
 
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    private ReservationMapper reservationMapper;
 
     @Override
     public boolean notifyApprove(Reservation reservation, boolean isAllowed) {
@@ -55,8 +59,8 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
         }
         //增加通知标题信息
         notification.setTitle(String.format("[%s]",notification.getTitle())+reservation.getTopic());
-        notification.setContent(String.format(notification.getTitle()+":%s\n会议时间:%s"
-                ,reservation.getTopic(),NotificationConstants.formatter.format(reservation.getStartTime()))
+        notification.setContent(String.format(notification.getTitle()+"会议时间:%s"
+                ,NotificationConstants.formatter.format(reservation.getStartTime()))
         );
         notification.setSenderId(reservation.getBookerId());
         notification.setCreateTime(new Date());
@@ -90,8 +94,8 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
         //增加通知标题信息
         notification.setTitle(String.format("[%s]",notification.getTitle())+reservation.getTopic());
 
-        notification.setContent(String.format(notification.getTitle()+":%s\n会议时间:%s"
-                ,reservation.getTopic(),NotificationConstants.formatter.format(reservation.getStartTime()))
+        notification.setContent(String.format(notification.getTitle()+"会议时间:%s"
+                ,NotificationConstants.formatter.format(reservation.getStartTime()))
         );
         notification.setSenderId(NotificationConstants.SYS_ADMIN);
         notification.setCreateTime(new Date());
@@ -151,6 +155,22 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
 
 
         return dto;
+    }
+
+    @Override
+    public String notifyBefore(int reservationId) {
+        String msg="";
+        Reservation reservation = reservationMapper.selectById(reservationId);
+        if(Objects.isNull(reservation)){
+            msg="会议id不存在";
+        } else if (reservation.getStatus()!=ReservationConstants.ALLOW) {
+            msg="会议未审批通过";
+        } else {
+            if(!notify(reservation,NotificationConstants.NOTIFICATION)){
+                msg="通知失败";
+            }
+        }
+        return msg;
     }
 
     private String getUserName(int userID){
