@@ -74,7 +74,7 @@ create table subtopics
     id int(11) not null auto_increment primary key comment '主键id',
     reservation_id int(11) not null default 0 comment '预约id',
     subtopics varchar(50) not null default '' comment '子主题',
-    description varchar(200) not null default '' comment '子主题描述',
+    description varchar(200) default '' comment '子主题描述',
     create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='子主题表';
 
