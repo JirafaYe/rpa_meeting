@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.cuit.meeting.domain.AjaxResult.error;
@@ -94,8 +95,9 @@ public class UserController {
         // 生成令牌
         String token = userService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
                 loginBody.getUuid());
-        return Result.ok(ImmutableMultimap
-                .of("token", token));
+        Map<String, String> map = new HashMap<>();
+        map.put("token", token);
+        return Result.ok(map);
     }
 
     /**
