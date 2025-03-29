@@ -5,11 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.7</version>
+        <groupId>org.cuit.meeting</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
-    <groupId>org.cuit.meeting</groupId>
     <artifactId>backend</artifactId>
     <version>1.0-SNAPSHOT</version>
 
