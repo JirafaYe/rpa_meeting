@@ -7,7 +7,6 @@ on:
 
 env:
   REGISTRY: crpi-4cxmmgs5vgve081u.cn-beijing.personal.cr.aliyuncs.com  # 默认为 docker.io，即去 Docker Hub 上找
-
   IMAGE_NAME: crpi-4cxmmgs5vgve081u.cn-beijing.personal.cr.aliyuncs.com/devildyw/${{ github.event.repository.name }}  # 使用 GitHub Actions 提供的能力，可以自动获取仓库名
   IMAGE_TAG: latest  # Docker Image 的 tag，为了方便我直接设置 latest
   PORT: 8080  # 服务要暴露的端口，可以改
@@ -61,4 +60,4 @@ jobs:
           docker stop ${{ env.IMAGE_NAME }} || true
           docker rm ${{ env.IMAGE_NAME }} || true
           docker pull ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          docker run -p ${{ env.PORT }}:${{ env.PORT}} --name ${{ env.IMAGE_NAME }} -d ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker run -p ${{ env.PORT }}:${{ env.PORT}} --name rpa_meeting -d ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
