@@ -7,14 +7,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.constant.SubTopicsConstants;
 import org.cuit.meeting.dao.ParticipantsMapper;
 import org.cuit.meeting.dao.SubtopicsMapper;
+import org.cuit.meeting.domain.Result;
 import org.cuit.meeting.domain.entity.Participants;
 import org.cuit.meeting.domain.entity.Subtopics;
+import org.cuit.meeting.domain.entity.SubtopicsFile;
 import org.cuit.meeting.domain.request.SubtopicsBody;
 import org.cuit.meeting.domain.request.SubtopicsUpdateBody;
+import org.cuit.meeting.web.service.FileService;
+import org.cuit.meeting.web.service.SubtopicsFileService;
 import org.cuit.meeting.web.service.SubtopicsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -31,6 +36,12 @@ public class SubtopicsServiceImpl extends ServiceImpl<SubtopicsMapper, Subtopics
 
     @Autowired
     SubtopicsMapper subtopicsMapper;
+
+    @Autowired
+    private FileService fileService;
+
+    @Autowired
+    private SubtopicsFileService subtopicsFileService;
 
     @Override
     public String create(int userId, SubtopicsBody body) {
@@ -66,6 +77,23 @@ public class SubtopicsServiceImpl extends ServiceImpl<SubtopicsMapper, Subtopics
         }
 
         return msg;
+    }
+
+    @Override
+    public Result<Object> uploadFile(Integer subId, String fileKey) {
+        Subtopics subtopics = subtopicsMapper.selectById(subId);
+        if (Objects.isNull(subtopics)) {
+            return Result.fail("子议题不存在");
+        }
+
+        // 获取到文件的key
+        SubtopicsFile subtopicsFile = new SubtopicsFile();
+        subtopicsFile.setSubtopicsId(subId);
+        subtopicsFile.setFileName(fileKey);
+        subtopicsFile.setFileUrl(fileKey);
+        subtopicsFile.setCreateTime(new Date());
+        subtopicsFileService.save(subtopicsFile);
+        return Result.ok();
     }
 
     /**

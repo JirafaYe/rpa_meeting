@@ -8,6 +8,7 @@ import org.cuit.meeting.utils.SecurityUtils;
 import org.cuit.meeting.web.service.SubtopicsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 子议题操作
@@ -41,5 +42,17 @@ public class SubTopicsController {
         String msg = subtopicsService.update(SecurityUtils.getUserId(), body);
         return StringUtils.isBlank(msg)?Result.ok()
                 :Result.fail(msg);
+    }
+
+
+    /**
+     * 上传子议题文件（前端许校验文件格式仅限PDF）
+     * @param subId
+     * @param fileKey
+     * @return
+     */
+    @PostMapping("/upload/file/{subId}")
+    public Result<Object> uploadFile(@PathVariable("subId") Integer subId, @RequestParam String fileKey){
+        return subtopicsService.uploadFile(subId, fileKey);
     }
 }
