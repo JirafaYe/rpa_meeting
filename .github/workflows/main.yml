@@ -1,0 +1,51 @@
+name: Deploy Java Service to Docker
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '8'
+
+    - name: Build with Maven
+      run: mvn clean package
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: 1842501760@qq.com
+        password: dyw20020304
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: devildyw/rpa_meeting:latest
+
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v1
+      with:
+        host: 182.92.115.169
+        username: root
+        password: Ye123456
+        script: |
+          docker pull devildyw/rpa_meeting:latest
+          docker stop rpa_meeting || true
+          docker rm rpa_meeting || true
+          docker run -d --name rpa_meeting -p 8080:8080 devildyw/rpa_meeting:latest
