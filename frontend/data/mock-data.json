@@ -1,0 +1,330 @@
+{
+  "currentUser": {
+    "id": "1",
+    "name": "张三",
+    "avatar": "/static/images/avatar/user1.png",
+    "role": "user"
+  },
+  
+  "meetings": [
+    {
+      "id": "1",
+      "title": "产品开发周会",
+      "startTime": "2023-05-20 09:00",
+      "endTime": "2023-05-20 10:30",
+      "location": "线上会议室",
+      "department": "产品研发部",
+      "type": "周例会",
+      "description": "讨论本周工作进展和下周计划",
+      "status": "2",
+      "creatorId": "1",
+      "creator": {
+        "id": "1",
+        "name": "张经理"
+      },
+      "participants": [
+        { "id": "1", "name": "张经理", "role": "creator" },
+        { "id": "2", "name": "李主管", "role": "participant" },
+        { "id": "3", "name": "王工程师", "role": "participant" },
+        { "id": "4", "name": "赵设计师", "role": "participant" },
+        { "id": "5", "name": "刘测试", "role": "participant" }
+      ],
+      "agenda": [
+        { "id": "a1", "title": "上周工作总结", "owner": "张经理", "time": "15分钟" },
+        { "id": "a2", "title": "本周工作安排", "owner": "李主管", "time": "20分钟" },
+        { "id": "a3", "title": "项目进度报告", "owner": "王工程师", "time": "15分钟" },
+        { "id": "a4", "title": "问题讨论", "owner": "全体", "time": "30分钟" }
+      ]
+    },
+    {
+      "id": "2",
+      "title": "项目启动会议",
+      "startTime": "2023-05-21 14:00",
+      "endTime": "2023-05-21 16:00",
+      "location": "大会议室",
+      "department": "产品研发部",
+      "type": "项目会议",
+      "description": "讨论新项目的启动计划和分工",
+      "status": "1",
+      "creatorId": "2",
+      "creator": {
+        "id": "2",
+        "name": "李主管"
+      },
+      "participants": [
+        { "id": "2", "name": "李主管", "role": "creator" },
+        { "id": "1", "name": "张经理", "role": "participant" },
+        { "id": "3", "name": "王工程师", "role": "participant" },
+        { "id": "4", "name": "赵设计师", "role": "participant" },
+        { "id": "6", "name": "孙产品", "role": "participant" }
+      ]
+    },
+    {
+      "id": "3",
+      "title": "技术分享会",
+      "startTime": "2023-05-18 10:00",
+      "endTime": "2023-05-18 11:30",
+      "location": "小会议室",
+      "department": "技术部",
+      "type": "技术分享",
+      "description": "Vue3新特性和最佳实践分享",
+      "status": "3",
+      "creatorId": "3",
+      "creator": {
+        "id": "3",
+        "name": "王工程师"
+      },
+      "participants": [
+        { "id": "3", "name": "王工程师", "role": "creator" },
+        { "id": "7", "name": "钱开发", "role": "participant" },
+        { "id": "8", "name": "周开发", "role": "participant" },
+        { "id": "9", "name": "吴开发", "role": "participant" }
+      ]
+    },
+    {
+      "id": "101",
+      "title": "当前进行中的会议",
+      "startTime": "2023-05-25 09:00",
+      "endTime": "2023-05-25 17:00",
+      "location": "视频会议室",
+      "department": "全公司",
+      "type": "视频会议",
+      "description": "讨论公司战略规划",
+      "status": "2",
+      "creatorId": "1",
+      "creator": {
+        "id": "1",
+        "name": "张经理"
+      },
+      "participants": [
+        { "id": "1", "name": "张经理", "role": "creator" },
+        { "id": "2", "name": "李主管", "role": "participant" },
+        { "id": "3", "name": "王工程师", "role": "participant" }
+      ]
+    },
+    {
+      "id": "102",
+      "title": "未来待开始的会议",
+      "startTime": "2024-05-30 09:00",
+      "endTime": "2024-05-30 11:00",
+      "location": "多功能厅",
+      "department": "市场部",
+      "type": "季度总结",
+      "description": "总结第二季度工作",
+      "status": "1",
+      "creatorId": "2",
+      "creator": {
+        "id": "2",
+        "name": "李主管"
+      },
+      "participants": [
+        { "id": "2", "name": "李主管", "role": "creator" },
+        { "id": "1", "name": "张经理", "role": "participant" }
+      ]
+    },
+    {
+      "id": "103",
+      "title": "已结束的历史会议",
+      "startTime": "2022-12-30 10:00",
+      "endTime": "2022-12-30 12:00",
+      "location": "小会议室",
+      "department": "技术部",
+      "type": "年终总结",
+      "description": "技术部年终总结会议",
+      "status": "3",
+      "creatorId": "3",
+      "creator": {
+        "id": "3",
+        "name": "王工程师"
+      },
+      "participants": [
+        { "id": "3", "name": "王工程师", "role": "creator" },
+        { "id": "7", "name": "钱开发", "role": "participant" }
+      ]
+    }
+  ],
+  
+  "messages": [
+    {
+      "id": "msg1",
+      "meetingId": "1",
+      "senderId": "1",
+      "senderName": "张经理",
+      "senderAvatar": "/static/images/avatar/user1.png",
+      "content": "大家好，欢迎参加本次会议",
+      "createTime": "2023-05-20 09:01:00",
+      "isSystem": false
+    },
+    {
+      "id": "msg2",
+      "meetingId": "1",
+      "senderId": "2",
+      "senderName": "李主管",
+      "senderAvatar": "/static/images/avatar/user2.png",
+      "content": "已经准备好了报告",
+      "createTime": "2023-05-20 09:02:30",
+      "isSystem": false
+    },
+    {
+      "id": "msg3",
+      "meetingId": "1",
+      "senderId": "3",
+      "senderName": "王工程师",
+      "senderAvatar": "/static/images/avatar/user3.png",
+      "content": "项目进度报告可以开始了",
+      "createTime": "2023-05-20 09:15:45",
+      "isSystem": false
+    },
+    {
+      "id": "msg4",
+      "meetingId": "1",
+      "senderId": "system",
+      "senderName": "系统",
+      "senderAvatar": "",
+      "content": "王工程师已加入会议",
+      "createTime": "2023-05-20 09:00:30",
+      "isSystem": true
+    },
+    {
+      "id": "msg5",
+      "meetingId": "2",
+      "senderId": "2",
+      "senderName": "李主管",
+      "senderAvatar": "/static/images/avatar/user2.png",
+      "content": "项目启动会议将在下周二举行",
+      "createTime": "2023-05-19 15:00:00",
+      "isSystem": false
+    },
+    {
+      "id": "msg6",
+      "meetingId": "101",
+      "senderId": "1",
+      "senderName": "张经理",
+      "senderAvatar": "/static/images/avatar/user1.png",
+      "content": "今天我们讨论公司战略规划",
+      "createTime": "2023-05-25 09:01:00",
+      "isSystem": false
+    },
+    {
+      "id": "msg7",
+      "meetingId": "101",
+      "senderId": "2",
+      "senderName": "李主管",
+      "senderAvatar": "/static/images/avatar/user2.png",
+      "content": "我已经准备好了市场分析报告",
+      "createTime": "2023-05-25 09:02:30",
+      "isSystem": false
+    }
+  ],
+  
+  "files": [
+    {
+      "id": "file1",
+      "meetingId": "1",
+      "name": "周例会-项目进度报告.pdf",
+      "type": "pdf",
+      "size": 2048576,
+      "uploadTime": "2023-05-20 08:50:00",
+      "uploader": "王工程师",
+      "uploaderId": "3",
+      "url": "/static/files/sample.pdf",
+      "agendaId": "a3"
+    },
+    {
+      "id": "file2",
+      "meetingId": "1",
+      "name": "产品开发计划.docx",
+      "type": "doc",
+      "size": 1048576,
+      "uploadTime": "2023-05-20 08:55:00",
+      "uploader": "李主管",
+      "uploaderId": "2",
+      "url": "/static/files/sample.docx",
+      "agendaId": "a2"
+    },
+    {
+      "id": "file3",
+      "meetingId": "2",
+      "name": "项目启动说明书.pdf",
+      "type": "pdf",
+      "size": 3145728,
+      "uploadTime": "2023-05-19 16:30:00",
+      "uploader": "李主管",
+      "uploaderId": "2",
+      "url": "/static/files/sample2.pdf",
+      "agendaId": null
+    },
+    {
+      "id": "file4",
+      "meetingId": "101",
+      "name": "公司战略规划2023.pptx",
+      "type": "ppt",
+      "size": 5242880,
+      "uploadTime": "2023-05-25 08:30:00",
+      "uploader": "张经理",
+      "uploaderId": "1",
+      "url": "/static/files/sample3.pptx",
+      "agendaId": null
+    },
+    {
+      "id": "file5",
+      "meetingId": "101",
+      "name": "市场分析报告.pdf",
+      "type": "pdf",
+      "size": 3145728,
+      "uploadTime": "2023-05-25 08:40:00",
+      "uploader": "李主管",
+      "uploaderId": "2",
+      "url": "/static/files/sample4.pdf",
+      "agendaId": null
+    }
+  ],
+  
+  "minutes": [
+    {
+      "id": "minutes1",
+      "meetingId": "3",
+      "title": "Vue3技术分享会议纪要",
+      "content": "## 会议内容\n1. Vue3的Composition API介绍\n2. 响应式系统的变化\n3. 性能优化的最佳实践\n\n## 决议事项\n1. 团队新项目将采用Vue3 + TypeScript\n2. 下个月进行全员Vue3培训\n\n## 下一步行动\n1. 所有开发人员学习Vue3文档\n2. 技术部准备培训材料",
+      "creatorId": "3",
+      "creatorName": "王工程师",
+      "createTime": "2023-05-18 11:45:00"
+    },
+    {
+      "id": "minutes2",
+      "meetingId": "103",
+      "title": "技术部年终总结会议纪要",
+      "content": "## 会议内容\n1. 2022年度技术部工作总结\n2. 项目完成情况回顾\n3. 技术栈演进\n\n## 决议事项\n1. 确定2023年技术路线图\n2. 人员培训计划\n\n## 下一步行动\n1. 各组负责人提交详细计划\n2. 1月15日前完成路线图讨论",
+      "creatorId": "3",
+      "creatorName": "王工程师",
+      "createTime": "2022-12-30 14:30:00"
+    }
+  ],
+  
+  "recordings": [
+    {
+      "id": "rec1",
+      "meetingId": "1",
+      "name": "产品开发周会-录音",
+      "duration": "01:30:00",
+      "createTime": "2023-05-20 09:00:00",
+      "url": "/static/recordings/sample.mp3"
+    },
+    {
+      "id": "rec2",
+      "meetingId": "3",
+      "name": "Vue3技术分享-录音",
+      "duration": "01:25:30",
+      "createTime": "2023-05-18 10:00:00",
+      "url": "/static/recordings/sample2.mp3"
+    },
+    {
+      "id": "rec3",
+      "meetingId": "103",
+      "name": "技术部年终总结-录音",
+      "duration": "02:00:00",
+      "createTime": "2022-12-30 10:00:00",
+      "url": "/static/recordings/sample3.mp3"
+    }
+  ]
+} 

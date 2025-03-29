@@ -1,0 +1,87 @@
+{
+  "rooms": [
+    {
+      "id": "1",
+      "name": "大会议室",
+      "location": "总部1楼",
+      "capacity": 20,
+      "equipment": ["投影仪", "视频会议系统", "白板"],
+      "status": "available",
+      "description": "适合大型会议和培训",
+      "bookable": true
+    },
+    {
+      "id": "2",
+      "name": "小会议室A",
+      "location": "总部2楼",
+      "capacity": 8,
+      "equipment": ["电视", "视频会议系统"],
+      "status": "available",
+      "description": "适合小组讨论",
+      "bookable": true
+    },
+    {
+      "id": "3",
+      "name": "小会议室B",
+      "location": "总部2楼",
+      "capacity": 8,
+      "equipment": ["电视", "视频会议系统"],
+      "status": "maintenance",
+      "description": "适合小组讨论，设备维护中",
+      "bookable": false
+    },
+    {
+      "id": "4",
+      "name": "小会议室C",
+      "location": "总部3楼",
+      "capacity": 10,
+      "equipment": ["投影仪", "视频会议系统", "白板"],
+      "status": "available",
+      "description": "适合中型会议",
+      "bookable": true
+    },
+    {
+      "id": "5",
+      "name": "董事会议室",
+      "location": "总部5楼",
+      "capacity": 15,
+      "equipment": ["投影仪", "高级视频会议系统", "白板", "音响系统"],
+      "status": "available",
+      "description": "适合重要会议",
+      "bookable": true,
+      "needApproval": true
+    }
+  ],
+  "equipmentTypes": [
+    {
+      "id": "1",
+      "name": "投影仪",
+      "icon": "projector"
+    },
+    {
+      "id": "2",
+      "name": "视频会议系统",
+      "icon": "video-conference"
+    },
+    {
+      "id": "3",
+      "name": "白板",
+      "icon": "whiteboard"
+    },
+    {
+      "id": "4",
+      "name": "电视",
+      "icon": "tv"
+    },
+    {
+      "id": "5",
+      "name": "音响系统",
+      "icon": "audio"
+    },
+    {
+      "id": "6",
+      "name": "高级视频会议系统",
+      "icon": "advanced-video-conference"
+    }
+  ]
+} 

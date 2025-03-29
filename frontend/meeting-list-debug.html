@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会议列表调试页面</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .meeting-card { 
+      border: 1px solid #ddd; 
+      border-radius: 4px; 
+      padding: 15px; 
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .header { display: flex; justify-content: space-between; align-items: center; }
+    .title { font-size: 18px; font-weight: bold; margin: 0; }
+    .status {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      color: white;
+    }
+    .status-in-progress { background-color: #3498db; }
+    .status-completed { background-color: #27ae60; }
+    .status-pending { background-color: #f39c12; }
+    .info { margin-top: 10px; font-size: 14px; color: #666; }
+    .info-item { margin-bottom: 5px; }
+    .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #eee; }
+    .tab { 
+      padding: 10px 20px; 
+      cursor: pointer; 
+      border-bottom: 2px solid transparent;
+    }
+    .tab.active { 
+      border-bottom-color: #3498db; 
+      color: #3498db; 
+      font-weight: bold;
+    }
+    #loading { display: none; text-align: center; padding: 20px; }
+    #error { display: none; color: #e74c3c; padding: 10px; background-color: #fadbd8; border-radius: 4px; margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>会议列表</h1>
+    
+    <div class="tabs">
+      <div class="tab active" data-type="initiated">我发起的</div>
+      <div class="tab" data-type="participated">我参与的</div>
+    </div>
+    
+    <div id="error"></div>
+    <div id="loading">加载中...</div>
+    
+    <div id="meeting-list"></div>
+  </div>
+
+  <script>
+    // 在页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+      // 初始化变量
+      const meetingListEl = document.getElementById('meeting-list');
+      const loadingEl = document.getElementById('loading');
+      const errorEl = document.getElementById('error');
+      const tabs = document.querySelectorAll('.tab');
+      let activeType = 'initiated';
+      
+      // 加载会议列表
+      loadMeetingList(activeType);
+      
+      // 监听选项卡点击事件
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          tabs.forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          activeType = this.dataset.type;
+          loadMeetingList(activeType);
+        });
+      });
+      
+      // 加载会议列表的函数
+      function loadMeetingList(type) {
+        // 显示加载中
+        loadingEl.style.display = 'block';
+        meetingListEl.innerHTML = '';
+        errorEl.style.display = 'none';
+        
+        // 创建请求对象
+        fetch(`/api/meeting/list?type=${type}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('获取会议列表失败');
+            }
+            return response.json();
+          })
+          .then(data => {
+            // 隐藏加载中
+            loadingEl.style.display = 'none';
+            
+            // 检查响应
+            if (data.code === 200 && data.data && data.data.list) {
+              // 渲染会议列表
+              if (data.data.list.length === 0) {
+                meetingListEl.innerHTML = '<div class="empty">暂无会议</div>';
+              } else {
+                renderMeetingList(data.data.list);
+              }
+            } else {
+              throw new Error(data.message || '返回数据格式错误');
+            }
+          })
+          .catch(error => {
+            // 处理错误
+            loadingEl.style.display = 'none';
+            errorEl.textContent = error.message;
+            errorEl.style.display = 'block';
+            console.error('加载会议列表失败:', error);
+            
+            // 如果是网络错误或API不可用，显示模拟数据
+            showMockData(type);
+          });
+      }
+      
+      // 显示模拟数据
+      function showMockData(type) {
+        meetingListEl.innerHTML = '<div style="padding: 10px; margin-bottom: 15px; background-color: #f8f9fa; border-radius: 4px;">使用模拟数据</div>';
+        
+        const mockMeetings = type === 'initiated' ? 
+          [
+            {
+              "id": "3",
+              "title": "项目进度例会",
+              "description": "讨论项目的当前进度和遇到的问题",
+              "startTime": "2023-05-15 09:00",
+              "endTime": "2023-05-15 10:00",
+              "roomName": "大会议室",
+              "status": "in-progress",
+              "participants": [
+                { "id": "1", "name": "张三" },
+                { "id": "2", "name": "李四" },
+                { "id": "3", "name": "王五" }
+              ]
+            },
+            {
+              "id": "101",
+              "title": "产品需求评审会议",
+              "description": "讨论新产品功能的需求细节和实现方案",
+              "startTime": "2023-06-10 09:30",
+              "endTime": "2023-06-10 11:00",
+              "roomName": "大会议室",
+              "status": "pending",
+              "participants": [
+                { "id": "2", "name": "李四" },
+                { "id": "1", "name": "张三" }
+              ]
+            }
+          ] :
+          [
+            {
+              "id": "101",
+              "title": "产品需求评审会议",
+              "description": "讨论新产品功能的需求细节和实现方案",
+              "startTime": "2023-06-10 09:30",
+              "endTime": "2023-06-10 11:00",
+              "roomName": "大会议室",
+              "status": "pending",
+              "participants": [
+                { "id": "2", "name": "李四" },
+                { "id": "1", "name": "张三" }
+              ]
+            }
+          ];
+        
+        renderMeetingList(mockMeetings);
+      }
+      
+      // 渲染会议列表
+      function renderMeetingList(meetings) {
+        let html = '';
+        
+        meetings.forEach(meeting => {
+          // 获取状态文本
+          const statusText = getStatusText(meeting.status);
+          
+          // 创建会议卡片
+          html += `
+          <div class="meeting-card">
+            <div class="header">
+              <h2 class="title">${meeting.title}</h2>
+              <span class="status status-${meeting.status}">${statusText}</span>
+            </div>
+            <div class="info">
+              <div class="info-item">时间: ${meeting.startTime.split(' ')[0]} ${meeting.startTime.split(' ')[1]} - ${meeting.endTime.split(' ')[1]}</div>
+              <div class="info-item">地点: ${meeting.roomName}</div>
+              <div class="info-item">参会人数: ${meeting.participants?.length || 0}人</div>
+            </div>
+          </div>`;
+        });
+        
+        meetingListEl.innerHTML = html;
+      }
+      
+      // 获取状态文本
+      function getStatusText(status) {
+        const statusMap = {
+          'pending': '待审批',
+          'approved': '已通过',
+          'in-progress': '进行中',
+          'completed': '已完成',
+          'rejected': '已拒绝',
+          'canceled': '已取消'
+        };
+        return statusMap[status] || '未知状态';
+      }
+    });
+  </script>
+</body>
+</html> 

@@ -1,0 +1,124 @@
+{
+  "files": [
+    {
+      "id": "1",
+      "name": "项目进度报告.docx",
+      "type": "doc",
+      "size": 2048000,
+      "url": "/static/files/project_report.docx",
+      "uploadTime": "2023-05-15 09:25",
+      "uploaderId": "1",
+      "uploaderName": "张三",
+      "meetingId": "3",
+      "agendaId": "4"
+    },
+    {
+      "id": "2",
+      "name": "产品需求文档.pdf",
+      "type": "pdf",
+      "size": 3584000,
+      "url": "/static/files/requirements.pdf",
+      "uploadTime": "2023-03-27 14:05",
+      "uploaderId": "2",
+      "uploaderName": "李四",
+      "meetingId": "101",
+      "agendaId": "1"
+    },
+    {
+      "id": "3",
+      "name": "技术方案.pptx",
+      "type": "ppt",
+      "size": 5120000,
+      "url": "/static/files/tech_solution.pptx",
+      "uploadTime": "2023-05-15 09:40",
+      "uploaderId": "3",
+      "uploaderName": "王五",
+      "meetingId": "3",
+      "agendaId": "5"
+    },
+    {
+      "id": "4",
+      "name": "新版界面原型设计.pdf",
+      "type": "pdf",
+      "size": 4250000,
+      "url": "/static/files/ui_design.pdf",
+      "uploadTime": "2023-03-27 14:11",
+      "uploaderId": "3",
+      "uploaderName": "王五",
+      "meetingId": "101",
+      "agendaId": "1"
+    },
+    {
+      "id": "5",
+      "name": "移动端兼容性测试报告.xlsx",
+      "type": "xls",
+      "size": 1856000,
+      "url": "/static/files/mobile_compatibility.xlsx",
+      "uploadTime": "2023-05-15 09:32",
+      "uploaderId": "4",
+      "uploaderName": "赵六",
+      "meetingId": "3",
+      "agendaId": "5"
+    },
+    {
+      "id": "6",
+      "name": "下一阶段工作计划.docx",
+      "type": "doc",
+      "size": 1245000,
+      "url": "/static/files/next_phase_plan.docx",
+      "uploadTime": "2023-05-15 09:48",
+      "uploaderId": "1",
+      "uploaderName": "张三",
+      "meetingId": "3",
+      "agendaId": "6"
+    },
+    {
+      "id": "7",
+      "name": "前端开发进度统计.xlsx",
+      "type": "xls",
+      "size": 965000,
+      "url": "/static/files/frontend_progress.xlsx",
+      "uploadTime": "2023-05-15 09:05",
+      "uploaderId": "2",
+      "uploaderName": "李四",
+      "meetingId": "3",
+      "agendaId": "401"
+    },
+    {
+      "id": "8",
+      "name": "后端API文档.pdf",
+      "type": "pdf",
+      "size": 3120000,
+      "url": "/static/files/api_doc.pdf",
+      "uploadTime": "2023-05-15 09:12",
+      "uploaderId": "3",
+      "uploaderName": "王五",
+      "meetingId": "3",
+      "agendaId": "402"
+    },
+    {
+      "id": "9",
+      "name": "数据分析功能规格.docx",
+      "type": "doc",
+      "size": 1750000,
+      "url": "/static/files/data_analysis_spec.docx",
+      "uploadTime": "2023-03-27 14:08",
+      "uploaderId": "2",
+      "uploaderName": "李四",
+      "meetingId": "101",
+      "agendaId": "101"
+    },
+    {
+      "id": "10",
+      "name": "自动化报表样例.pdf",
+      "type": "pdf",
+      "size": 2150000,
+      "url": "/static/files/report_samples.pdf",
+      "uploadTime": "2023-03-27 14:20",
+      "uploaderId": "3",
+      "uploaderName": "王五",
+      "meetingId": "101",
+      "agendaId": "102"
+    }
+  ]
+} 
