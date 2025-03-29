@@ -19,6 +19,9 @@ jobs:
         distribution: 'temurin'
         java-version: '8'
 
+    - name: Change to project directory
+      run: cd /backend
+
     - name: Build with Maven
       run: mvn clean package
 
