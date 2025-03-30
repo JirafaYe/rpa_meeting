@@ -78,10 +78,10 @@ public class UserController {
         {
             return Result.fail(e.getMessage());
         }
-
-        return Result.ok(ImmutableMultimap
-                .of("uuid", uuid,
-                    "img", Base64.encode(os.toByteArray())));
+        HashMap<String, String> map = new HashMap<>();
+        map.put("uuid", uuid);
+        map.put("img", Base64.encode(os.toByteArray()));
+        return Result.ok(map);
     }
 
     /**
