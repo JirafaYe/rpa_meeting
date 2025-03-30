@@ -2,6 +2,7 @@ package org.cuit.meeting.web.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.domain.Result;
+import org.cuit.meeting.domain.dto.SubtopicsFileDTO;
 import org.cuit.meeting.domain.request.SubtopicsBody;
 import org.cuit.meeting.domain.request.SubtopicsUpdateBody;
 import org.cuit.meeting.utils.SecurityUtils;
@@ -9,6 +10,8 @@ import org.cuit.meeting.web.service.SubtopicsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * 子议题操作
@@ -54,5 +57,35 @@ public class SubTopicsController {
     @PostMapping("/upload/file/{subId}")
     public Result<Object> uploadFile(@PathVariable("subId") Integer subId, @RequestParam String fileKey){
         return subtopicsService.uploadFile(subId, fileKey);
+    }
+
+    /**
+     * 删除子议题
+     * @param subId
+     * @return
+     */
+    @DeleteMapping("/{subId}")
+    public Result<Object> delete(@PathVariable("subId") Integer subId){
+        return subtopicsService.delete(subId);
+    }
+
+    /**
+     * 删除子议题文件 （删除数据库记录和文件）
+     * @param subFileId 子议题文件id
+     * @return 删除结果
+     */
+    @DeleteMapping("/file/{subFileId}")
+    public Result<Object> deleteFile(@PathVariable("subFileId") Integer subFileId){
+        return subtopicsService.deleteFile(subFileId);
+    }
+
+    /**
+     * 获取子议题文件列表
+     * @param subId 子议题id
+     * @return 文件列表
+     */
+    @GetMapping("/{subId}/file/list")
+    public Result<List<SubtopicsFileDTO>> listFile(@PathVariable("subId") Integer subId){
+        return subtopicsService.listFile(subId);
     }
 }

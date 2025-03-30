@@ -14,6 +14,7 @@ import org.cuit.meeting.constant.ReservationConstants;
 import org.cuit.meeting.dao.MeetingRoomMapper;
 import org.cuit.meeting.dao.ReservationMapper;
 import org.cuit.meeting.dao.UserMapper;
+import org.cuit.meeting.domain.Result;
 import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.dto.ReservationDTO;
 import org.cuit.meeting.domain.entity.MeetingRoom;
@@ -22,6 +23,7 @@ import org.cuit.meeting.domain.entity.Reservation;
 import org.cuit.meeting.domain.entity.User;
 import org.cuit.meeting.domain.request.ReservationBody;
 import org.cuit.meeting.domain.request.ReservationPageQuery;
+import org.cuit.meeting.domain.request.SummaryBody;
 import org.cuit.meeting.utils.OpenAPIUtil;
 import org.cuit.meeting.web.service.FileService;
 import org.cuit.meeting.web.service.MeetingNotificationService;
@@ -156,28 +158,19 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
     }
 
     @Override
-    public void uploadAudioAndSummary(int reservationId, MultipartFile file) {
+    public void uploadAudioAndSummary(int reservationId, String fileKey) {
         // 先上传文件
-        try {
-            // 获取会议
-            Reservation reservation = this.getById(reservationId);
-            if (Objects.isNull(reservation)) {
-                throw new RuntimeException("会议不存在");
-            }
-
-
-            String key = fileService.uploadFile(file.getOriginalFilename(), file.getInputStream());
-            reservation.setVoiceUrl(key);
-            this.updateById(reservation);
-
-            // 生成总结
-            getSummary(reservation, key);
-            return;
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
-            log.error("上传文件失败", e);
-            throw new RuntimeException("上传文件失败");
+        // 获取会议
+        Reservation reservation = this.getById(reservationId);
+        if (Objects.isNull(reservation)) {
+            throw new RuntimeException("会议不存在");
         }
 
+        reservation.setVoiceUrl(fileKey);
+        this.updateById(reservation);
+
+        // 生成总结
+        getSummary(reservation, fileKey);
     }
 
     @Override
@@ -233,6 +226,40 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
         } finally {
             lock.unlock();
         }
+    }
+
+    @Override
+    public Result<Object> getSummary(int id) {
+        Reservation reservation = getById(id);
+        if (Objects.isNull(reservation)) {
+            return Result.fail("会议不存在");
+        }
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put("summary", reservation.getSummary());
+        return Result.ok(map);
+    }
+
+    /**
+     * 更新会议总结
+     * @param body
+     * @return
+     */
+    @Override
+    public Result<Object> updateSummary(SummaryBody body) {
+        Integer reservationId = body.getReservationId();
+        Reservation reservation = getById(reservationId);
+        if (Objects.isNull(reservation)) {
+            return Result.fail("会议不存在");
+        }
+
+        if (StringUtils.isBlank(body.getSummary())) {
+            return Result.fail("总结不能为空");
+        }
+
+        reservation.setSummary(body.getSummary());
+        updateById(reservation);
+        return Result.ok();
     }
 
     @NotNull

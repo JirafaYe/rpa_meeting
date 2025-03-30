@@ -4,6 +4,7 @@ import org.cuit.meeting.config.Constants;
 import org.cuit.meeting.constant.HttpStatus;
 import org.cuit.meeting.domain.LoginUser;
 import org.cuit.meeting.domain.entity.Role;
+import org.cuit.meeting.domain.entity.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -67,6 +68,10 @@ public class SecurityUtils
         {
             throw new RuntimeException("获取用户信息异常");
         }
+    }
+
+    public static void setUser(User user) {
+        getLoginUser().setUser(user);
     }
 
     /**

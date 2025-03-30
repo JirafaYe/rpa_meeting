@@ -12,8 +12,10 @@ import org.cuit.meeting.constant.UserConstants;
 import org.cuit.meeting.dao.UserMapper;
 import org.cuit.meeting.dao.UserRoleMapper;
 import org.cuit.meeting.domain.LoginUser;
+import org.cuit.meeting.domain.Result;
 import org.cuit.meeting.domain.entity.User;
 import org.cuit.meeting.domain.entity.UserRole;
+import org.cuit.meeting.domain.request.PasswordBody;
 import org.cuit.meeting.domain.request.RegisterBody;
 import org.cuit.meeting.utils.AuthenticationContextHolder;
 import org.cuit.meeting.utils.RedisCache;
@@ -138,6 +140,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         // 生成token
         return tokenService.createToken(loginUser);
+    }
+
+    @Override
+    public Result<Object> updatePassword(PasswordBody body) {
+        Integer id = body.getId();
+        User user = getById(id);
+        if (Objects.isNull(user)) {
+            return Result.fail("用户不存在");
+        }
+
+        String oldPassword = body.getOldPassword();
+
+        if (!SecurityUtils.matchesPassword(oldPassword, user.getPassword())) {
+            return Result.fail("原密码错误");
+        }
+
+        String newPassword = body.getNewPassword();
+        String confirmPassword = body.getConfirmPassword();
+
+        if (StringUtils.isEmpty(newPassword) || StringUtils.isEmpty(confirmPassword)) {
+            return Result.fail("新密码不能为空");
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            return Result.fail("两次密码不一致");
+        }
+
+        user.setPassword(SecurityUtils.encryptPassword(newPassword));
+
+        return updateById(user) ? Result.fail() : Result.fail("修改密码失败");
     }
 
     /**

@@ -2,30 +2,32 @@ package org.cuit.meeting.web.controller;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.lang.UUID;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.code.kaptcha.Producer;
-import com.google.common.collect.ImmutableMultimap;
 import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.config.CacheConstants;
 import org.cuit.meeting.config.Constants;
-import org.cuit.meeting.domain.AjaxResult;
+import org.cuit.meeting.domain.LoginUser;
 import org.cuit.meeting.domain.Result;
+import org.cuit.meeting.domain.entity.User;
 import org.cuit.meeting.domain.request.LoginBody;
+import org.cuit.meeting.domain.request.PasswordBody;
 import org.cuit.meeting.domain.request.RegisterBody;
+import org.cuit.meeting.domain.request.UserBody;
 import org.cuit.meeting.utils.RedisCache;
 import org.cuit.meeting.utils.SecurityUtils;
 import org.cuit.meeting.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static org.cuit.meeting.domain.AjaxResult.error;
@@ -112,6 +114,67 @@ public class UserController {
         return StringUtils.isBlank(msg) ? Result.ok() : Result.fail(msg);
     }
 
+    /**
+     * 获取登录用户信息
+     * @return 用户信息
+     */
+    @GetMapping("/info")
+    public Result<LoginUser> getInfo(){
+        return Result.ok(SecurityUtils.getLoginUser());
+    }
 
+    /**
+     * 更新用户信息
+     * @param body 用户信息
+     * @return 结果
+     */
+    @PutMapping("info")
+    public Result<Object> update(@RequestBody UserBody body){
+        Integer id = body.getId();
+        if (id == null) {
+            return Result.fail("用户id不能为空");
+        }
 
+        User user = userService.getById(id);
+        if (user == null) {
+            return Result.fail("用户不存在");
+        }
+
+        // 如果是更新用户名
+        if (StringUtils.isNotBlank(body.getUsername())) {
+            if (!body.getUsername().equals(user.getUsername())) {
+                if (userService.getBaseMapper().selectCount(new LambdaQueryWrapper<User>().eq(User::getUsername, body.getUsername())) > 0) {
+                    return Result.fail("用户名已存在");
+                }
+            }
+            user.setUsername(body.getUsername());
+        }
+
+        // 如果是更新头像
+        if (StringUtils.isNotBlank(body.getAvatarUrl())) {
+            user.setAvatarUrl(body.getAvatarUrl());
+        }
+
+        // 如果是更新状态
+        if (Objects.nonNull(body.getIsActive())) {
+            user.setIsActive(body.getIsActive());
+        }
+
+        boolean success = userService.updateById(user);
+        if (!success) {
+            return Result.fail("更新失败");
+        }
+        SecurityUtils.setUser(userService.getById(body.getId()));
+        return Result.ok();
+    }
+
+    /**
+     * 更新密码
+     * @param body 密码信息
+     * @return
+     */
+    @PutMapping("/password")
+    public Result<Object> updatePassword(@RequestBody PasswordBody body){
+        return userService.updatePassword(body);
+    }
 }

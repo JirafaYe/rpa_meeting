@@ -8,6 +8,7 @@ import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.dto.ReservationDTO;
 import org.cuit.meeting.domain.request.ReservationBody;
 import org.cuit.meeting.domain.request.ReservationPageQuery;
+import org.cuit.meeting.domain.request.SummaryBody;
 import org.cuit.meeting.utils.SecurityUtils;
 import org.cuit.meeting.web.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,5 +90,25 @@ public class ReservationController {
         String msg = reservationService.book(body, userId);
         return StringUtils.isBlank(msg)
                 ?Result.ok():Result.fail(msg);
+    }
+
+    /**
+     * 获取会议摘要
+     * @param id 会议id
+     * @return 会议摘要
+     */
+    @GetMapping("/{id}/summary")
+    public Result<Object> getSummary(@PathVariable("id") int id){
+        return reservationService.getSummary(id);
+    }
+
+    /**
+     * 修改会议摘要
+     * @param body 会议摘要body
+     * @return 修改结果
+     */
+    @PutMapping("/summary")
+    public Result<Object> updateSummary(@RequestBody SummaryBody body){
+        return reservationService.updateSummary(body);
     }
 }

@@ -2,9 +2,12 @@ package org.cuit.meeting.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.cuit.meeting.domain.Result;
+import org.cuit.meeting.domain.dto.SubtopicsFileDTO;
 import org.cuit.meeting.domain.entity.Subtopics;
 import org.cuit.meeting.domain.request.SubtopicsBody;
 import org.cuit.meeting.domain.request.SubtopicsUpdateBody;
+
+import java.util.List;
 
 
 /**
@@ -19,4 +22,10 @@ public interface SubtopicsService extends IService<Subtopics> {
     String update(int userId, SubtopicsUpdateBody body);
 
     Result<Object> uploadFile(Integer subId, String fileKey);
+
+    Result<Object> delete(Integer subId);
+
+    Result<Object> deleteFile(Integer subId);
+
+    Result<List<SubtopicsFileDTO>> listFile(Integer subId);
 }

@@ -1,5 +1,6 @@
 package org.cuit.meeting.web.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
@@ -8,6 +9,7 @@ import org.cuit.meeting.constant.SubTopicsConstants;
 import org.cuit.meeting.dao.ParticipantsMapper;
 import org.cuit.meeting.dao.SubtopicsMapper;
 import org.cuit.meeting.domain.Result;
+import org.cuit.meeting.domain.dto.SubtopicsFileDTO;
 import org.cuit.meeting.domain.entity.Participants;
 import org.cuit.meeting.domain.entity.Subtopics;
 import org.cuit.meeting.domain.entity.SubtopicsFile;
@@ -16,11 +18,13 @@ import org.cuit.meeting.domain.request.SubtopicsUpdateBody;
 import org.cuit.meeting.web.service.FileService;
 import org.cuit.meeting.web.service.SubtopicsFileService;
 import org.cuit.meeting.web.service.SubtopicsService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
 * @author 18425
@@ -94,6 +98,70 @@ public class SubtopicsServiceImpl extends ServiceImpl<SubtopicsMapper, Subtopics
         subtopicsFile.setCreateTime(new Date());
         subtopicsFileService.save(subtopicsFile);
         return Result.ok();
+    }
+
+    /**
+     * 删除子议题
+     * @param subId
+     * @return
+     */
+    @Override
+    public Result<Object> delete(Integer subId) {
+        Subtopics subtopics = subtopicsMapper.selectById(subId);
+        if (Objects.isNull(subtopics)) {
+            return Result.fail("子议题不存在");
+        }
+
+        subtopicsMapper.deleteById(subId);
+        return Result.ok();
+    }
+
+    /**
+     * 删除子议题文件
+     * @param subFileId 子议题id
+     * @return 删除结果
+     */
+    @Override
+    public Result<Object> deleteFile(Integer subFileId) {
+        SubtopicsFile subtopicsFile = subtopicsFileService.getById(subFileId);
+        if (Objects.isNull(subtopicsFile)) {
+            return Result.fail("文件不存在");
+        }
+
+        // 删除文件
+        try {
+            fileService.removeFile(subtopicsFile.getFileName());
+        } catch (Exception e) {
+            return Result.fail("删除文件失败");
+        }
+
+        subtopicsFileService.removeById(subFileId);
+        return Result.ok();
+    }
+
+    @Override
+    public Result<List<SubtopicsFileDTO>> listFile(Integer subId) {
+        Subtopics subtopics = this.getById(subId);
+        if (Objects.isNull(subtopics)) {
+            return Result.fail("子议题不存在");
+        }
+
+        // 查询子议题文件列表
+        List<SubtopicsFile> list = subtopicsFileService.list(new LambdaQueryWrapper<SubtopicsFile>().eq(SubtopicsFile::getSubtopicsId, subId));
+        if (CollectionUtils.isEmpty(list)) {
+            return Result.ok(new ArrayList<SubtopicsFileDTO>());
+        }
+
+        // 转换为DTO
+        return Result.ok(convertToFileDTO(list));
+    }
+
+    private List<SubtopicsFileDTO> convertToFileDTO(List<SubtopicsFile> list) {
+        return list.stream().map(subtopicsFile -> {
+            SubtopicsFileDTO dto = BeanUtil.copyProperties(subtopicsFile, SubtopicsFileDTO.class);
+            dto.setFileKey(subtopicsFile.getFileName());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     /**

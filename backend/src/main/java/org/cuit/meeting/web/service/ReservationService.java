@@ -2,11 +2,13 @@ package org.cuit.meeting.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.cuit.meeting.domain.PageQuery;
+import org.cuit.meeting.domain.Result;
 import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.dto.ReservationDTO;
 import org.cuit.meeting.domain.entity.Reservation;
 import org.cuit.meeting.domain.request.ReservationBody;
 import org.cuit.meeting.domain.request.ReservationPageQuery;
+import org.cuit.meeting.domain.request.SummaryBody;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -37,9 +39,13 @@ public interface ReservationService extends IService<Reservation>{
     /**
      * 上传音频文件并生成总结
      * @param reservationId 会议id
-     * @param file 音频文件
+     * @param fileKey 音频文件Key
      */
-    void uploadAudioAndSummary(int reservationId, MultipartFile file);
+    void uploadAudioAndSummary(int reservationId, String fileKey);
 
     String book(ReservationBody body, int userId);
+
+    Result<Object> getSummary(int id);
+
+    Result<Object> updateSummary(SummaryBody body);
 }
