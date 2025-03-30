@@ -1,6 +1,5 @@
 package org.cuit.meeting.web.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
@@ -9,7 +8,6 @@ import org.cuit.meeting.constant.SubTopicsConstants;
 import org.cuit.meeting.dao.ParticipantsMapper;
 import org.cuit.meeting.dao.SubtopicsMapper;
 import org.cuit.meeting.domain.Result;
-import org.cuit.meeting.domain.dto.SubtopicsFileDTO;
 import org.cuit.meeting.domain.entity.Participants;
 import org.cuit.meeting.domain.entity.Subtopics;
 import org.cuit.meeting.domain.entity.SubtopicsFile;
@@ -18,13 +16,11 @@ import org.cuit.meeting.domain.request.SubtopicsUpdateBody;
 import org.cuit.meeting.web.service.FileService;
 import org.cuit.meeting.web.service.SubtopicsFileService;
 import org.cuit.meeting.web.service.SubtopicsService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
 * @author 18425
@@ -84,7 +80,7 @@ public class SubtopicsServiceImpl extends ServiceImpl<SubtopicsMapper, Subtopics
     }
 
     @Override
-    public Result<Object> uploadFile(Integer subId, String fileKey) {
+    public Result<Object> uploadFile(Integer subId, String fileName, String fileUrl) {
         Subtopics subtopics = subtopicsMapper.selectById(subId);
         if (Objects.isNull(subtopics)) {
             return Result.fail("子议题不存在");
@@ -93,8 +89,9 @@ public class SubtopicsServiceImpl extends ServiceImpl<SubtopicsMapper, Subtopics
         // 获取到文件的key
         SubtopicsFile subtopicsFile = new SubtopicsFile();
         subtopicsFile.setSubtopicsId(subId);
-        subtopicsFile.setFileName(fileKey);
-        subtopicsFile.setFileUrl(fileKey);
+
+        subtopicsFile.setFileName(fileName);
+        subtopicsFile.setFileUrl(fileUrl);
         subtopicsFile.setCreateTime(new Date());
         subtopicsFileService.save(subtopicsFile);
         return Result.ok();
@@ -128,19 +125,12 @@ public class SubtopicsServiceImpl extends ServiceImpl<SubtopicsMapper, Subtopics
             return Result.fail("文件不存在");
         }
 
-        // 删除文件
-        try {
-            fileService.removeFile(subtopicsFile.getFileName());
-        } catch (Exception e) {
-            return Result.fail("删除文件失败");
-        }
-
         subtopicsFileService.removeById(subFileId);
         return Result.ok();
     }
 
     @Override
-    public Result<List<SubtopicsFileDTO>> listFile(Integer subId) {
+    public Result<List<SubtopicsFile>> listFile(Integer subId) {
         Subtopics subtopics = this.getById(subId);
         if (Objects.isNull(subtopics)) {
             return Result.fail("子议题不存在");
@@ -149,21 +139,12 @@ public class SubtopicsServiceImpl extends ServiceImpl<SubtopicsMapper, Subtopics
         // 查询子议题文件列表
         List<SubtopicsFile> list = subtopicsFileService.list(new LambdaQueryWrapper<SubtopicsFile>().eq(SubtopicsFile::getSubtopicsId, subId));
         if (CollectionUtils.isEmpty(list)) {
-            return Result.ok(new ArrayList<SubtopicsFileDTO>());
+            return Result.ok(new ArrayList<SubtopicsFile>());
         }
 
         // 转换为DTO
-        return Result.ok(convertToFileDTO(list));
+        return Result.ok(list);
     }
-
-    private List<SubtopicsFileDTO> convertToFileDTO(List<SubtopicsFile> list) {
-        return list.stream().map(subtopicsFile -> {
-            SubtopicsFileDTO dto = BeanUtil.copyProperties(subtopicsFile, SubtopicsFileDTO.class);
-            dto.setFileKey(subtopicsFile.getFileName());
-            return dto;
-        }).collect(Collectors.toList());
-    }
-
     /**
      * 判断是否唯一
      * @param reservationId 会议id

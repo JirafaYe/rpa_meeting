@@ -3,6 +3,8 @@ package org.cuit.meeting.web.controller;
 import com.alibaba.dashscope.aigc.generation.GenerationResult;
 import com.alibaba.dashscope.aigc.multimodalconversation.MultiModalConversationResult;
 import com.alibaba.fastjson2.JSON;
+import org.cuit.meeting.domain.Result;
+import org.cuit.meeting.domain.dto.FileDto;
 import org.cuit.meeting.utils.OpenAPIUtil;
 import org.cuit.meeting.web.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +42,11 @@ public class TestController {
     @RequestMapping("/testAudio")
     public String testAudio(@RequestParam String fileName, @RequestParam MultipartFile file) {
 //        GenerationResult completion = openAIClient.getCompletion(prompt);
-        String filename = "";
+        FileDto fileDto = null;
         MultiModalConversationResult multiModalConversationResult = null;
         try {
-            filename = fileService.uploadFile(file.getOriginalFilename(), file.getInputStream());
-            String fileUrl = fileService.getPresignedObjectUrl(filename);
-            multiModalConversationResult = openAIClient.analysisAudio(fileUrl);
+            fileDto = fileService.uploadFile(file.getOriginalFilename(), file.getInputStream());
+            multiModalConversationResult = openAIClient.analysisAudio(fileDto.getFileUrl());
 
         } catch (Exception e) {
             System.out.println(e);
@@ -56,14 +57,14 @@ public class TestController {
     @Autowired
     private FileService  fileService;
     @RequestMapping("/upload")
-    public String upload(String fileName, MultipartFile file) throws IOException {
-        String url = "";
+    public Result<FileDto> upload(String fileName, MultipartFile file) throws IOException {
+        FileDto fileDto = null;
         try {
-            url = fileService.uploadFile(file.getOriginalFilename(), file.getInputStream());
+            fileDto = fileService.uploadFile(file.getOriginalFilename(), file.getInputStream());
         } catch (Exception e) {
             System.out.println(e);
         }
-        return url;
+        return Result.ok(fileDto);
     }
 
     @RequestMapping("/getUrl")

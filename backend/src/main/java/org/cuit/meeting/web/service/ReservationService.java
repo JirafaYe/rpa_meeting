@@ -39,9 +39,9 @@ public interface ReservationService extends IService<Reservation>{
     /**
      * 上传音频文件并生成总结
      * @param reservationId 会议id
-     * @param fileKey 音频文件Key
+     * @param fileUrl 音频文件Key
      */
-    void uploadAudioAndSummary(int reservationId, String fileKey);
+    void uploadAudioAndSummary(int reservationId, String fileUrl);
 
     String book(ReservationBody body, int userId);
 

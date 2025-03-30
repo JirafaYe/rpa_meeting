@@ -158,7 +158,7 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
     }
 
     @Override
-    public void uploadAudioAndSummary(int reservationId, String fileKey) {
+    public void uploadAudioAndSummary(int reservationId, String fileUrl) {
         // 先上传文件
         // 获取会议
         Reservation reservation = this.getById(reservationId);
@@ -166,11 +166,11 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
             throw new RuntimeException("会议不存在");
         }
 
-        reservation.setVoiceUrl(fileKey);
+        reservation.setVoiceUrl(fileUrl);
         this.updateById(reservation);
 
         // 生成总结
-        getSummary(reservation, fileKey);
+        getSummary(reservation, fileUrl);
     }
 
     @Override
@@ -327,9 +327,8 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
     }
 
     @Async
-    public void getSummary(Reservation reservation, String key) {
+    public void getSummary(Reservation reservation, String fileUrl) {
         try {
-            String fileUrl = fileService.getPresignedObjectUrl(key);
             MultiModalConversationResult multiModalConversationResult = openAPIUtil.analysisAudio(fileUrl);
             // 语音转文字
             String text = String.valueOf(multiModalConversationResult.getOutput().getChoices().get(0).getMessage().getContent().get(0).get("text"));
@@ -340,7 +339,7 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
             reservation.setSummary(content);
             // 更新会议
             this.updateById(reservation);
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+        } catch (Exception e) {
             log.error("生成摘要失败", e);
             throw new RuntimeException("生成摘要失败");
         }

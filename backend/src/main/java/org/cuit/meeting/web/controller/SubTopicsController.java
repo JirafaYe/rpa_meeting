@@ -2,14 +2,13 @@ package org.cuit.meeting.web.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.domain.Result;
-import org.cuit.meeting.domain.dto.SubtopicsFileDTO;
+import org.cuit.meeting.domain.entity.SubtopicsFile;
 import org.cuit.meeting.domain.request.SubtopicsBody;
 import org.cuit.meeting.domain.request.SubtopicsUpdateBody;
 import org.cuit.meeting.utils.SecurityUtils;
 import org.cuit.meeting.web.service.SubtopicsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -51,12 +50,12 @@ public class SubTopicsController {
     /**
      * 上传子议题文件（前端许校验文件格式仅限PDF）
      * @param subId
-     * @param fileKey
+     * @param fileUrl
      * @return
      */
     @PostMapping("/upload/file/{subId}")
-    public Result<Object> uploadFile(@PathVariable("subId") Integer subId, @RequestParam String fileKey){
-        return subtopicsService.uploadFile(subId, fileKey);
+    public Result<Object> uploadFile(@PathVariable("subId") Integer subId, @RequestParam String fileName, @RequestParam String fileUrl){
+        return subtopicsService.uploadFile(subId, fileName, fileUrl);
     }
 
     /**
@@ -70,7 +69,7 @@ public class SubTopicsController {
     }
 
     /**
-     * 删除子议题文件 （删除数据库记录和文件）
+     * 删除子议题文件 （删除数据库记录 不删除文件 简化开发成本不删除源文件了）
      * @param subFileId 子议题文件id
      * @return 删除结果
      */
@@ -85,7 +84,7 @@ public class SubTopicsController {
      * @return 文件列表
      */
     @GetMapping("/{subId}/file/list")
-    public Result<List<SubtopicsFileDTO>> listFile(@PathVariable("subId") Integer subId){
+    public Result<List<SubtopicsFile>> listFile(@PathVariable("subId") Integer subId){
         return subtopicsService.listFile(subId);
     }
 }

@@ -2,9 +2,9 @@ package org.cuit.meeting.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.cuit.meeting.domain.Result;
+import org.cuit.meeting.domain.dto.FileDto;
 import org.cuit.meeting.web.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,16 +63,15 @@ public class FileController {
      * @return 文件key
      */
     @PostMapping("/upload")
-    public Result<Object> uploadFile(@RequestParam("file") MultipartFile file){
-        String fileKey = "";
+    public Result<FileDto> uploadFile(@RequestParam("file") MultipartFile file){
+        FileDto fileDto = null;
         try {
-            fileKey = fileService.uploadFile(file.getOriginalFilename(), file.getInputStream());
+            fileDto = fileService.uploadFile(file.getOriginalFilename(), file.getInputStream());
         } catch (Exception e){
             log.error("上传文件失败，原因：{}",e.getMessage());
             return Result.fail("上传文件失败");
         }
         HashMap<String, String> result = new HashMap<>();
-        result.put("fileKey", fileKey);
-        return Result.ok(result);
+        return Result.ok(fileDto);
     }
 }

@@ -78,7 +78,7 @@ redisson:
 
 
 minio:
-  endpoint: http://8.222.198.214:9000/
+  endpoint: http://8.222.198.214:9000
   accessKey: minioadmin
   secretKey: minioadmin
   bucket: meeting

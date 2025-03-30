@@ -5,6 +5,7 @@ import io.minio.errors.*;
 import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.cuit.meeting.config.minio.MinioProperties;
+import org.cuit.meeting.domain.dto.FileDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,13 +39,11 @@ public class FileService {
      * @throws NoSuchAlgorithmException 算法异常
      * @throws InvalidKeyException key异常
      */
-    public String uploadFile(String fileName, InputStream inputStream)
+    public FileDto uploadFile(String fileName, InputStream inputStream)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         try {
             //校验bucket是否存在
             String bucket = this.getBucketName();
-//            bucketExists(bucket);
-//            fileName = getFileName(fileName);
             minioClient
                     .putObject(PutObjectArgs.builder()
                             .bucket(bucket)
@@ -55,13 +54,12 @@ public class FileService {
             System.out.println("Error occurred: " + e);
             System.out.println("HTTP trace: " + e.httpTrace());
         }
-        return fileName;
+        return new FileDto(fileName, this.getFileUrl(fileName));
     }
 
-//    private String getFileName(String fileName) {
-//        String[] split = fileName.split("\\.");
-//        return split[0] + "_" + System.currentTimeMillis() + "." + split[1];
-//    }
+    private String getFileUrl(String fileName) {
+        return minioProperties.getEndpoint() + "/" + this.getBucketName() + "/" + fileName;
+    }
 
     /**
      * 生成预签名的文件URL

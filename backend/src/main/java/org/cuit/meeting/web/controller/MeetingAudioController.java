@@ -21,12 +21,12 @@ public class MeetingAudioController {
     /**
      * 上传音频文件并生成总结
      * @param reservationId
-     * @param fileKey
+     * @param fileUrl
      * @return
      */
     @PostMapping("{reservationId}")
-    public Result uploadAudio(@PathVariable("reservationId") int reservationId, @RequestParam("fileKey") String fileKey) {
-        reservationService.uploadAudioAndSummary(reservationId, fileKey);
+    public Result uploadAudio(@PathVariable("reservationId") int reservationId, @RequestParam("fileUrl") String fileUrl) {
+        reservationService.uploadAudioAndSummary(reservationId, fileUrl);
         return Result.ok();
     }
 }
