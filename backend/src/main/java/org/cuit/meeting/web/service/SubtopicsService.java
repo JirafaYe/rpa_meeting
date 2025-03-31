@@ -28,4 +28,6 @@ public interface SubtopicsService extends IService<Subtopics> {
     Result<Object> deleteFile(Integer subId);
 
     Result<List<SubtopicsFile>> listFile(Integer subId);
+
+    List<Subtopics> listTopics(int reservationId);
 }

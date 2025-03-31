@@ -146,6 +146,15 @@ public class SubtopicsServiceImpl extends ServiceImpl<SubtopicsMapper, Subtopics
         // 转换为DTO
         return Result.ok(list);
     }
+
+    @Override
+    public List<Subtopics> listTopics(int reservationId) {
+        List<Subtopics> subtopics = subtopicsMapper
+                .selectList(new LambdaQueryWrapper<Subtopics>().eq(Subtopics::getReservationId, reservationId));
+
+        return subtopics;
+    }
+
     /**
      * 判断是否唯一
      * @param reservationId 会议id

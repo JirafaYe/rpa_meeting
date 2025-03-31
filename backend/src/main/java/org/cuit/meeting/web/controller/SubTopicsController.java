@@ -2,6 +2,7 @@ package org.cuit.meeting.web.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.domain.Result;
+import org.cuit.meeting.domain.entity.Subtopics;
 import org.cuit.meeting.domain.entity.SubtopicsFile;
 import org.cuit.meeting.domain.request.SubtopicsBody;
 import org.cuit.meeting.domain.request.SubtopicsUpdateBody;
@@ -86,5 +87,15 @@ public class SubTopicsController {
     @GetMapping("/{subId}/file/list")
     public Result<List<SubtopicsFile>> listFile(@PathVariable("subId") Integer subId){
         return subtopicsService.listFile(subId);
+    }
+
+    /**
+     * 根据会议id查看子议题列表
+     * @param id
+     * @return
+     */
+    @GetMapping("/{reservationId}")
+    public Result<List<Subtopics>> listTopics(@PathVariable("reservationId") int id){
+        return Result.ok(subtopicsService.listTopics(id));
     }
 }
