@@ -184,6 +184,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public PageDTO<UserBody> pageUsers(UserPageQuery query) {
         LambdaQueryWrapper<User> w = new LambdaQueryWrapper<>();
+        w.eq(User::getIsActive,UserConstants.NORMAL);
 
         if(!StringUtils.isBlank(query.getUserName())){
             w.like(User::getUsername,query.getUserName());
