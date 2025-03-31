@@ -9,11 +9,9 @@ import org.cuit.meeting.config.CacheConstants;
 import org.cuit.meeting.config.Constants;
 import org.cuit.meeting.domain.LoginUser;
 import org.cuit.meeting.domain.Result;
+import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.entity.User;
-import org.cuit.meeting.domain.request.LoginBody;
-import org.cuit.meeting.domain.request.PasswordBody;
-import org.cuit.meeting.domain.request.RegisterBody;
-import org.cuit.meeting.domain.request.UserBody;
+import org.cuit.meeting.domain.request.*;
 import org.cuit.meeting.utils.RedisCache;
 import org.cuit.meeting.utils.SecurityUtils;
 import org.cuit.meeting.web.service.UserService;
@@ -34,7 +32,7 @@ import static org.cuit.meeting.domain.AjaxResult.error;
 import static org.cuit.meeting.domain.AjaxResult.success;
 
 /**
- * 
+ * 用户通用
  * @author Devildyw
  * @date 2025/03/16 22:03
  **/
@@ -176,5 +174,14 @@ public class UserController {
     @PutMapping("/password")
     public Result<Object> updatePassword(@RequestBody PasswordBody body){
         return userService.updatePassword(body);
+    }
+
+    /**
+     * 分页查询用户，支持模糊查询名字
+     * @return
+     */
+    @GetMapping()
+    public Result<PageDTO<UserBody>> pageUsers(UserPageQuery query){
+        return Result.ok(userService.pageUsers(query));
     }
 }

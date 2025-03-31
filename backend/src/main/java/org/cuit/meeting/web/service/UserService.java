@@ -2,9 +2,12 @@ package org.cuit.meeting.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.cuit.meeting.domain.Result;
+import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.entity.User;
 import org.cuit.meeting.domain.request.PasswordBody;
 import org.cuit.meeting.domain.request.RegisterBody;
+import org.cuit.meeting.domain.request.UserBody;
+import org.cuit.meeting.domain.request.UserPageQuery;
 
 
 /**
@@ -19,4 +22,6 @@ public interface UserService extends IService<User> {
     String login(String username, String password, String code, String uuid);
 
     Result<Object> updatePassword(PasswordBody body);
+
+    PageDTO<UserBody> pageUsers(UserPageQuery query);
 }

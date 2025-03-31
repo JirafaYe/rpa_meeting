@@ -1,11 +1,12 @@
 package org.cuit.meeting.web.service.impl;
 
-import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.cuit.meeting.config.CacheConstants;
 import org.cuit.meeting.config.Constants;
 import org.cuit.meeting.constant.UserConstants;
@@ -13,10 +14,13 @@ import org.cuit.meeting.dao.UserMapper;
 import org.cuit.meeting.dao.UserRoleMapper;
 import org.cuit.meeting.domain.LoginUser;
 import org.cuit.meeting.domain.Result;
+import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.entity.User;
 import org.cuit.meeting.domain.entity.UserRole;
 import org.cuit.meeting.domain.request.PasswordBody;
 import org.cuit.meeting.domain.request.RegisterBody;
+import org.cuit.meeting.domain.request.UserBody;
+import org.cuit.meeting.domain.request.UserPageQuery;
 import org.cuit.meeting.utils.AuthenticationContextHolder;
 import org.cuit.meeting.utils.RedisCache;
 import org.cuit.meeting.utils.SecurityUtils;
@@ -35,8 +39,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
 * @author 18425
@@ -59,6 +65,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Autowired
     private UserRoleMapper userRoleMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public String register(RegisterBody registerBody) {
@@ -170,6 +179,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setPassword(SecurityUtils.encryptPassword(newPassword));
 
         return updateById(user) ? Result.fail() : Result.fail("修改密码失败");
+    }
+
+    @Override
+    public PageDTO<UserBody> pageUsers(UserPageQuery query) {
+        LambdaQueryWrapper<User> w = new LambdaQueryWrapper<>();
+
+        if(!StringUtils.isBlank(query.getUserName())){
+            w.like(User::getUsername,query.getUserName());
+        }
+
+        Page<User> userPage = userMapper.selectPage(query.toMpPage(), w);
+        PageDTO<UserBody> dto = new PageDTO<>();
+        dto.setPages(userPage.getPages());
+        dto.setTotal(userPage.getTotal());
+        if(!userPage.getRecords().isEmpty()){
+            List<UserBody> result= userPage.getRecords().stream().map(p -> {
+                UserBody body = new UserBody();
+                body.setId(p.getId());
+                body.setUsername(p.getUsername());
+                body.setAvatarUrl(p.getAvatarUrl());
+                return body;
+            }).collect(Collectors.toList());
+            dto.setList(result);
+        }
+
+        return dto;
     }
 
     /**
