@@ -1,5 +1,7 @@
 package org.cuit.meeting.web.service;
 
+import org.cuit.meeting.domain.PageQuery;
+import org.cuit.meeting.domain.dto.PageDTO;
 import org.cuit.meeting.domain.entity.RpaFile;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -10,4 +12,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface RpaFileService extends IService<RpaFile> {
 
+    String upload(String url, String fileName, boolean topped);
+
+    String deleteFile(int fileId);
+
+    PageDTO<RpaFile> pageFiles(PageQuery query);
 }
