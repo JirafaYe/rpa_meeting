@@ -46,8 +46,7 @@ public class MeetingNotificationController {
     @GetMapping("{id}")
     public Result<NotificationDetailsDTO> queryDetailsById(@PathVariable("id") int id){
         Integer userId = SecurityUtils.getUserId();
-        NotificationDetailsDTO dto = service.selectById(userId, id);
-        return Result.ok(dto);
+        return service.selectById(userId, id);
     }
 
     /**
@@ -58,8 +57,7 @@ public class MeetingNotificationController {
     @GetMapping("/admin/{id}")
     @PreAuthorize("@ss.hasAnyRoles('ADMIN')")
     public Result<NotificationDetailsDTO> queryDetailsByAdmin(@PathVariable("id") int id){
-        NotificationDetailsDTO dto = service.selectById(NotificationConstants.SYS_ADMIN, id);
-        return Result.ok(dto);
+        return service.selectById(NotificationConstants.SYS_ADMIN, id);
     }
 
     /**

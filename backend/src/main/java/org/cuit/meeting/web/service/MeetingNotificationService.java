@@ -2,6 +2,7 @@ package org.cuit.meeting.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.cuit.meeting.domain.PageQuery;
+import org.cuit.meeting.domain.Result;
 import org.cuit.meeting.domain.dto.NotificationDTO;
 import org.cuit.meeting.domain.dto.NotificationDetailsDTO;
 import org.cuit.meeting.domain.dto.PageDTO;
@@ -21,7 +22,7 @@ public interface MeetingNotificationService extends IService<MeetingNotification
 
     PageDTO<NotificationDTO> pageQuery(PageQuery query, int userId);
 
-    NotificationDetailsDTO selectById(int userId, int notificationId);
+    Result<NotificationDetailsDTO> selectById(int userId, int notificationId);
 
     /**
      * 会前提醒

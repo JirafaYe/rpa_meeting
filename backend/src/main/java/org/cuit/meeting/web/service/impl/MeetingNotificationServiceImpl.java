@@ -11,6 +11,7 @@ import org.cuit.meeting.dao.MeetingNotificationMapper;
 import org.cuit.meeting.dao.ReservationMapper;
 import org.cuit.meeting.dao.UserMapper;
 import org.cuit.meeting.domain.PageQuery;
+import org.cuit.meeting.domain.Result;
 import org.cuit.meeting.domain.dto.NotificationDTO;
 import org.cuit.meeting.domain.dto.NotificationDetailsDTO;
 import org.cuit.meeting.domain.dto.PageDTO;
@@ -22,6 +23,7 @@ import org.cuit.meeting.web.service.ParticipantsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -136,7 +138,7 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
     }
 
     @Override
-    public NotificationDetailsDTO selectById(int userId, int notificationId) {
+    public Result<NotificationDetailsDTO> selectById(int userId, int notificationId) {
         MeetingNotification notify = getById(notificationId);
         LambdaQueryWrapper<Participants> wrapper = new LambdaQueryWrapper<>();
 
@@ -149,7 +151,7 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
 
         long count = participantsService.count(wrapper);
         if(count==0){
-            throw new RuntimeException("无读取权限");
+            return Result.fail(HttpServletResponse.SC_FORBIDDEN,"无读取权限");
         }
 
         NotificationDetailsDTO dto = new NotificationDetailsDTO();
@@ -161,7 +163,7 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
         dto.setCreateTime(notify.getCreateTime());
 
 
-        return dto;
+        return Result.ok(dto);
     }
 
     @Override
