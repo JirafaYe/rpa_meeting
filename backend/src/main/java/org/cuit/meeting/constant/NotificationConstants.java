@@ -33,4 +33,8 @@ public class NotificationConstants {
 
     // 时间格式
     public static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+
+    //永远为假的条件
+    public static final int FAKE_ID=-1;
 }

@@ -31,7 +31,9 @@ public class MeetingNotificationController {
     //只返回大概信息，详细信息通过id查看
     @GetMapping("")
     public Result<PageDTO<NotificationDTO>> pageQuery(PageQuery query){
-        Integer userId = SecurityUtils.getUserId();
+        int userId = SecurityUtils.hasRole("ADMIN")?NotificationConstants.SYS_ADMIN
+                :SecurityUtils.getUserId();
+
         return Result.ok(service.pageQuery(query,userId));
     }
 

@@ -113,9 +113,16 @@ public class MeetingNotificationServiceImpl extends ServiceImpl<MeetingNotificat
         //根据会议id查找通知
         LambdaQueryWrapper<MeetingNotification> wrapper = new LambdaQueryWrapper<>();
         //判断是否有参加的会议
-        if(!reservations.isEmpty()) {
-            wrapper.in(MeetingNotification::getReservationId, reservations);
+        if(userId!=NotificationConstants.SYS_ADMIN){
+            //不是管理员才需要判断权限
+            if(!reservations.isEmpty()) {
+                wrapper.in(MeetingNotification::getReservationId, reservations);
+            }else{
+                //添加永远假的条件，保证查不到数据
+                wrapper.eq(MeetingNotification::getId,NotificationConstants.FAKE_ID);
+            }
         }
+
         Page<MeetingNotification> result = this.page(query.toMpPage(), wrapper);
 
         PageDTO<NotificationDTO> pageDTO = new PageDTO<>();
