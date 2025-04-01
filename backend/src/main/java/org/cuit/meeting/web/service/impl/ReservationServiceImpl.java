@@ -209,7 +209,11 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
             Integer reservationId = reservation.getId();
             //插入participants
             Date date = new Date();
-            body.getParticipants().add(userId);
+            //如果不包含，需加入预约人本人id
+            if(!body.getParticipants().contains(userId)) {
+                body.getParticipants().add(userId);
+            }
+
             List<Participants> participants = body.getParticipants().stream()
                     .map(id -> {
                         Participants participant = new Participants();
