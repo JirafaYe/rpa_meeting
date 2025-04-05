@@ -5,49 +5,92 @@
       <text class="app-name">会议室预约系统</text>
     </view>
     
+    <view class="form-tabs">
+      <view :class="['tab-item', isLoginMode ? 'active' : '']" @click="switchToLogin">登录</view>
+      <view :class="['tab-item', !isLoginMode ? 'active' : '']" @click="switchToRegister">注册</view>
+    </view>
+    
     <view class="login-form">
-      <view class="input-group">
-        <text class="input-label">用户名</text>
-        <input class="input-field" type="text" v-model="username" placeholder="请输入用户名" />
+      <!-- 登录表单 -->
+      <view v-if="isLoginMode">
+        <view class="input-group">
+          <text class="input-label">用户名</text>
+          <input class="input-field" type="text" v-model="loginForm.username" placeholder="请输入用户名" />
+        </view>
+        
+        <view class="input-group">
+          <text class="input-label">密码</text>
+          <input class="input-field" type="password" v-model="loginForm.password" placeholder="请输入密码" password />
+        </view>
+        
+        <view class="input-group captcha-group">
+          <text class="input-label">验证码</text>
+          <view class="captcha-container">
+            <input class="input-field captcha-input" type="text" v-model="loginForm.code" placeholder="请输入验证码" />
+            <view class="captcha-wrapper" @click="refreshCaptcha">
+              <image class="captcha-image" :src="captchaImageUrl" />
+              <view class="refresh-icon">
+                <text class="refresh-text">刷新</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <view class="remember-row">
+          <checkbox-group @change="rememberChange">
+            <label class="remember-label">
+              <checkbox :checked="rememberMe" />
+              <text>记住密码</text>
+            </label>
+          </checkbox-group>
+          <text class="forget-password" @click="navigateToForgetPassword">忘记密码?</text>
+        </view>
+        
+        <button class="login-button" @click="handleLogin">登 录</button>
       </view>
       
-      <view class="input-group">
-        <text class="input-label">密码</text>
-        <input class="input-field" type="password" v-model="password" placeholder="请输入密码" password />
-      </view>
-      
-      <view class="remember-row">
-        <checkbox-group @change="rememberChange">
-          <label class="remember-label">
-            <checkbox :checked="rememberMe" />
-            <text>记住密码</text>
-          </label>
-        </checkbox-group>
-        <text class="forget-password" @click="navigateToForgetPassword">忘记密码?</text>
-      </view>
-      
-      <button class="login-button" @click="handleLogin">登 录</button>
-      
-      <view v-if="isMockMode" class="mock-tips">
-        <text class="mock-tip-title">测试环境可用账号:</text>
-        <view class="mock-tip-item">
-          <text class="mock-tip-label">管理员: </text>
-          <text class="mock-tip-content">admin / admin123</text>
+      <!-- 注册表单 -->
+      <view v-else>
+        <view class="input-group">
+          <text class="input-label">用户名</text>
+          <input class="input-field" type="text" v-model="registerForm.username" placeholder="请输入用户名" />
         </view>
-        <view class="mock-tip-item">
-          <text class="mock-tip-label">普通用户: </text>
-          <text class="mock-tip-content">user / user123</text>
+        
+        <view class="input-group">
+          <text class="input-label">密码</text>
+          <input class="input-field" type="password" v-model="registerForm.password" placeholder="请输入密码" password />
         </view>
-        <view class="mock-tip-item">
-          <text class="mock-tip-label">部门经理: </text>
-          <text class="mock-tip-content">manager / manager123</text>
+        
+        <view class="input-group">
+          <text class="input-label">确认密码</text>
+          <input class="input-field" type="password" v-model="registerForm.confirmPassword" placeholder="请再次输入密码" password />
         </view>
+        
+        <view class="input-group captcha-group">
+          <text class="input-label">验证码</text>
+          <view class="captcha-container">
+            <input class="input-field captcha-input" type="text" v-model="registerForm.code" placeholder="请输入验证码" />
+            <view class="captcha-wrapper" @click="refreshCaptcha">
+              <image class="captcha-image" :src="captchaImageUrl" />
+              <view class="refresh-icon">
+                <text class="refresh-text">刷新</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <button class="login-button" @click="handleRegister">注 册</button>
       </view>
       
       <view class="quick-actions">
-        <text class="quick-action-text" @click="navigateToRegister">注册账号</text>
-        <text class="divider">|</text>
-        <text class="quick-action-text" @click="navigateToAdminLogin">管理员登录</text>
+        <template v-if="isLoginMode">
+          <text class="quick-action-text" @click="switchToRegister">注册账号</text>
+          <text class="divider">|</text>
+          <text class="quick-action-text" @click="navigateToAdminLogin">管理员登录</text>
+        </template>
+        <template v-else>
+          <text class="quick-action-text" @click="switchToLogin">返回登录</text>
+        </template>
       </view>
     </view>
     
@@ -59,110 +102,91 @@
 </template>
 
 <script>
-import api from '../../utils/api.js'
+import api from '../../api/index'
 
 export default {
   data() {
     return {
-      username: '',
-      password: '',
+      isLoginMode: true,
+      loginForm: {
+        username: '',
+        password: '',
+        code: '',
+        uuid: ''
+      },
+      registerForm: {
+        username: '',
+        password: '',
+        confirmPassword: '',
+        code: '',
+        uuid: ''
+      },
       rememberMe: false,
+      showPassword: false,
+      captchaImageUrl: '',
       isMockMode: false
     }
   },
   onLoad() {
-    // 检查平台，确保是移动端访问
-    // #ifdef H5
-    // 如果是H5平台访问用户页面，重定向到管理员登录页
-    console.log("检测到Web平台访问用户页面，将重定向到管理员登录");
-    setTimeout(() => {
-      uni.reLaunch({
-        url: '/pages/admin/login'
-      });
-    }, 100);
-    return; // 不再执行后续代码
-    // #endif
     
     // 加载保存的用户名密码
     try {
       const loginInfo = uni.getStorageSync('loginInfo');
       if (loginInfo) {
         const info = JSON.parse(loginInfo);
-        this.username = info.username || '';
-        this.password = info.password || '';
+        this.loginForm.username = info.username || '';
+        this.loginForm.password = info.password || '';
         this.rememberMe = true;
       }
-      
-      // 检查是否处于mock模式
-      try {
-        const app = getApp();
-        this.isMockMode = app && app.$config && app.$config.enableMock;
-      } catch (e) {
-        console.error('获取App配置失败:', e);
-        this.isMockMode = false;
-      }
-      
-      if (this.isMockMode) {
-        console.log('当前使用Mock模式，可使用以下测试账号：');
-        console.log('用户名: admin, 密码: admin123');
-        console.log('用户名: user, 密码: user123');
-        console.log('用户名: manager, 密码: manager123');
-      }
-      
-      // 检查是否是开发环境并自动登录
-      this.checkDevModeAutoLogin();
     } catch (e) {
-      console.error('读取登录信息失败', e);
+      uni.removeStorageSync('loginInfo');
     }
+    
+    // 获取验证码
+    this.refreshCaptcha();
   },
   methods: {
-    // 检查是否是开发环境并自动登录
-    checkDevModeAutoLogin() {
-      try {
-        // 获取应用配置
-        const app = getApp();
-        if (!app || !app.$config) {
-          console.error('无法获取应用配置');
-          return;
-        }
-        
-        // 检查是否启用自动登录
-        const autoLoginConfig = app.$config.autoLogin;
-        if (!autoLoginConfig || !autoLoginConfig.enabled) {
-          console.log('未启用自动登录功能');
-          return;
-        }
-        
-        // 检查是否已经登录
-        const token = uni.getStorageSync('token');
-        if (token) {
-          console.log('检测到已登录状态，直接跳转到首页');
-          setTimeout(() => {
-            uni.reLaunch({
-              url: '/pages/user/schedule'
-            });
-          }, 100);
-          return;
-        }
-        
-        console.log('检测到开发环境自动登录配置，正在使用默认账号登录');
-        
-        // 设置默认账号
-        this.username = autoLoginConfig.username || 'user';
-        this.password = autoLoginConfig.password || 'user123';
-        
-        // 延迟一下自动登录，让UI先渲染出来
-        setTimeout(() => {
-          this.handleLogin(true);
-        }, 500);
-      } catch (err) {
-        console.error('自动登录检查失败:', err);
-      }
+    switchToLogin() {
+      this.isLoginMode = true;
+      // 刷新验证码
+      this.refreshCaptcha();
     },
-    
-    handleLogin(isAutoLogin = false) {
+    switchToRegister() {
+      this.isLoginMode = false;
+      // 保留现有登录表单的验证码给注册表单使用
+      this.registerForm.code = this.loginForm.code;
+      this.registerForm.uuid = this.loginForm.uuid;
+    },
+    refreshCaptcha() {
+      uni.showLoading({
+        title: '获取验证码...'
+      });
+      
+      api.user.getCaptcha()
+        .then(res => {
+          uni.hideLoading();
+          if (res.code === 200 && res.data) {
+            this.captchaImageUrl = res.data.imageUrl || 'data:image/png;base64,' + res.data.img;
+            this.loginForm.uuid = res.data.uuid; // 保存到登录表单中
+            this.loginForm.code = '';
+          } else {
+            uni.showToast({
+              title: '获取验证码失败',
+              icon: 'none'
+            });
+          }
+        })
+        .catch(err => {
+          uni.hideLoading();
+          uni.showToast({
+            title: '获取验证码失败，请稍后重试',
+            icon: 'none'
+          });
+        });
+    },
+    handleLogin() {
       // 表单验证
-      if (!this.username.trim()) {
+      if (!this.loginForm.username.trim()) {
         uni.showToast({
           title: '请输入用户名',
           icon: 'none'
@@ -170,7 +194,7 @@ export default {
         return;
       }
       
-      if (!this.password.trim()) {
+      if (!this.loginForm.password.trim()) {
         uni.showToast({
           title: '请输入密码',
           icon: 'none'
@@ -178,12 +202,18 @@ export default {
         return;
       }
       
-      // 登录请求
-      if (!isAutoLogin) {
-        uni.showLoading({
-          title: '登录中...'
+      if (!this.loginForm.code.trim()) {
+        uni.showToast({
+          title: '请输入验证码',
+          icon: 'none'
         });
+        return;
       }
+      
+      // 登录请求
+      uni.showLoading({
+        title: '登录中...'
+      });
       
       // 设置请求超时标志
       let loginTimeout = false;
@@ -199,92 +229,190 @@ export default {
       
       // 使用API层进行登录
       api.user.login({
-        username: this.username,
-        password: this.password
+        username: this.loginForm.username,
+        password: this.loginForm.password,
+        code: this.loginForm.code,
+        uuid: this.loginForm.uuid
       })
         .then(res => {
           clearTimeout(timeoutTimer);
-          if (!isAutoLogin) {
-            uni.hideLoading();
-          }
+          uni.hideLoading();
           
           if (loginTimeout) return; // 已经显示超时错误，不再处理
           
-          if (res.code === 200 && res.data) {
-            // 登录成功，保存登录信息
+          if (res.code === 200 && res.data && res.data.token) {
+            // 登录成功，检查用户是否被禁用
+            const userData = res.data;
+            
+            // 检查用户状态
+            const isActive = userData.user?.isActive || userData.isActive;
+            if (isActive === 0) {
+              // 用户被禁用
+              uni.showToast({
+                title: '您的账号已被禁用，请联系管理员',
+                icon: 'none',
+                duration: 3000
+              });
+              // 登录失败时刷新验证码
+              this.refreshCaptcha();
+              return;
+            }
+            
+            // 用户状态正常，保存登录成功的数据
+            const token = res.data.token;
+            
+            // 保存登录成功的数据
+            uni.setStorageSync('token', token);
+            
+            // 登录成功后立即获取用户详细信息
+            api.user.getUserInfo()
+              .then(userInfoRes => {
+                if (userInfoRes.code === 200 && userInfoRes.data) {
+                  // 保存完整的用户信息
+                  uni.setStorageSync('userInfo', JSON.stringify(userInfoRes.data));
+                  console.log('已保存用户信息:', userInfoRes.data);
+                } else {
+                  console.log('获取用户信息失败:', userInfoRes);
+                }
+              })
+              .catch(err => {
+                console.error('获取用户信息出错:', err);
+              });
+            
+            // 如果记住密码，保存登录信息
             if (this.rememberMe) {
               uni.setStorageSync('loginInfo', JSON.stringify({
-                username: this.username,
-                password: this.password
+                username: this.loginForm.username,
+                password: this.loginForm.password
               }));
             } else {
               uni.removeStorageSync('loginInfo');
             }
             
-            // 保存用户登录状态和token
-            uni.setStorageSync('token', res.data.token);
-            uni.setStorageSync('userInfo', JSON.stringify(res.data.userInfo));
-            
-            if (!isAutoLogin) {
-              uni.showToast({
-                title: '登录成功',
-                icon: 'success',
-                success: () => {
-                  // 登录成功后跳转到首页
-                  setTimeout(() => {
-                    uni.reLaunch({
-                      url: '/pages/user/schedule'
-                    });
-                  }, 1000);
-                }
-              });
-            } else {
-              console.log('自动登录成功，立即跳转到首页');
-              // 对于自动登录，立即跳转
-              uni.reLaunch({
-                url: '/pages/user/schedule'
-              });
-            }
+            uni.showToast({
+              title: '登录成功',
+              icon: 'success',
+              success: () => {
+                // 登录成功后跳转到首页
+                setTimeout(() => {
+                  uni.reLaunch({
+                    url: '/pages/user/schedule'
+                  });
+                }, 1000);
+              }
+            });
           } else {
             // 登录失败
-            if (!isAutoLogin) {
-              uni.showToast({
-                title: res.message || '登录失败，请检查用户名和密码',
-                icon: 'none'
-              });
-            } else {
-              console.error('自动登录失败:', res.message);
-              // 自动登录失败不显示提示，只在控制台输出错误信息
-            }
+            uni.showToast({
+              title: res.message || '登录失败，请检查用户名和密码',
+              icon: 'none'
+            });
+            // 登录失败时刷新验证码
+            this.refreshCaptcha();
           }
         })
         .catch(err => {
           clearTimeout(timeoutTimer);
-          if (!isAutoLogin) {
-            uni.hideLoading();
-          }
+          uni.hideLoading();
           
           if (loginTimeout) return; // 已经显示超时错误，不再处理
           
-          console.error('登录请求失败:', err);
-          if (!isAutoLogin) {
+          uni.showToast({
+            title: '登录失败，请稍后重试',
+            icon: 'none'
+          });
+          // 登录失败时刷新验证码
+          this.refreshCaptcha();
+        });
+    },
+    handleRegister() {
+      // 表单验证
+      if (!this.registerForm.username.trim()) {
+        uni.showToast({
+          title: '请输入用户名',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      if (!this.registerForm.password.trim()) {
+        uni.showToast({
+          title: '请输入密码',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      if (this.registerForm.password !== this.registerForm.confirmPassword) {
+        uni.showToast({
+          title: '两次输入的密码不一致',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      if (!this.registerForm.code.trim()) {
+        uni.showToast({
+          title: '请输入验证码',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      // 注册请求
+      uni.showLoading({
+        title: '注册中...'
+      });
+      
+      api.user.register({
+        username: this.registerForm.username,
+        password: this.registerForm.password,
+        code: this.registerForm.code,
+        uuid: this.registerForm.uuid
+      })
+        .then(res => {
+          uni.hideLoading();
+          
+          if (res.code === 200) {
             uni.showToast({
-              title: '登录失败，请稍后重试',
+              title: '注册成功',
+              icon: 'success'
+            });
+            
+            // 注册成功后，切换到登录模式
+            this.loginForm.username = this.registerForm.username;
+            this.loginForm.password = this.registerForm.password;
+            this.switchToLogin();
+            
+            // 清除注册表单
+            this.registerForm = {
+              username: '',
+              password: '',
+              confirmPassword: '',
+              code: '',
+              uuid: ''
+            };
+          } else {
+            uni.showToast({
+              title: res.message || '注册失败',
               icon: 'none'
             });
-          } else {
-            console.error('自动登录请求异常:', err);
+            // 刷新验证码
+            this.refreshCaptcha();
           }
+        })
+        .catch(err => {
+          uni.hideLoading();
+          uni.showToast({
+            title: '注册失败，请稍后重试',
+            icon: 'none'
+          });
+          // 刷新验证码
+          this.refreshCaptcha();
         });
     },
     rememberChange(e) {
       this.rememberMe = e.detail.value.length > 0;
-    },
-    navigateToRegister() {
-      uni.showToast({
-        title: '注册功能暂未开放',
-        icon: 'none'
-      });
     },
     navigateToForgetPassword() {
       uni.showToast({
@@ -315,7 +443,7 @@ export default {
   flex-direction: column;
   align-items: center;
   margin-top: 40px;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
 }
 
 .logo-image {
@@ -330,6 +458,26 @@ export default {
   margin-top: 10px;
 }
 
+.form-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.tab-item {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #666;
+  border-bottom: 2px solid transparent;
+  margin: 0 10px;
+}
+
+.tab-item.active {
+  color: #3498db;
+  border-bottom-color: #3498db;
+  font-weight: bold;
+}
+
 .login-form {
   background-color: #fff;
   border-radius: 10px;
@@ -338,7 +486,55 @@ export default {
 }
 
 .input-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.captcha-group {
+  margin-bottom: 20px;
+}
+
+.captcha-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+.captcha-input {
+  flex: 1;
+  height: 44px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 0 15px;
+  font-size: 14px;
+}
+
+.captcha-wrapper {
+  position: relative;
+  width: 120px;
+  height: 44px;
+  margin-left: 10px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.captcha-image {
+  width: 100%;
+  height: 100%;
+  background-color: #f9f9f9;
+}
+
+.refresh-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-size: 12px;
+  padding: 2px 5px;
+  border-top-left-radius: 4px;
 }
 
 .input-label {

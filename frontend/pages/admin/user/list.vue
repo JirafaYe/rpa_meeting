@@ -1,85 +1,55 @@
 <template>
-  <view class="user-list-container">
-    <!-- 搜索和添加按钮区域 -->
-    <view class="action-bar">
-      <view class="search-box">
-        <input type="text" class="search-input" v-model="searchText" placeholder="搜索用户..." @confirm="handleSearch" />
-        <button class="search-btn" @click="handleSearch">
-          <text class="iconfont icon-search"></text>
-        </button>
-      </view>
-      <button class="add-btn" @click="navigateToEdit()">
-        <text class="iconfont icon-plus"></text> 添加用户
-      </button>
-    </view>
-    
-    <!-- 过滤条件 -->
-    <view class="filter-bar">
-      <view class="filter-item">
-        <text class="filter-label">部门</text>
-        <picker :value="departmentIndex" :range="departmentOptions" range-key="label" @change="departmentChange" class="filter-picker">
-          <view class="picker-value">
-            {{departmentOptions[departmentIndex].label}}
-          </view>
-        </picker>
-      </view>
-      
-      <view class="filter-item">
-        <text class="filter-label">角色</text>
-        <picker :value="roleIndex" :range="roleOptions" range-key="label" @change="roleChange" class="filter-picker">
-          <view class="picker-value">
-            {{roleOptions[roleIndex].label}}
-          </view>
-        </picker>
-      </view>
-      
-      <view class="filter-item">
-        <text class="filter-label">状态</text>
-        <picker :value="statusIndex" :range="statusOptions" range-key="label" @change="statusChange" class="filter-picker">
-          <view class="picker-value">
-            {{statusOptions[statusIndex].label}}
-          </view>
-        </picker>
-      </view>
-    </view>
-    
-    <!-- 用户列表 -->
-    <view class="user-list" v-if="users.length > 0">
-      <view class="table">
-        <view class="table-header">
-          <text class="th th-id">ID</text>
-          <text class="th th-name">姓名</text>
-          <text class="th th-username">用户名</text>
-          <text class="th th-department">部门</text>
-          <text class="th th-role">角色</text>
-          <text class="th th-status">状态</text>
-          <text class="th th-action">操作</text>
+  <admin-layout 
+    title="用户管理" 
+    description="管理系统用户，可添加、编辑和禁用用户"
+    active-path="/pages/admin/user/list">
+    <view class="user-list-container">
+      <!-- 操作栏 -->
+      <view class="action-bar">
+        <view class="search-box">
+            <text class="iconfont icon-search"></text>
+          <input 
+            type="text" 
+            v-model="searchQuery" 
+            placeholder="搜索用户" 
+            @input="handleSearch"
+          />
         </view>
-        
-        <view class="table-body">
-          <view class="table-row" v-for="(user, index) in users" :key="index">
-            <text class="td td-id">{{user.id}}</text>
-            <text class="td td-name">{{user.name}}</text>
-            <text class="td td-username">{{user.username}}</text>
-            <text class="td td-department">{{user.department}}</text>
-            <text class="td td-role">{{user.role}}</text>
-            <view class="td td-status">
-              <text class="badge" :class="getStatusClass(user.status)">{{user.statusText}}</text>
-            </view>
-            <view class="td td-action">
-              <view class="action-buttons">
-                <button class="btn-icon btn-edit" @click="navigateToEdit(user.id)">
-                  <text class="iconfont icon-edit"></text>
-                </button>
-                <button class="btn-icon btn-reset" @click="handleResetPassword(user)">
-                  <text class="iconfont icon-reset"></text>
-                </button>
-                <button v-if="user.status === 'active'" class="btn-icon btn-disable" @click="handleToggleStatus(user)">
-                  <text class="iconfont icon-ban"></text>
-                </button>
-                <button v-else class="btn-icon btn-enable" @click="handleToggleStatus(user)">
-                  <text class="iconfont icon-check"></text>
-                </button>
+        <view class="button-group">
+          <button class="btn-primary" @click="handleAdd">
+            <text class="iconfont icon-add"></text>
+            添加用户
+          </button>
+        </view>
+      </view>
+      
+      <!-- 用户表格 -->
+      <view class="table-container">
+        <view class="table">
+          <view class="table-header">
+            <view class="th">用户名</view>
+            <view class="th">姓名</view>
+            <view class="th">邮箱</view>
+            <view class="th">状态</view>
+            <view class="th">操作</view>
+          </view>
+          
+          <view class="table-body">
+            <view class="tr" v-for="user in users" :key="user.id">
+              <view class="td">{{ user.username }}</view>
+              <view class="td">{{ user.name }}</view>
+              <view class="td">{{ user.email }}</view>
+              <view class="td">
+                <text :class="['status-tag', user.status === 1 ? 'active' : 'inactive']">
+                  {{ '启用' }}
+                </text>
+              </view>
+              <view class="td">
+                <view class="action-buttons">
+                  <button class="btn-small" @click="handleToggleStatus(user)">
+                    {{ '禁用' }}
+                  </button>
+                </view>
               </view>
             </view>
           </view>
@@ -88,562 +58,357 @@
       
       <!-- 分页 -->
       <view class="pagination">
-        <view class="page-btn" :class="{disabled: currentPage === 1}" @click="handlePageChange(currentPage - 1)">
-          <text class="iconfont icon-left"></text>
-        </view>
-        <view class="page-number" :class="{active: currentPage === page}" v-for="page in totalPages" :key="page" @click="handlePageChange(page)">
-          {{page}}
-        </view>
-        <view class="page-btn" :class="{disabled: currentPage === totalPages}" @click="handlePageChange(currentPage + 1)">
-          <text class="iconfont icon-right"></text>
-        </view>
+        <button 
+          class="btn-page" 
+          :disabled="currentPage === 1"
+          @click="handlePageChange(currentPage - 1)"
+        >
+          <text class="iconfont icon-arrow-left"></text>
+          上一页
+        </button>
+        <text class="page-info">第 {{ currentPage }} 页</text>
+        <button 
+          class="btn-page" 
+          :disabled="!hasMore"
+          @click="handlePageChange(currentPage + 1)"
+        >
+          下一页
+          <text class="iconfont icon-arrow-right"></text>
+        </button>
       </view>
     </view>
-    
-    <!-- 无数据状态 -->
-    <view class="empty-state" v-else>
-      <text class="iconfont icon-empty"></text>
-      <text class="empty-text">暂无用户数据</text>
-      <button class="add-btn" @click="navigateToEdit()">添加用户</button>
-    </view>
-  </view>
+  </admin-layout>
 </template>
 
 <script>
+import api from '@/api/index.js';
+import AdminLayout from '@/components/admin/AdminLayout.vue';
+
 export default {
+  components: {
+    AdminLayout
+  },
   data() {
     return {
-      searchText: '',
-      departmentIndex: 0,
-      roleIndex: 0,
-      statusIndex: 0,
-      departmentOptions: [
-        { label: '全部部门', value: '' },
-        { label: '研发部', value: 'dev' },
-        { label: '产品部', value: 'product' },
-        { label: '设计部', value: 'design' },
-        { label: '测试部', value: 'qa' },
-        { label: '市场部', value: 'market' },
-        { label: '人事部', value: 'hr' }
-      ],
-      roleOptions: [
-        { label: '全部角色', value: '' },
-        { label: '普通用户', value: 'user' },
-        { label: '部门管理员', value: 'dept_admin' },
-        { label: '系统管理员', value: 'sys_admin' }
-      ],
-      statusOptions: [
-        { label: '全部状态', value: '' },
-        { label: '正常', value: 'active' },
-        { label: '禁用', value: 'disabled' }
-      ],
-      users: [
-        {
-          id: 1,
-          name: '张三',
-          username: 'zhangsan',
-          department: '研发部',
-          role: '部门管理员',
-          status: 'active',
-          statusText: '正常'
-        },
-        {
-          id: 2,
-          name: '李四',
-          username: 'lisi',
-          department: '研发部',
-          role: '普通用户',
-          status: 'active',
-          statusText: '正常'
-        },
-        {
-          id: 3,
-          name: '王五',
-          username: 'wangwu',
-          department: '产品部',
-          role: '部门管理员',
-          status: 'active',
-          statusText: '正常'
-        },
-        {
-          id: 4,
-          name: '赵六',
-          username: 'zhaoliu',
-          department: '设计部',
-          role: '部门管理员',
-          status: 'active',
-          statusText: '正常'
-        },
-        {
-          id: 5,
-          name: '钱七',
-          username: 'qianqi',
-          department: '测试部',
-          role: '普通用户',
-          status: 'disabled',
-          statusText: '禁用'
-        }
-      ],
+      users: [],
       currentPage: 1,
       pageSize: 10,
-      total: 5
-    }
-  },
-  computed: {
-    totalPages() {
-      return Math.ceil(this.total / this.pageSize);
-    }
+      hasMore: true,
+      searchQuery: '',
+      loading: false
+    };
   },
   onLoad() {
-    this.fetchUserList();
-  },
-  onPullDownRefresh() {
-    this.fetchUserList();
+    this.loadUsers();
   },
   methods: {
-    fetchUserList() {
-      // 这里应该从API获取用户列表数据
-      uni.showLoading({
-        title: '加载中...'
-      });
-      
-      setTimeout(() => {
-        uni.hideLoading();
-        uni.stopPullDownRefresh();
-        
-        // 实际项目中应该使用接口返回的数据更新页面
-        // 这里模拟根据筛选条件过滤数据
-        let filteredUsers = [...this.users];
-        
-        const department = this.departmentOptions[this.departmentIndex].value;
-        const role = this.roleOptions[this.roleIndex].value;
-        const status = this.statusOptions[this.statusIndex].value;
-        
-        if (department) {
-          filteredUsers = filteredUsers.filter(user => 
-            user.department === this.departmentOptions[this.departmentIndex].label
-          );
-        }
-        
-        if (role) {
-          filteredUsers = filteredUsers.filter(user => {
-            if (role === 'user' && user.role === '普通用户') return true;
-            if (role === 'dept_admin' && user.role === '部门管理员') return true;
-            if (role === 'sys_admin' && user.role === '系统管理员') return true;
-            return false;
+    async loadUsers() {
+      this.loading = true;
+      try {
+        const res = await api.user.getUserList({
+          pageNo: this.currentPage,
+          pageSize: this.pageSize,
+          userName: this.searchQuery
+        });
+        if (res.code === 200 && res.data) {
+          this.users = res.data.list || [];
+          this.hasMore = (res.data.list && res.data.list.length === this.pageSize);
+        } else {
+          this.users = [];
+          this.hasMore = false;
+          uni.showToast({
+            title: res.message || '获取用户列表失败',
+            icon: 'none'
           });
         }
-        
-        if (status) {
-          filteredUsers = filteredUsers.filter(user => user.status === status);
-        }
-        
-        if (this.searchText) {
-          filteredUsers = filteredUsers.filter(user => 
-            user.name.includes(this.searchText) || 
-            user.username.includes(this.searchText)
-          );
-        }
-        
-        this.users = filteredUsers;
-        this.total = filteredUsers.length;
-      }, 500);
+      } catch (error) {
+        console.error('获取用户列表失败:', error);
+        this.users = [];
+        this.hasMore = false;
+        uni.showToast({
+          title: '获取用户列表失败',
+          icon: 'none'
+        });
+      } finally {
+        this.loading = false;
+      }
     },
     handleSearch() {
-      this.fetchUserList();
+      this.currentPage = 1;
+      this.loadUsers();
     },
-    departmentChange(e) {
-      this.departmentIndex = e.detail.value;
-      this.fetchUserList();
+    handlePageChange(page) {
+      this.currentPage = page;
+      this.loadUsers();
     },
-    roleChange(e) {
-      this.roleIndex = e.detail.value;
-      this.fetchUserList();
-    },
-    statusChange(e) {
-      this.statusIndex = e.detail.value;
-      this.fetchUserList();
-    },
-    navigateToEdit(id) {
-      if (id) {
-        uni.navigateTo({
-          url: `/pages/admin/user/edit?id=${id}`
-        });
-      } else {
+    handleAdd() {
         uni.navigateTo({
           url: '/pages/admin/user/edit'
         });
-      }
     },
-    handleResetPassword(user) {
-      uni.showModal({
-        title: '重置密码',
-        content: `确定要重置"${user.name}"的密码吗？`,
-        success: (res) => {
-          if (res.confirm) {
-            uni.showLoading({
-              title: '处理中...'
-            });
-            
-            // 模拟网络请求
-            setTimeout(() => {
-              uni.hideLoading();
-              
-              // 实际项目中应该调用接口重置密码
+    async handleToggleStatus(user) {
+      try {
+        const res = await api.user.updateUserStatus(user.id, user.status === 1 ? 0 : 1);
+        if (res.code === 200) {
               uni.showToast({
-                title: '密码已重置',
+            title: '操作成功',
                 icon: 'success'
               });
-            }, 500);
-          }
-        }
-      });
-    },
-    handleToggleStatus(user) {
-      const action = user.status === 'active' ? '禁用' : '启用';
-      
-      uni.showModal({
-        title: `确认${action}`,
-        content: `确定要${action}"${user.name}"吗？`,
-        success: (res) => {
-          if (res.confirm) {
-            uni.showLoading({
-              title: '处理中...'
-            });
-            
-            // 模拟网络请求
-            setTimeout(() => {
-              uni.hideLoading();
-              
-              // 实际项目中应该调用接口更新用户状态
-              const index = this.users.findIndex(u => u.id === user.id);
-              if (index !== -1) {
-                if (user.status === 'active') {
-                  this.users[index].status = 'disabled';
-                  this.users[index].statusText = '禁用';
+          this.loadUsers();
                 } else {
-                  this.users[index].status = 'active';
-                  this.users[index].statusText = '正常';
-                }
-              }
-              
               uni.showToast({
-                title: `已${action}用户`,
-                icon: 'success'
-              });
-            }, 500);
-          }
+            title: res.message || '操作失败',
+            icon: 'none'
+          });
         }
-      });
-    },
-    handlePageChange(page) {
-      if (page < 1 || page > this.totalPages || page === this.currentPage) {
-        return;
+      } catch (error) {
+        console.error('更新用户状态失败:', error);
+        uni.showToast({
+          title: '操作失败',
+          icon: 'none'
+        });
       }
-      
-      this.currentPage = page;
-      this.fetchUserList();
-    },
-    getStatusClass(status) {
-      const statusMap = {
-        'active': 'badge-success',
-        'disabled': 'badge-danger'
-      };
-      return statusMap[status] || 'badge-secondary';
     }
   }
-}
+};
 </script>
 
-<style>
+<style scoped>
 .user-list-container {
-  padding: 15px;
-  background-color: #f5f7fa;
-  min-height: 100vh;
+  padding: 24px;
+  background: #fff;
+  min-height: 480px;
+  position: relative;
 }
 
-/* 操作栏样式 */
 .action-bar {
   display: flex;
-  margin-bottom: 15px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 20px;
 }
 
 .search-box {
-  display: flex;
   flex: 1;
-  margin-right: 10px;
-}
-
-.search-input {
-  flex: 1;
-  height: 40px;
-  border: 1px solid #ddd;
-  border-radius: 4px 0 0 4px;
-  padding: 0 15px;
-  background-color: #fff;
-}
-
-.search-btn {
-  width: 40px;
-  height: 40px;
-  background-color: #3498db;
-  color: white;
-  border-radius: 0 4px 4px 0;
+  max-width: 360px;
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.add-btn {
-  height: 40px;
-  padding: 0 15px;
-  background-color: #2ecc71;
-  color: white;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 过滤条件样式 */
-.filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.filter-item {
-  flex: 1;
-  min-width: 120px;
-}
-
-.filter-label {
-  display: block;
-  font-size: 14px;
-  margin-bottom: 5px;
-  color: #555;
-}
-
-.filter-picker {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  height: 40px;
-  width: 100%;
-}
-
-.picker-value {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  font-size: 14px;
-}
-
-/* 表格样式 */
-.table {
   background-color: #fff;
   border-radius: 8px;
+  padding: 0 16px;
+  border: 1px solid #e8e8e8;
+  transition: all 0.3s ease;
+}
+
+.search-box:hover, .search-box:focus-within {
+  border-color: #40a9ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+.search-box .iconfont {
+  font-size: 18px;
+  color: #bfbfbf;
+  margin-right: 8px;
+}
+
+.search-box input {
+  flex: 1;
+  height: 40px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #262626;
+}
+
+.search-box input::placeholder {
+  color: #bfbfbf;
+}
+
+.btn-primary {
+  height: 40px;
+  padding: 0 24px;
+  background: #1890ff;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #40a9ff;
+}
+
+.btn-primary .iconfont {
+  font-size: 16px;
+}
+
+.table-container {
+  background-color: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .table-header {
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
   display: flex;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #eee;
-  padding: 12px 10px;
 }
 
 .th {
-  font-weight: bold;
-  color: #555;
+  padding: 16px;
   font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  text-align: left;
+  flex: 1;
 }
 
-.table-row {
+.tr {
   display: flex;
-  border-bottom: 1px solid #eee;
-  padding: 12px 10px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
 }
 
-.table-row:last-child {
-  border-bottom: none;
+.tr:hover {
+  background-color: #f5f7fa;
 }
 
 .td {
+  padding: 16px;
   font-size: 14px;
-  color: #333;
-  padding: 0 2px;
+  color: #595959;
+  flex: 1;
   display: flex;
   align-items: center;
 }
 
-.th-id, .td-id {
-  width: 40px;
+.status-tag {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.th-name, .td-name {
-  flex: 1;
+.active {
+  background: #f6ffed;
+  color: #52c41a;
+  border: 1px solid #b7eb8f;
 }
 
-.th-username, .td-username {
-  flex: 1;
-}
-
-.th-department, .td-department {
-  flex: 1;
-}
-
-.th-role, .td-role {
-  flex: 1;
-}
-
-.th-status, .td-status {
-  width: 60px;
-}
-
-.th-action, .td-action {
-  width: 120px;
-  text-align: center;
+.inactive {
+  background: #fff1f0;
+  color: #f5222d;
+  border: 1px solid #ffa39e;
 }
 
 .action-buttons {
   display: flex;
-  justify-content: center;
+  gap: 8px;
 }
 
-.btn-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 4px;
+.btn-small {
+  height: 32px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 2px;
-  padding: 0;
+  cursor: pointer;
+  background: #fff1f0;
+  color: #f5222d;
+  border: 1px solid #ffa39e;
+  transition: all 0.3s ease;
 }
 
-.btn-edit {
-  background-color: #3498db;
-  color: white;
+.btn-small:hover {
+  background: #fff2f0;
+  border-color: #ff4d4f;
 }
 
-.btn-reset {
-  background-color: #f39c12;
-  color: white;
-}
-
-.btn-disable {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.btn-enable {
-  background-color: #2ecc71;
-  color: white;
-}
-
-/* 状态标签样式 */
-.badge {
-  display: inline-block;
-  padding: 3px 6px;
-  border-radius: 3px;
-  font-size: 12px;
-  color: #fff;
-}
-
-.badge-success {
-  background-color: #2ecc71;
-}
-
-.badge-danger {
-  background-color: #e74c3c;
-}
-
-.badge-secondary {
-  background-color: #95a5a6;
-}
-
-/* 分页样式 */
 .pagination {
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
 }
 
-.page-btn, .page-number {
-  width: 36px;
+.btn-page {
   height: 36px;
+  padding: 0 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #262626;
+  font-size: 14px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin: 0 5px;
-  background-color: #fff;
-  border-radius: 4px;
-  color: #333;
-  font-size: 14px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.page-number.active {
-  background-color: #3498db;
-  color: white;
+.btn-page:not(:disabled):hover {
+  color: #1890ff;
+  border-color: #1890ff;
+  background-color: #f0f7ff;
 }
 
-.page-btn.disabled {
+.btn-page:disabled {
   background-color: #f5f5f5;
-  color: #ccc;
+  border-color: #d9d9d9;
+  color: #bfbfbf;
   cursor: not-allowed;
 }
 
-/* 空状态样式 */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 50px 0;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.page-info {
+  font-size: 14px;
+  color: #8c8c8c;
 }
 
-.empty-state .iconfont {
-  font-size: 50px;
-  color: #ddd;
-  margin-bottom: 15px;
-}
-
-.empty-text {
-  font-size: 16px;
-  color: #999;
-  margin-bottom: 20px;
-}
-
-.iconfont {
-  font-family: 'iconfont';
-}
-
+/* 响应式调整 */
 @media (max-width: 768px) {
   .action-bar {
     flex-direction: column;
+    align-items: stretch;
   }
   
   .search-box {
-    margin-right: 0;
-    margin-bottom: 10px;
+    max-width: 100%;
   }
   
-  .filter-bar {
-    flex-direction: column;
+  .table-container {
+    overflow-x: auto;
   }
   
-  .filter-item {
-    width: 100%;
+  .table {
+    min-width: 800px;
+  }
+  
+  .pagination {
+    justify-content: center;
   }
 }
 </style> 

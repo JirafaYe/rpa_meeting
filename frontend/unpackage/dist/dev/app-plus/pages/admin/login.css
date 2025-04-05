@@ -1,0 +1,295 @@
+
+.login-container[data-v-3190821f] {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.login-container[data-v-3190821f]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  z-index: 1;
+}
+.login-card[data-v-3190821f] {
+  width: 100%;
+  max-width: 420px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+  animation: fadeIn-3190821f 0.5s ease-out;
+}
+@keyframes fadeIn-3190821f {
+from {
+    opacity: 0;
+    transform: translateY(20px);
+}
+to {
+    opacity: 1;
+    transform: translateY(0);
+}
+}
+.login-header[data-v-3190821f] {
+  padding: 30px 30px 20px;
+  text-align: center;
+  background: linear-gradient(to right, #f5f7fa, #f9fcff);
+  border-bottom: 1px solid #f0f0f0;
+}
+.login-logo[data-v-3190821f] {
+  margin-bottom: 15px;
+}
+.login-logo img[data-v-3190821f] {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+.login-title h1[data-v-3190821f] {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+}
+.login-title p[data-v-3190821f] {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin: 0;
+}
+.login-form[data-v-3190821f] {
+  padding: 30px;
+}
+.input-group[data-v-3190821f] {
+  position: relative;
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.input-icon[data-v-3190821f] {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+.input-icon .iconfont[data-v-3190821f] {
+  font-size: 20px;
+  color: #8c8c8c;
+}
+.input-field[data-v-3190821f] {
+  width: 100%;
+  height: 50px;
+  padding: 10px 15px 10px 45px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #1a1a1a;
+  background-color: #f9fafb;
+  transition: all 0.3s;
+  box-sizing: border-box;
+  -webkit-appearance: none; /* 移除Safari和iOS上的默认样式 */
+  appearance: none;
+}
+.input-field[data-v-3190821f]:focus {
+  outline: none;
+  border-color: #1890ff;
+  background-color: #fff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+.input-field[data-v-3190821f]::-webkit-input-placeholder {
+  color: #bfbfbf;
+}
+.input-field[data-v-3190821f]::placeholder {
+  color: #bfbfbf;
+}
+.login-options[data-v-3190821f] {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+.remember-me[data-v-3190821f] {
+  display: flex;
+  align-items: center;
+  color: #595959;
+  cursor: pointer;
+}
+.remember-me uni-input[data-v-3190821f] {
+  margin-right: 6px;
+}
+.forgot-password[data-v-3190821f] {
+  color: #1890ff;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.forgot-password[data-v-3190821f]:hover {
+  color: #40a9ff;
+  text-decoration: underline;
+}
+.login-button[data-v-3190821f] {
+  width: 100%;
+  height: 50px;
+  background: linear-gradient(90deg, #1890ff, #096dd9);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-button[data-v-3190821f]:hover {
+  background: linear-gradient(90deg, #40a9ff, #1890ff);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+  transform: translateY(-2px);
+}
+.login-button[data-v-3190821f]:disabled {
+  background: #d9d9d9;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+.login-footer[data-v-3190821f] {
+  margin-top: 40px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+.login-overlay[data-v-3190821f] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.login-spinner[data-v-3190821f] {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin-3190821f 1s ease-in-out infinite;
+}
+@keyframes spin-3190821f {
+to {
+    transform: rotate(360deg);
+}
+}
+@media (max-width: 480px) {
+.login-card[data-v-3190821f] {
+    max-width: 100%;
+    margin: 0 10px;
+}
+.login-header[data-v-3190821f] {
+    padding: 20px 20px 15px;
+}
+.login-form[data-v-3190821f] {
+    padding: 20px;
+}
+.login-logo img[data-v-3190821f] {
+    width: 60px;
+    height: 60px;
+}
+.login-title h1[data-v-3190821f] {
+    font-size: 20px;
+}
+.input-field[data-v-3190821f] {
+    font-size: 14px;
+    height: 45px;
+}
+.login-button[data-v-3190821f] {
+    height: 45px;
+    font-size: 15px;
+}
+}
+.quick-login-section[data-v-3190821f] {
+  margin-top: 20px;
+  text-align: center;
+}
+.divider[data-v-3190821f] {
+  display: flex;
+  align-items: center;
+  margin: 15px 0;
+}
+.divider[data-v-3190821f]::before,
+.divider[data-v-3190821f]::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e8e8e8;
+}
+.divider span[data-v-3190821f] {
+  padding: 0 10px;
+  color: #8c8c8c;
+  font-size: 14px;
+}
+.quick-login-button[data-v-3190821f] {
+  width: 100%;
+  height: 45px;
+  background: linear-gradient(90deg, #52c41a, #389e0d);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.quick-login-button[data-v-3190821f]:hover {
+  background: linear-gradient(90deg, #73d13d, #52c41a);
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+  transform: translateY(-2px);
+}
+.quick-login-button[data-v-3190821f]:disabled {
+  background: #d9d9d9;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+.password-toggle[data-v-3190821f] {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #8c8c8c;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.password-toggle[data-v-3190821f]:hover {
+  color: #1890ff;
+}

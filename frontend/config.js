@@ -3,11 +3,22 @@ const config = {
   // 应用名称
   appName: 'RPA会议系统',
   
-  // API基础URL - 设置默认值避免file协议错误
-  apiBaseUrl: '/api',
+  // API基础URL - 设置后端API地址
+  apiBaseUrl: 'http://182.92.115.169:8080',
   
   // 是否开启调试模式
-  debug: process.env.NODE_ENV === 'development',
+  debug: {
+    // 总开关，是否开启调试模式
+    enabled: process.env.NODE_ENV === 'development',
+    // 是否显示页面路径日志
+    showPageLog: false,
+    // 是否显示页面栈信息
+    showPageStack: false,
+    // 是否显示网络请求日志
+    showNetworkLog: false,
+    // 是否显示控制台警告信息
+    showWarnings: false
+  },
   
   // 默认页面路径
   defaultPage: '/pages/user/schedule',
@@ -35,25 +46,25 @@ const config = {
     // 会议最大时长（单位分钟）
     maxDuration: 240
   },
-
-  // 是否启用模拟数据
-  enableMock: true,
-  
-  // 开发模式自动登录配置
-  autoLogin: {
-    // 是否启用自动登录（默认在开发环境下启用）
-    enabled: process.env.NODE_ENV === 'development',
-    // 自动登录使用的用户名
-    username: 'user',
-    // 自动登录使用的密码
-    password: 'user123'
-  },
   
   // 应用版本
-  version: '1.0.0'
+  version: '1.0.0',
+  
+  // 请求超时设置（毫秒）
+  requestTimeout: 30000,
+  
+  // 网络配置
+  network: {
+    // 重试次数
+    retryCount: 3,
+    // 重试间隔（毫秒）
+    retryDelay: 1000,
+    // 是否显示网络错误提示
+    showErrorToast: true
+  }
 };
 
-// 根据环境设置BASE_URL
-const BASE_URL = config.apiBaseUrl || 'http://localhost:3000';
+// 不再需要这个变量，直接使用config.apiBaseUrl
+// const BASE_URL = config.apiBaseUrl || 'http://localhost:3000';
 
 export default config; 

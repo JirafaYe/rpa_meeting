@@ -1,21 +1,61 @@
 <template>
   <view class="create-meeting-container">
+    <!-- 添加面包屑导航 -->
+    <view class="breadcrumb">
+      <view class="breadcrumb-item" @click="navigateToList">会议列表</view>
+      <text class="breadcrumb-separator">/</text>
+      <view class="breadcrumb-item">{{ isEdit ? '编辑会议' : '创建会议' }}</view>
+    </view>
+
     <form @submit="handleSubmit">
       <view class="form-section">
         <view class="form-title">基本信息</view>
         
         <view class="form-item">
-          <text class="form-label required">会议主题</text>
+          <view class="form-label">会议名称</view>
           <input 
             class="form-input" 
             type="text" 
             v-model="form.title" 
-            placeholder="请输入会议主题" 
+            placeholder="请输入会议名称"
           />
         </view>
         
         <view class="form-item">
-          <text class="form-label required">会议类型</text>
+          <view class="form-label">会议日期</view>
+          <picker 
+            mode="date" 
+            :value="form.date" 
+            @change="handleDateChange"
+          >
+            <view class="picker-value">{{ form.date || '请选择日期' }}</view>
+          </picker>
+        </view>
+        
+        <view class="form-item">
+          <view class="form-label">开始时间</view>
+          <picker 
+            mode="time" 
+            :value="form.startTime" 
+            @change="handleStartTimeChange"
+          >
+            <view class="picker-value">{{ form.startTime || '请选择开始时间' }}</view>
+          </picker>
+        </view>
+        
+        <view class="form-item">
+          <view class="form-label">结束时间</view>
+          <picker 
+            mode="time" 
+            :value="form.endTime" 
+            @change="handleEndTimeChange"
+          >
+            <view class="picker-value">{{ form.endTime || '请选择结束时间' }}</view>
+          </picker>
+        </view>
+        
+        <view class="form-item">
+          <text class="form-label">会议类型</text>
           <picker 
             class="form-picker" 
             :range="meetingTypes" 
@@ -23,18 +63,6 @@
             @change="handleTypeChange"
           >
             <view class="picker-value">{{ meetingTypes[typeIndex] }}</view>
-          </picker>
-        </view>
-        
-        <view class="form-item">
-          <text class="form-label">所属部门</text>
-          <picker 
-            class="form-picker" 
-            :range="departmentOptions" 
-            :value="departmentIndex" 
-            @change="handleDepartmentChange"
-          >
-            <view class="picker-value">{{ departmentOptions[departmentIndex] }}</view>
           </picker>
         </view>
         
@@ -50,44 +78,6 @@
               <view class="priority-indicator" :class="getPriorityClass(form.priority)"></view>
               {{ priorityOptions[priorityIndex] }}
             </view>
-          </picker>
-        </view>
-        
-        <view class="form-item">
-          <text class="form-label required">日期</text>
-          <picker 
-            class="form-picker" 
-            mode="date" 
-            :value="form.date" 
-            start="2023-01-01" 
-            end="2025-12-31" 
-            @change="handleDateChange"
-          >
-            <view class="picker-value">{{ form.date || '请选择日期' }}</view>
-          </picker>
-        </view>
-        
-        <view class="form-item">
-          <text class="form-label required">开始时间</text>
-          <picker 
-            class="form-picker" 
-            mode="time" 
-            :value="form.startTime" 
-            @change="handleStartTimeChange"
-          >
-            <view class="picker-value">{{ form.startTime || '请选择时间' }}</view>
-          </picker>
-        </view>
-        
-        <view class="form-item">
-          <text class="form-label required">结束时间</text>
-          <picker 
-            class="form-picker" 
-            mode="time" 
-            :value="form.endTime" 
-            @change="handleEndTimeChange"
-          >
-            <view class="picker-value">{{ form.endTime || '请选择时间' }}</view>
           </picker>
         </view>
         
@@ -211,6 +201,19 @@
                   placeholder="负责人/发言人" 
                 />
               </view>
+              <view class="agenda-files">
+                <view v-if="item.files && item.files.length > 0" class="files-list">
+                  <view v-for="(file, fileIndex) in item.files" :key="fileIndex" class="file-item">
+                    <text class="file-name">{{ file.name }}</text>
+                    <text class="file-size">{{ file.size }}</text>
+                    <text class="delete-btn" @click="removeAgendaFile(index, fileIndex)">×</text>
+                  </view>
+                </view>
+                <view class="add-file-btn" @click="selectAgendaFile(index)">
+                  <text class="add-icon">+</text>
+                  <text>添加议程文件</text>
+                </view>
+              </view>
             </view>
           </view>
           
@@ -266,7 +269,7 @@
           class="submit-btn" 
           :disabled="isSubmitting" 
           :loading="isSubmitting" 
-          form-type="submit"
+          @click="handleSubmit"
         >{{ isEdit ? '保存修改' : '提交申请' }}</button>
         <button 
           class="cancel-btn" 
@@ -279,7 +282,7 @@
 </template>
 
 <script>
-import api from '../../../utils/api.js'
+import api from '../../../api/index'
 
 export default {
   data() {
@@ -290,8 +293,6 @@ export default {
       typeIndex: 0,
       priorityOptions: ['普通', '重要', '紧急'],
       priorityIndex: 0,
-      departmentOptions: ['技术部', '产品部', '市场部', '销售部', '人事部', '财务部', '行政部'],
-      departmentIndex: 0,
       repeatOptions: ['不重复', '每天', '每周', '每两周', '每月'],
       repeatIndex: 0,
       equipmentOptions: ['投影仪', '白板', '视频会议设备', '话筒', '电视'],
@@ -302,7 +303,6 @@ export default {
         title: '',
         type: '普通会议',
         priority: '普通', // 会议优先级
-        department: '技术部', // 所属部门
         date: '',
         startTime: '',
         endTime: '',
@@ -312,7 +312,14 @@ export default {
         equipment: [],
         description: '',
         attachments: [],
-        agenda: []
+        agenda: [
+          {
+            time: '',
+            content: '',
+            speaker: '',
+            files: []
+          }
+        ]
       }
     };
   },
@@ -334,6 +341,72 @@ export default {
       this.form.date = options.date;
     }
     
+    // 初始化参会人员列表为空数组
+    this.form.attendees = [];
+    
+    // 尝试获取当前登录用户信息
+    try {
+      // 优先从vuex或全局用户状态获取
+      const app = getApp();
+      let userInfo = null;
+      
+      // 如果有全局用户状态管理，尝试从那里获取
+      if (app && app.globalData && app.globalData.userInfo) {
+        userInfo = app.globalData.userInfo;
+        console.log('从全局状态获取到用户信息:', userInfo);
+      } else {
+        // 尝试从本地存储获取
+        userInfo = uni.getStorageSync('userInfo');
+        console.log('从本地存储获取到用户信息:', userInfo);
+      }
+      
+      // 如果有用户信息且包含ID
+      if (userInfo && userInfo.id) {
+        // 确保ID是整数类型
+        const userId = parseInt(userInfo.id);
+        const userName = userInfo.username || userInfo.name || '我';
+        
+        // 只有在有效ID的情况下添加用户
+        if (!isNaN(userId) && userId > 0) {
+          this.form.attendees.push({
+            id: userId,
+            name: userName,
+            avatar: userInfo.avatarUrl || ''
+          });
+          
+          console.log('初始化参会人员列表:', JSON.stringify(this.form.attendees));
+        } else {
+          console.error('获取到的用户ID无效:', userInfo.id);
+        }
+      } else {
+        // 尝试通过API获取用户信息
+        console.warn('本地未找到用户信息，尝试通过API获取');
+        api.user.getUserInfo()
+          .then(res => {
+            if (res.code === 200 && res.data) {
+              const apiUserInfo = res.data;
+              const userId = parseInt(apiUserInfo.id);
+              
+              if (!isNaN(userId) && userId > 0) {
+                this.form.attendees.push({
+                  id: userId,
+                  name: apiUserInfo.username || apiUserInfo.name || '我',
+                  avatar: apiUserInfo.avatarUrl || ''
+                });
+                console.log('从API获取并添加用户到参会列表:', this.form.attendees);
+              }
+            } else {
+              console.error('API获取用户信息失败:', res);
+            }
+          })
+          .catch(err => {
+            console.error('获取用户信息API异常:', err);
+          });
+      }
+    } catch (error) {
+      console.error('处理用户信息时出错:', error);
+    }
+    
     // 如果url参数中有id，则是编辑模式
     if (options.id) {
       this.isEdit = true;
@@ -343,7 +416,30 @@ export default {
       this.loadAvailableRooms();
     }
   },
+  onReady() {
+    // 注册全局事件监听，接收来自联系人选择器的数据
+    uni.$on('updateSelectedAttendees', (selectedContacts) => {
+      console.log('接收到联系人选择器返回的参会人员:', selectedContacts);
+      if (selectedContacts && Array.isArray(selectedContacts)) {
+        this.handleSelectedAttendees(selectedContacts);
+      }
+    });
+  },
+  onUnload() {
+    uni.$off('updateSelectedAttendees');
+  },
   methods: {
+    navigateToList() {
+      uni.navigateTo({
+        url: '/pages/user/meeting/list',
+        fail: () => {
+          uni.showToast({
+            title: '导航失败',
+            icon: 'none'
+          });
+        }
+      });
+    },
     // 加载会议详情
     loadMeetingDetail() {
       uni.showLoading({ title: '加载中...' });
@@ -368,27 +464,6 @@ export default {
             const typeIndex = this.meetingTypes.findIndex(type => type === meeting.type);
             this.typeIndex = typeIndex !== -1 ? typeIndex : 0;
             this.form.type = this.meetingTypes[this.typeIndex];
-            
-            // 设置部门
-            if (meeting.department) {
-              const deptIndex = this.departmentOptions.findIndex(dept => dept === meeting.department);
-              this.departmentIndex = deptIndex !== -1 ? deptIndex : 0;
-              this.form.department = this.departmentOptions[this.departmentIndex];
-            }
-            
-            // 设置优先级
-            if (meeting.priority !== undefined) {
-              this.priorityIndex = meeting.priority;
-              this.form.priority = meeting.priority;
-            }
-            
-            // 设置重复选项
-            const repeatIndex = this.repeatOptions.findIndex(opt => opt === meeting.repeat);
-            this.repeatIndex = repeatIndex !== -1 ? repeatIndex : 0;
-            this.form.repeat = this.repeatOptions[this.repeatIndex];
-            
-            // 设置会议室
-            this.form.roomId = meeting.roomId;
             
             // 设置参会人员
             this.form.attendees = meeting.participants || [];
@@ -429,33 +504,107 @@ export default {
     },
     // 加载可用会议室
     loadAvailableRooms() {
+      // 检查必要的参数是否存在
+      if (!this.form.date || !this.form.startTime || !this.form.endTime) {
+        console.log('缺少必要的参数:', {
+          date: this.form.date,
+          startTime: this.form.startTime,
+          endTime: this.form.endTime
+        });
+        return;
+      }
+
       this.isLoading = true;
+      uni.showLoading({ title: '加载会议室...' });
       
-      const params = {
-        date: this.form.date,
-        startTime: this.form.startTime,
-        endTime: this.form.endTime
+      // 处理时间格式
+      const formatTimeWithSeconds = (time) => {
+        if (!time) return '';
+        // 如果已经有秒级格式，直接返回
+        if (time.split(':').length === 3) return time;
+        // 否则补充秒
+        return `${time}:00`;
       };
       
-      api.room.getAvailableList(params)
+      // 构建查询参数 - 直接使用扁平结构
+      const params = {
+        pageNo: 1,
+        pageSize: 100,
+        isAsc: true,
+        sortBy: 'id'
+      };
+      
+      // 添加日期和时间参数，确保正确格式
+      params.date = this.form.date;
+      params.startTime = formatTimeWithSeconds(this.form.startTime);
+      params.endTime = formatTimeWithSeconds(this.form.endTime);
+      
+      console.log('请求会议室参数:', params);
+      
+      // 使用API获取会议室列表
+      api.room.getRooms(params)
         .then(res => {
           if (res.code === 200 && res.data) {
-            this.availableRooms = res.data;
+            // 提取会议室数据
+            let roomList = [];
+            
+            // 根据响应结构解析数据
+            if (Array.isArray(res.data)) {
+              roomList = res.data;
+            } else if (res.data.list && Array.isArray(res.data.list)) {
+              roomList = res.data.list;
+            } else if (res.data.records && Array.isArray(res.data.records)) {
+              roomList = res.data.records;
+            }
+            
+            // 格式化会议室数据
+            this.availableRooms = roomList.map(room => ({
+              id: room.id,
+              name: room.name || '未命名会议室',
+              capacity: room.capacity || 0,
+              equipment: room.equipment || [],
+              location: room.location || '未知位置',
+              available: room.status !== 'unavailable' // 根据状态判断可用性
+            }));
+            
+            console.log('可用会议室:', this.availableRooms);
+            
+            // 如果当前选中的会议室不在可用列表中，清除选择
+            if (this.form.roomId) {
+              const isCurrentRoomAvailable = this.availableRooms.some(room => room.id.toString() === this.form.roomId.toString());
+              if (!isCurrentRoomAvailable) {
+                this.form.roomId = '';
+                uni.showToast({
+                  title: '之前选择的会议室已不可用，请重新选择',
+                  icon: 'none'
+                });
+              }
+            }
+            
+            // 如果没有可用会议室，提示用户
+            if (this.availableRooms.length === 0) {
+              uni.showToast({
+                title: '当前时间段没有可用会议室',
+                icon: 'none'
+              });
+            }
           } else {
+            console.error('获取会议室失败:', res);
             uni.showToast({
-              title: res.message || '获取可用会议室失败',
+              title: res.message || '获取会议室失败',
               icon: 'none'
             });
           }
         })
         .catch(err => {
-          console.error('获取可用会议室失败:', err);
+          console.error('获取会议室失败:', err);
           uni.showToast({
-            title: '获取可用会议室失败',
+            title: '获取会议室失败',
             icon: 'none'
           });
         })
         .finally(() => {
+          uni.hideLoading();
           this.isLoading = false;
         });
     },
@@ -515,17 +664,7 @@ export default {
           title: '结束时间必须晚于开始时间',
           icon: 'none'
         });
-        // 如果已有有效的结束时间，则保持原值，否则设置为开始时间后一小时
-        if (this.form.endTime && this.form.endTime > this.form.startTime) {
-          // 保持原有的有效结束时间
-          return;
-        } else if (this.form.startTime) {
-          // 计算开始时间后一小时作为结束时间
-          const [hours, minutes] = this.form.startTime.split(':').map(Number);
-          const newHour = (hours + 1) % 24;
-          this.form.endTime = `${newHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-          return;
-        }
+        return;
       }
       
       // 时间有效，更新结束时间
@@ -547,47 +686,195 @@ export default {
     },
     // 显示参会人员选择器
     showAttendeeSelector() {
-      uni.navigateTo({
-        url: '/pages/user/contact-selector',
-        events: {
-          // 接收选中的联系人
-          selectedContacts: (contacts) => {
-            console.log('收到选中的联系人:', contacts);
-            // 去重处理
-            const existingIds = this.form.attendees.map(attendee => attendee.id.toString());
-            const newAttendees = contacts.filter(contact => !existingIds.includes(contact.id.toString()));
+      try {
+        // 获取当前已选择的参会人ID
+        const selectedAttendeeIds = Array.isArray(this.form.attendees) 
+          ? this.form.attendees.map(a => parseInt(a.id)).filter(id => !isNaN(id))
+          : [];
+          
+        // 获取当前用户ID
+        const currentUserId = this.getCurrentUserId();
+        
+        console.log('当前选中参会人:', selectedAttendeeIds);
+        console.log('当前用户ID:', currentUserId);
+        
+        // 跳转到联系人选择页面
+        uni.navigateTo({
+          url: '/pages/user/contact-selector',
+          events: {
+            // 定义事件，用于接收选择结果
+            updateSelectedAttendees: (data) => {
+              console.log('通过事件通道收到联系人选择结果:', data);
+              this.handleSelectedAttendees(data);
+            }
+          },
+          success: (res) => {
+            // 向打开的页面传递参数
+            res.eventChannel.emit('initParams', {
+              preSelectedIds: selectedAttendeeIds,
+              currentUserId: currentUserId
+            });
+            console.log('成功打开联系人选择器并传递参数');
+          },
+          fail: (err) => {
+            console.error('打开联系人选择器失败:', err);
+            uni.showToast({
+              title: '打开联系人选择器失败',
+              icon: 'none'
+            });
+          }
+        });
+      } catch (error) {
+        console.error('打开联系人选择器出错:', error);
+        uni.showToast({
+          title: '操作失败',
+          icon: 'none'
+        });
+      }
+    },
+    // 处理选中的联系人
+    handleSelectedAttendees(selectedData) {
+      try {
+        console.log('收到选中的联系人数据:', selectedData);
+        
+        // 检查数据格式
+        if (!selectedData) {
+          console.warn('没有收到联系人数据');
+          return;
+        }
+        
+        let newAttendees = [];
+        
+        // 处理新的数据格式 (通过事件通道)
+        if (selectedData.selectedContacts && Array.isArray(selectedData.selectedContacts)) {
+          console.log('使用通道传递的完整联系人数据');
+          newAttendees = selectedData.selectedContacts.map(contact => ({
+            id: parseInt(contact.id),
+            name: contact.name || '',
+            avatar: contact.avatar || '/static/default-avatar.png'
+          }));
+        } 
+        // 处理旧的数据格式 (通过全局事件)
+        else if (Array.isArray(selectedData)) {
+          console.log('使用全局事件传递的联系人数据');
+          newAttendees = selectedData.map(contact => ({
+            id: parseInt(contact.id),
+            name: contact.name || '',
+            avatar: contact.avatar || '/static/default-avatar.png'
+          }));
+        }
+        // 如果只有 ID 列表
+        else if (selectedData.selectedIds && Array.isArray(selectedData.selectedIds)) {
+          console.log('只收到联系人ID列表，需要查找对应联系人信息');
+          // 这种情况需要根据ID查找对应的联系人信息
+          // 通常在实际应用中应该有一个方法来通过ID获取联系人详情
+          // 这里暂时只保存ID
+          newAttendees = selectedData.selectedIds.map(id => ({
+            id: parseInt(id),
+            name: '用户' + id,  // 临时名称，实际应用中应该查询真实名称
+            avatar: '/static/default-avatar.png'
+          }));
+        }
+        
+        if (newAttendees.length === 0) {
+          console.warn('未能解析有效的联系人数据');
+          return;
+        }
+        
+        console.log('解析后的新联系人列表:', newAttendees);
+        
+        // 获取当前用户ID
+        const currentUserId = this.getCurrentUserId();
+        console.log('当前用户ID:', currentUserId);
+        
+        // 设置到表单中
+        if (this.form.attendees && Array.isArray(this.form.attendees)) {
+          // 合并新的与原有的联系人，避免覆盖
+          // 构建ID映射以便快速查找
+          const existingMap = new Map();
+          this.form.attendees.forEach(attendee => {
+            existingMap.set(parseInt(attendee.id), attendee);
+          });
+          
+          // 合并新的联系人，避免重复
+          newAttendees.forEach(attendee => {
+            existingMap.set(parseInt(attendee.id), attendee);
+          });
+          
+          // 转换回数组
+          this.form.attendees = Array.from(existingMap.values());
+          
+          console.log('更新后的联系人列表:', this.form.attendees);
+        } else {
+          // 如果之前没有联系人，直接设置
+          this.form.attendees = newAttendees;
+          console.log('设置新的联系人列表:', this.form.attendees);
+        }
+        
+        // 确保当前用户在列表中
+        if (currentUserId) {
+          const hasCurrentUser = this.form.attendees.some(
+            attendee => parseInt(attendee.id) === parseInt(currentUserId)
+          );
+          
+          if (!hasCurrentUser) {
+            console.log('当前用户不在联系人列表中，尝试添加');
             
-            // 添加新选择的联系人
-            if (newAttendees.length > 0) {
-              this.form.attendees = [...this.form.attendees, ...newAttendees];
-              console.log('更新后的参会人员:', this.form.attendees);
+            // 尝试从全局状态获取用户信息
+            const userInfo = this.getUserInfo();
+            if (userInfo && userInfo.id) {
+              this.form.attendees.push({
+                id: parseInt(userInfo.id),
+                name: userInfo.name || userInfo.username || '当前用户',
+                avatar: userInfo.avatar || userInfo.avatarUrl || '/static/default-avatar.png'
+              });
+              console.log('已添加当前用户到联系人列表');
+            } else {
+              console.warn('无法获取当前用户信息，无法添加到联系人列表');
             }
           }
-        },
-        success: (res) => {
-          // 确保事件通道被正确创建
-          console.log('导航到联系人选择器成功');
-          const eventChannel = res.eventChannel;
-          // 发送当前已选择的联系人
-          if (eventChannel) {
-            console.log('事件通道已创建，发送当前已选择的联系人');
-            eventChannel.emit('selectedContacts', this.form.attendees);
-          } else {
-            console.error('无法创建事件通道');
-          }
-        },
-        fail: (err) => {
-          console.error('导航到联系人选择器失败:', err);
-          uni.showToast({
-            title: '无法打开联系人选择器',
-            icon: 'none'
-          });
         }
-      });
+      } catch (error) {
+        console.error('处理选中联系人时出错:', error);
+        uni.showToast({
+          title: '处理联系人数据失败',
+          icon: 'none'
+        });
+      }
     },
     // 移除参会人员
     removeAttendee(index) {
-      this.form.attendees.splice(index, 1);
+      try {
+        // 防止移除当前用户
+        const userInfo = uni.getStorageSync('userInfo');
+        const currentUserId = userInfo && userInfo.id ? parseInt(userInfo.id) : 0;
+        
+        if (currentUserId > 0) {
+          // 获取要移除的参会人ID
+          const attendeeToRemove = this.form.attendees[index];
+          const attendeeId = typeof attendeeToRemove === 'object' 
+            ? parseInt(attendeeToRemove.id) 
+            : parseInt(attendeeToRemove);
+          
+          // 确保是整数ID并进行比较
+          if (!isNaN(attendeeId) && attendeeId === currentUserId) {
+            uni.showToast({
+              title: '无法移除自己',
+              icon: 'none'
+            });
+            return;
+          }
+        }
+        
+        // 移除其他参会人员
+        this.form.attendees.splice(index, 1);
+      } catch (error) {
+        console.error('移除参会人员时出错:', error);
+        // 出错时也尝试移除
+        if (index >= 0 && index < this.form.attendees.length) {
+          this.form.attendees.splice(index, 1);
+        }
+      }
     },
     // 处理设备需求变更
     handleEquipmentChange(e) {
@@ -872,9 +1159,18 @@ export default {
     },
     // 验证表单
     validateForm() {
-      if (!this.form.title.trim()) {
+      if (!this.form.title || this.form.title.trim() === '') {
         uni.showToast({
           title: '请输入会议主题',
+          icon: 'none'
+        });
+        return false;
+      }
+      
+      // 验证会议标题长度 - 后端限制为5个字符
+      if (this.form.title.length > 5) {
+        uni.showToast({
+          title: '会议主题不能超过5个字符',
           icon: 'none'
         });
         return false;
@@ -945,219 +1241,313 @@ export default {
     },
     // 处理表单提交
     handleSubmit() {
-      if (!this.validateForm()) {
+      console.log('提交表单');
+      
+      // 表单验证
+      if (!this.form.title) {
+        uni.showToast({
+          title: '请输入会议名称',
+          icon: 'none'
+        });
         return;
       }
       
-      this.isSubmitting = true;
-      uni.showLoading({ title: '提交中...' });
+      if (!this.form.date) {
+        uni.showToast({
+          title: '请选择会议日期',
+          icon: 'none'
+        });
+        return;
+      }
       
-      // 准备提交的数据，确保时间格式正确
-      const formatTime = (date, time) => {
-        if (!date || !time) return '';
-        return `${date} ${time}`;
-      };
+      if (!this.form.startTime) {
+        uni.showToast({
+          title: '请选择开始时间',
+          icon: 'none'
+        });
+        return;
+      }
       
+      if (!this.form.endTime) {
+        uni.showToast({
+          title: '请选择结束时间',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      if (!this.form.roomId) {
+        uni.showToast({
+          title: '请选择会议室',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      // 显示加载
+      uni.showLoading({
+        title: '创建中...',
+        mask: true
+      });
+      
+      // 构建会议数据
       const meetingData = {
         title: this.form.title,
+        room: this.form.roomId,
         description: this.form.description,
-        roomId: this.form.roomId,
-        startTime: formatTime(this.form.date, this.form.startTime),
-        endTime: formatTime(this.form.date, this.form.endTime),
-        type: this.form.type,
-        priority: this.form.priority,
-        department: this.form.department,
-        repeat: this.form.repeat,
-        participants: this.form.attendees || [], // 直接提交参会人员完整对象
-        equipment: this.form.equipment || [],
-        agenda: this.form.agenda || [], // 添加议程数据
-        isRpa: this.form.isRpa || false,
-        rpaConfig: this.form.isRpa ? {
-          recordAudio: true,
-          recordVideo: false,
-          autoTranscribe: true,
-          autoSummary: true,
-          settings: {
-            audioQuality: 'high',
-            language: 'zh-CN',
-            speakerIdentification: true,
-            noiseReduction: true
-          }
-        } : null
+        date: this.form.date,
+        startTime: this.form.startTime,
+        endTime: this.form.endTime
       };
+      
+      if (this.form.attendees && this.form.attendees.length > 0) {
+        meetingData.participants = this.form.attendees.map(p => p.id);
+      }
       
       console.log('提交会议数据:', meetingData);
       
-      // 判断是新建还是编辑
-      if (!api.meeting.createMeeting || !api.meeting.updateMeeting) {
-        console.error('API方法未定义:', api.meeting);
+      try {
+      // 调用创建会议API
+        api.bookReservation(meetingData)
+          .then(async (res) => {
+          if (res.code === 200) {
+              console.log('会议创建成功:', res);
+              const reservationId = res.data;
+              
+              // 处理议程和文件上传
+              await this.processAgendaItems(reservationId);
+              
+              uni.hideLoading();
+            uni.showToast({
+                title: '会议创建成功',
+                icon: 'success',
+                duration: 2000
+            });
+            
+              // 延迟导航到会议详情页
+            setTimeout(() => {
+                uni.redirectTo({
+                  url: `/pages/user/meeting/detail?id=${reservationId}&from=create`
+                });
+              }, 2000);
+          } else {
+              console.error('会议创建失败:', res);
+              uni.hideLoading();
+            uni.showToast({
+                title: res.msg || '会议创建失败',
+              icon: 'none'
+            });
+          }
+        })
+        .catch(err => {
+            console.error('会议创建请求失败:', err);
+            uni.hideLoading();
+          uni.showToast({
+              title: '创建请求失败',
+            icon: 'none'
+          });
+          });
+      } catch (error) {
+        console.error('会议创建异常:', error);
+          uni.hideLoading();
         uni.showToast({
-          title: 'API方法未定义',
+          title: '创建发生异常',
           icon: 'none'
         });
-        this.isSubmitting = false;
-        uni.hideLoading();
+      }
+    },
+    // 添加处理议程项目和文件上传的方法
+    async processAgendaItems(reservationId) {
+      // 如果没有议程项，直接返回
+      if (!this.form.agenda || this.form.agenda.length === 0) {
         return;
       }
       
-      // 安全调用API
-      const apiMethod = this.isEdit ? 'updateMeeting' : 'createMeeting';
+      // 处理所有议程项
+      const subtopicPromises = [];
       
-      try {
-        const apiPromise = this.isEdit 
-          ? api.meeting[apiMethod](this.meetingId, meetingData)
-          : api.meeting[apiMethod](meetingData);
-          
-        apiPromise
-          .then(res => {
-            uni.hideLoading();
-            this.isSubmitting = false;
-            
-            if (res.code === 200) {
-              uni.showToast({
-                title: this.isEdit ? '会议已更新' : '会议已提交',
-                icon: 'success'
-              });
-              
-              // 提交附件
-              if (this.form.attachments && this.form.attachments.length > 0) {
-                this.uploadAttachments(res.data.id);
-              } else {
-                setTimeout(() => {
-                  uni.navigateBack();
-                }, 1500);
-              }
-            } else {
-              uni.showToast({
-                title: res.message || '提交失败',
-                icon: 'none'
-              });
-            }
-          })
-          .catch(err => {
-            console.error(this.isEdit ? '更新会议失败:' : '创建会议失败:', err);
-            uni.hideLoading();
-            this.isSubmitting = false;
-            uni.showToast({
-              title: '提交失败',
-              icon: 'none'
-            });
-          });
-      } catch (error) {
-        console.error('API调用异常:', error);
-        uni.hideLoading();
-        this.isSubmitting = false;
-        uni.showToast({
-          title: 'API调用异常',
-          icon: 'none'
-        });
-      }
-    },
-    // 上传附件
-    uploadAttachments(meetingId) {
-      // 显示上传提示
-      uni.showLoading({ title: '上传附件中...' });
-      
-      // 记录上传成功的数量
-      let uploadedCount = 0;
-      const totalAttachments = this.form.attachments.length;
-      
-      // 依次上传每个附件
-      this.form.attachments.forEach((file, index) => {
-        // 构建上传数据
-        const fileData = {
-          meetingId: meetingId,
-          fileName: file.name,
-          fileSize: file.size,
-          fileType: file.type
-        };
-        
-        // 实际项目中，这里应该是真实的文件上传
-        // 如果有文件对象或路径，可以使用以下方式上传
-        if (file.file) {
-          // H5环境，有实际的文件对象
-          console.log('上传文件对象:', file.file);
-          // 这里可以使用FormData来上传文件
-          // const formData = new FormData();
-          // formData.append('file', file.file);
-          // formData.append('meetingId', meetingId);
-          // 然后通过HTTP请求上传文件
-        } else if (file.path) {
-          // APP或小程序环境，有文件路径
-          console.log('上传文件路径:', file.path);
-          // 这里可以使用uni.uploadFile来上传文件
-          /*
-          uni.uploadFile({
-            url: 'your-upload-url',
-            filePath: file.path,
-            name: 'file',
-            formData: {
-              'meetingId': meetingId
-            },
-            success: (uploadRes) => {
-              console.log('上传成功', uploadRes);
-              // 处理上传成功
-            },
-            fail: (err) => {
-              console.error('上传失败', err);
-              // 处理上传失败
-            }
-          });
-          */
+      for (const agendaItem of this.form.agenda) {
+        // 跳过空的议程项
+        if (!agendaItem.content || !agendaItem.content.trim()) {
+          continue;
         }
         
-        // 调用上传文件接口（当前使用模拟接口）
-        api.meeting.uploadFile(fileData)
-          .then(res => {
-            console.log(`文件 ${file.name} 上传结果:`, res);
-            uploadedCount++;
-            
-            // 所有文件上传完成后处理
-            if (uploadedCount === totalAttachments) {
-              uni.hideLoading();
-              uni.showToast({
-                title: '上传附件成功',
-                icon: 'success',
-                duration: 1500
-              });
+        // 构建议程数据
+        const subtopicData = {
+          reservationId: reservationId,
+          subtopics: agendaItem.content,
+          description: agendaItem.time ? `时间: ${agendaItem.time}` : ''
+        };
+        
+        if (agendaItem.speaker) {
+          subtopicData.description += subtopicData.description ? 
+            `, 负责人: ${agendaItem.speaker}` : 
+            `负责人: ${agendaItem.speaker}`;
+        }
+        
+        // 创建议程项
+        const subtopicPromise = api.createSubtopic(subtopicData)
+          .then(async (response) => {
+            if (response.code === 200) {
+              console.log('议程创建成功:', response);
               
-              // 返回上一页
-              setTimeout(() => {
-                uni.navigateBack();
-              }, 1500);
-            }
-          })
-          .catch(err => {
-            console.error(`文件 ${file.name} 上传失败:`, err);
-            uploadedCount++;
-            
-            // 显示错误提示
-            uni.showToast({
-              title: `文件 ${file.name} 上传失败`,
-              icon: 'none'
-            });
-            
-            // 所有文件上传完成后处理
-            if (uploadedCount === totalAttachments) {
-              uni.hideLoading();
-              // 返回上一页
-              setTimeout(() => {
-                uni.navigateBack();
-              }, 1500);
+              // 获取子议题ID
+              const subtopicId = response.data;
+              
+              // 如果有文件，上传文件
+              if (agendaItem.files && agendaItem.files.length > 0) {
+                // 上传议程文件
+                await this.uploadAgendaFiles(subtopicId, agendaItem.files);
+              }
+              
+              return response;
+            } else {
+              console.error('议程创建失败:', response);
+              throw new Error(response.msg || '议程创建失败');
             }
           });
+        
+        subtopicPromises.push(subtopicPromise);
+      }
+      
+      // 等待所有议程创建和文件上传完成
+      return Promise.all(subtopicPromises).catch(error => {
+        console.error('处理议程时出错:', error);
+        // 继续处理，不中断流程
       });
     },
-    // 处理取消按钮
-    handleCancel() {
-      uni.navigateBack();
+    // 添加处理议程文件上传的方法
+    async uploadAgendaFiles(subtopicId, files) {
+      if (!files || files.length === 0) return;
+      
+      const fileUploadPromises = [];
+      
+      for (const file of files) {
+        console.log('准备上传文件:', file);
+        
+        // 上传文件
+        const uploadPromise = new Promise((resolve, reject) => {
+          
+          // 通用上传文件函数
+          const uploadFileToServer = (tempFilePath, fileName) => {
+            // 使用uni.uploadFile上传到服务器
+            uni.uploadFile({
+              url: '/file/upload', // 根据实际接口调整
+              filePath: tempFilePath,
+              name: 'file',
+              formData: {
+                'fileName': fileName
+              },
+              success: (uploadRes) => {
+                try {
+                  // 解析响应数据
+                  const data = typeof uploadRes.data === 'string' ? JSON.parse(uploadRes.data) : uploadRes.data;
+                  
+                  if (data.code === 200 && data.data) {
+                    const fileUrl = data.data;
+                    
+                    // 然后将文件关联到议题
+                    api.uploadSubtopicFile(subtopicId, fileName, fileUrl)
+                      .then(linkRes => {
+                        console.log('议题文件关联成功:', linkRes);
+                        resolve(linkRes);
+                      })
+                      .catch(err => {
+                        console.error('议题文件关联失败:', err);
+                        reject(err);
+                      });
+                  } else {
+                    console.error('文件上传失败:', data);
+                    reject(new Error(data.msg || '文件上传失败'));
+                  }
+                } catch (e) {
+                  console.error('解析上传响应失败:', e, uploadRes);
+                  reject(e);
+                }
+              },
+              fail: (err) => {
+                console.error('上传文件请求失败:', err);
+                reject(err);
+              }
+            });
+            return;
+          }
+          
+          // H5环境或其他情况，使用API上传
+          if (file.path) {
+            // 移动端或小程序环境，使用uni.uploadFile上传
+            uploadFileToServer(file.path, file.name);
+          } else if (file.file) {
+            // H5环境, 使用FormData上传
+            const formData = new FormData();
+            formData.append('file', file.file);
+            formData.append('fileName', file.name);
+            
+            // 使用Axios或Fetch API上传
+            uni.request({
+              url: '/file/upload',
+              method: 'POST',
+              data: formData,
+        success: (res) => {
+                if (res.statusCode === 200 && res.data) {
+                  const data = res.data;
+                  if (data.code === 200 && data.data) {
+                    const fileUrl = data.data;
+                    
+                    // 然后将文件关联到议题
+                    api.uploadSubtopicFile(subtopicId, file.name, fileUrl)
+                      .then(linkRes => {
+                        console.log('议题文件关联成功:', linkRes);
+                        resolve(linkRes);
+                      })
+                      .catch(err => {
+                        console.error('议题文件关联失败:', err);
+                        reject(err);
+                      });
+                  } else {
+                    console.error('文件上传失败:', data);
+                    reject(new Error(data.msg || '文件上传失败'));
+                  }
+                } else {
+                  reject(new Error('上传失败: ' + res.statusCode));
+                }
+              },
+              fail: (err) => {
+                console.error('请求失败:', err);
+                reject(err);
+              }
+            });
+          } else {
+            // 没有有效的文件
+            console.warn('没有有效的文件:', file);
+            resolve({
+              code: 200,
+              msg: '无文件内容',
+              data: null
+            });
+          }
+        });
+        
+        fileUploadPromises.push(uploadPromise);
+      }
+      
+      // 等待所有文件上传完成
+      return Promise.all(fileUploadPromises).catch(error => {
+        console.error('上传议程文件时出错:', error);
+        uni.showToast({
+          title: '部分文件上传失败',
+          icon: 'none'
+        });
+        // 继续处理，不中断流程
+      });
     },
     // 添加议程项
     addAgendaItem() {
       this.form.agenda.push({
         time: '',
         content: '',
-        speaker: ''
+        speaker: '',
+        files: []
       });
     },
     
@@ -1198,16 +1588,10 @@ export default {
         this.form.agenda = agendaItems;
       }
     },
-    // 处理部门选择变更
-    handleDepartmentChange(e) {
-      this.departmentIndex = e.detail.value;
-      this.form.department = this.departmentOptions[this.departmentIndex];
-    },
-    
     // 处理优先级变更
     handlePriorityChange(e) {
       this.priorityIndex = e.detail.value;
-      this.form.priority = this.priorityIndex;
+      this.form.priority = this.priorityOptions[this.priorityIndex];
     },
     
     // 获取优先级对应的CSS类名
@@ -1219,6 +1603,271 @@ export default {
       };
       return priorityClasses[priority] || 'priority-normal';
     },
+    // 添加缺失的checkTimeConflicts方法
+    checkTimeConflicts() {
+      // 由于api.meeting.checkTimeConflict不存在，我们改为本地简单检查
+      if (!this.form.date || !this.form.startTime || !this.form.endTime) {
+        return;
+      }
+      
+      // 由于无法远程检查冲突，这里实现一个简单的本地逻辑
+      // 如果没有可用会议室，可能意味着时间冲突
+      if (this.availableRooms && this.availableRooms.length === 0) {
+        uni.showModal({
+          title: '提示',
+          content: '当前时间段可能已被预订，建议选择其他时间',
+          showCancel: false
+        });
+      }
+    },
+    // 获取当前用户ID
+    getCurrentUserId() {
+      try {
+        // 尝试从全局状态获取
+        const app = getApp();
+        if (app && app.globalData && app.globalData.userInfo) {
+          const id = parseInt(app.globalData.userInfo.id);
+          if (id > 0) return id;
+        }
+        
+        // 尝试从存储获取
+        const userInfo = uni.getStorageSync('userInfo');
+        if (userInfo && userInfo.id) {
+          const id = parseInt(userInfo.id);
+          if (id > 0) return id;
+        }
+        
+        // 从页面数据获取
+        if (this.currentUser && this.currentUser.id) {
+          const id = parseInt(this.currentUser.id);
+          if (id > 0) return id;
+        }
+        
+        console.warn('无法找到有效的当前用户ID');
+        return 0;
+      } catch (error) {
+        console.error('获取当前用户ID出错:', error);
+        return 0;
+      }
+    },
+    // 获取用户信息
+    getUserInfo() {
+      try {
+        // 尝试从全局状态获取
+        const app = getApp();
+        if (app && app.globalData && app.globalData.userInfo) {
+          return app.globalData.userInfo;
+        }
+        
+        // 尝试从存储获取
+        const userInfo = uni.getStorageSync('userInfo');
+        if (userInfo) {
+          return userInfo;
+        }
+        
+        // 从页面数据获取
+        if (this.currentUser) {
+          return this.currentUser;
+        }
+        
+        console.warn('无法找到有效的用户信息');
+        return null;
+      } catch (error) {
+        console.error('获取用户信息出错:', error);
+        return null;
+      }
+    },
+    // 添加新的方法: 选择议程文件
+    selectAgendaFile(agendaIndex) {
+      // #ifdef H5
+      const inputEl = document.createElement('input');
+      inputEl.type = 'file';
+      inputEl.accept = '.pdf'; // 仅允许PDF文件
+      inputEl.style.display = 'none';
+      
+      inputEl.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // 检查文件大小
+        if (file.size > 10 * 1024 * 1024) {
+          uni.showToast({
+            title: '文件大小不能超过10MB',
+            icon: 'none'
+          });
+          return;
+        }
+        
+        // 检查文件类型
+        if (!file.type.includes('pdf')) {
+          uni.showToast({
+            title: '只支持PDF文件',
+            icon: 'none'
+          });
+          return;
+        }
+        
+        // 添加到议程项的文件列表
+        if (!this.form.agenda[agendaIndex].files) {
+          this.form.agenda[agendaIndex].files = [];
+        }
+        
+        this.form.agenda[agendaIndex].files.push({
+          name: file.name,
+          size: this.formatFileSize(file.size),
+          type: 'pdf',
+          file: file // 保存文件对象
+        });
+      };
+      
+      document.body.appendChild(inputEl);
+      inputEl.click();
+      document.body.removeChild(inputEl);
+      // #endif
+      
+      // #ifdef APP-PLUS || MP-WEIXIN || MP-ALIPAY || MP-BAIDU || MP-TOUTIAO || MP-QQ
+      // 使用plus.io.convertLocalFileSystemURL选择PDF文件
+      // #ifdef APP-PLUS
+      // 使用系统文件选择器，显示操作表
+      plus.nativeUI.actionSheet({
+        title: '选择PDF文件',
+        cancel: '取消',
+        buttons: [
+          { title: '文件管理器' }
+        ]
+      }, (e) => {
+        if (e.index === 1) { // 文件管理器
+          // 调用系统文件选择器
+          plus.io.pickDocument({
+            success: (uri) => {
+              console.log('文件选择成功:', uri);
+              // 获取本地文件系统路径
+              plus.io.resolveLocalFileSystemURL(uri, (entry) => {
+                entry.file((file) => {
+                  // 检查文件类型
+                  let fileName = entry.name || '';
+                  if (!fileName.toLowerCase().endsWith('.pdf')) {
+                    uni.showToast({
+                      title: '只支持PDF文件',
+                      icon: 'none'
+                    });
+                    return;
+                  }
+                  
+                  // 检查文件大小
+                  if (file.size > 10 * 1024 * 1024) {
+                    uni.showToast({
+                      title: '文件大小不能超过10MB',
+                      icon: 'none'
+                    });
+                    return;
+                  }
+                  
+                  // 添加到议程项的文件列表
+                  if (!this.form.agenda[agendaIndex].files) {
+                    this.form.agenda[agendaIndex].files = [];
+                  }
+                  
+                  // 构建文件对象
+                  this.form.agenda[agendaIndex].files.push({
+                    name: fileName,
+                    size: this.formatFileSize(file.size || 0),
+                    type: 'pdf',
+                    file: file,
+                    path: uri
+                  });
+                  
+                  uni.showToast({
+                    title: '文件已添加',
+                    icon: 'success'
+                  });
+                }, (error) => {
+                  console.error('获取文件对象失败:', error);
+                  uni.showToast({
+                    title: '获取文件信息失败',
+                    icon: 'none'
+                  });
+                });
+              }, (error) => {
+                console.error('解析文件URL失败:', error);
+                uni.showToast({
+                  title: '选择文件失败',
+                  icon: 'none'
+                });
+              });
+            },
+            error: (error) => {
+              console.error('选择文件失败:', error);
+              uni.showToast({
+                title: '选择文件失败',
+                icon: 'none'
+              });
+            }
+          });
+        }
+      });
+      // #endif
+      
+      // 在微信小程序中可以使用文档选择器（如果有）
+      // #ifdef MP-WEIXIN
+      wx.chooseMessageFile({
+        count: 1,
+        type: 'file',
+        extension: ['pdf'],
+        success: (res) => {
+          const file = res.tempFiles[0];
+          // 检查文件大小
+          if (file.size > 10 * 1024 * 1024) {
+            uni.showToast({
+              title: '文件大小不能超过10MB',
+              icon: 'none'
+            });
+            return;
+          }
+          
+          // 添加到议程项的文件列表
+          if (!this.form.agenda[agendaIndex].files) {
+            this.form.agenda[agendaIndex].files = [];
+          }
+          
+          // 检查文件名是否以.pdf结尾
+          if (!file.name.toLowerCase().endsWith('.pdf')) {
+            uni.showToast({
+              title: '只支持PDF文件',
+              icon: 'none'
+            });
+            return;
+          }
+          
+          this.form.agenda[agendaIndex].files.push({
+            name: file.name,
+            size: this.formatFileSize(file.size || 0),
+            type: 'pdf',
+            path: file.path
+          });
+          
+          uni.showToast({
+            title: '文件已添加',
+            icon: 'success'
+          });
+        }
+      });
+      // #endif
+      
+      // 其他小程序环境，暂时只能上传图片，然后在后端转PDF
+      // #ifdef MP-ALIPAY || MP-BAIDU || MP-TOUTIAO || MP-QQ
+      uni.showModal({
+        title: '提示',
+        content: '当前环境暂不支持PDF文件上传，请使用H5或APP进行操作',
+        showCancel: false
+      });
+      // #endif
+      // #endif
+    },
+    // 添加新的方法: 移除议程文件
+    removeAgendaFile(agendaIndex, fileIndex) {
+      this.form.agenda[agendaIndex].files.splice(fileIndex, 1);
+    },
   }
 };
 </script>
@@ -1228,6 +1877,44 @@ export default {
   min-height: 100vh;
   background-color: #f5f7fa;
   padding-bottom: 30px;
+}
+
+.breadcrumb {
+  display: flex;
+  padding: 10px 15px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #666;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  margin: 0 10px 15px;
+  border-radius: 4px;
+}
+
+.breadcrumb-item {
+  color: #3498db;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.breadcrumb-item:active {
+  background-color: #f0f0f0;
+}
+
+.breadcrumb-item:last-child {
+  color: #333;
+  font-weight: 500;
+  cursor: default;
+}
+
+.breadcrumb-item:last-child:active {
+  background-color: transparent;
+}
+
+.breadcrumb-separator {
+  margin: 0 8px;
+  color: #ccc;
 }
 
 .form-section {
@@ -1649,5 +2336,71 @@ export default {
 
 .priority-urgent {
   background-color: #f5222d;
+}
+
+/* 议程文件相关样式 */
+.agenda-files {
+  margin-top: 10px;
+  padding: 5px 0;
+}
+
+.files-list {
+  margin-bottom: 10px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.file-name {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+
+.file-size {
+  font-size: 12px;
+  color: #999;
+  margin-right: 15px;
+}
+
+.file-item .delete-btn {
+  font-size: 16px;
+  color: #ff4d4f;
+  padding: 0 8px;
+}
+
+.add-file-btn {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f0f8ff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-file-btn:active {
+  background-color: #e6f2ff;
+}
+
+.add-file-btn .add-icon {
+  margin-right: 5px;
+  font-size: 16px;
+  color: #1890ff;
+}
+
+.add-file-btn text {
+  font-size: 14px;
+  color: #1890ff;
 }
 </style> 

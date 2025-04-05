@@ -1,0 +1,254 @@
+
+.custom-tab-bar[data-v-416b8ca7] {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background-color: #fff;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  padding-bottom: constant(safe-area-inset-bottom); /* iOS 11.0 */
+  padding-bottom: env(safe-area-inset-bottom); /* iOS 11.2+ */
+}
+.tab-item[data-v-416b8ca7] {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #7A7E83;
+  padding-top: 5px;
+}
+.tab-item.active[data-v-416b8ca7] {
+  color: #3498db;
+}
+.emoji-icon[data-v-416b8ca7] {
+  font-size: 24px;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.tab-text[data-v-416b8ca7] {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+
+.schedule-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+  padding-bottom: 100px; /* 增加底部间距，确保内容不会被底部导航遮挡 */
+  box-sizing: border-box; /* 确保padding包含在宽高计算中 */
+}
+.calendar-wrapper {
+  background-color: #fff;
+  border-radius: 10px;
+  margin: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box; /* 确保padding包含在宽高计算中 */
+}
+.calendar-header {
+  margin-bottom: 15px;
+}
+.month-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.month-arrow {
+  font-size: 20px;
+  color: #3498db;
+  padding: 5px 15px;
+}
+.current-month {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+.weekdays {
+  display: flex;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+.weekday {
+    flex: 1;
+    text-align: center;
+  color: #666;
+  font-size: 14px;
+}
+.days-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+.day-cell {
+  width: 14.28%;
+  height: 0;
+  padding-bottom: 14.28%; /* 使用padding-bottom而不是aspect-ratio确保兼容性 */
+  position: relative;
+  box-sizing: border-box; /* 确保padding包含在宽高计算中 */
+}
+.day-number {
+  font-size: 14px; /* 减小字体大小 */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.other-month .day-number {
+  color: #ccc;
+}
+.today {
+  background-color: rgba(52, 152, 219, 0.1);
+  border-radius: 50%;
+}
+.today .day-number {
+  color: #3498db;
+  font-weight: bold;
+}
+.selected {
+  background-color: #3498db;
+  border-radius: 50%;
+}
+.selected .day-number {
+  color: #fff;
+  font-weight: bold;
+}
+.event-indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+  background-color: #e74c3c;
+  position: absolute;
+  bottom: 8px;
+}
+.events-container {
+  flex: 1;
+  background-color: #fff;
+  border-radius: 10px 10px 0 0;
+  padding: 15px;
+  margin: 0 10px 10px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box; /* 确保padding包含在宽高计算中 */
+  overflow-y: auto; /* 添加滚动条确保内容过多时可以滚动 */
+  max-height: 60vh; /* 限制最大高度 */
+}
+.events-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.events-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+.add-event-btn {
+  background-color: #3498db;
+  color: white;
+  font-size: 14px;
+  height: 36px;
+  line-height: 36px;
+  padding: 0 15px;
+  border-radius: 18px;
+}
+.events-list {
+  padding-bottom: 30px;
+}
+.event-card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-left: 4px solid #3498db;
+  box-sizing: border-box; /* 确保padding包含在宽高计算中 */
+  word-break: break-all; /* 确保长文本会换行 */
+  overflow: hidden; /* 防止内容溢出 */
+}
+.event-time {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+.event-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+  white-space: nowrap; /* 防止标题换行 */
+  overflow: hidden; /* 隐藏溢出内容 */
+  text-overflow: ellipsis; /* 显示省略号 */
+}
+.event-location {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+.event-status {
+  font-size: 12px;
+  color: #3498db;
+  align-self: flex-end;
+}
+.status-approved {
+  border-left-color: #2ecc71;
+}
+.status-pending {
+  border-left-color: #f39c12;
+}
+.status-in-progress {
+  border-left-color: #3498db;
+}
+.status-completed {
+  border-left-color: #27ae60;
+}
+.status-rejected {
+  border-left-color: #e74c3c;
+}
+.status-canceled {
+  border-left-color: #95a5a6;
+}
+.status-approved .event-status {
+  color: #2ecc71;
+}
+.status-pending .event-status {
+  color: #f39c12;
+}
+.status-in-progress .event-status {
+  color: #3498db;
+}
+.status-completed .event-status {
+  color: #27ae60;
+}
+.status-rejected .event-status {
+  color: #e74c3c;
+}
+.status-canceled .event-status {
+  color: #95a5a6;
+}
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 0; /* 减少padding */
+  box-sizing: border-box; /* 确保padding包含在宽高计算中 */
+}
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 15px;
+}
+.empty-text {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 10px;
+}
+.empty-hint {
+  font-size: 14px;
+  color: #999;
+}

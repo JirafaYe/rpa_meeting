@@ -3,29 +3,11 @@
     <view class="notification-header">
       <text class="title">通知消息</text>
       <view class="actions">
-        <text class="action-btn read-all" @click="markAllAsRead">全部已读</text>
         <text class="action-btn clear-all" @click="clearAll">清空</text>
       </view>
     </view>
     
     <view class="tab-wrapper">
-      <view class="tab-header">
-        <view 
-          class="tab-item" 
-          :class="{ 'active': activeTab === 'all' }"
-          @click="activeTab = 'all'"
-        >
-          全部 <text class="badge" v-if="allNotifications.length">{{ allNotifications.length }}</text>
-        </view>
-        <view 
-          class="tab-item" 
-          :class="{ 'active': activeTab === 'unread' }"
-          @click="activeTab = 'unread'"
-        >
-          未读 <text class="badge" v-if="unreadNotifications.length">{{ unreadNotifications.length }}</text>
-        </view>
-      </view>
-      
       <view class="tab-content">
         <scroll-view 
           scroll-y 
@@ -35,17 +17,14 @@
           :refresher-triggered="isRefreshing"
           @refresherrefresh="onRefresh"
         >
-          <view v-if="currentNotifications.length > 0">
+          <view v-if="notifications.length > 0">
             <view 
               class="notification-item" 
-              v-for="(notification, index) in currentNotifications" 
+              v-for="(notification, index) in notifications" 
               :key="index"
-              :class="{ 'unread': !notification.isRead }"
               @click="handleNotificationClick(notification)"
             >
-              <view class="notification-icon" :class="getIconClass(notification.type)">
-                <text class="icon-dot" v-if="!notification.isRead"></text>
-              </view>
+              <view class="notification-type-indicator" :class="getIconClass(notification.type)"></view>
               <view class="notification-content">
                 <view class="notification-title">{{ notification.title }}</view>
                 <view class="notification-body">{{ notification.content }}</view>
@@ -69,7 +48,7 @@
           
           <view class="empty-view" v-else>
             <image class="empty-icon" src="/static/icons/empty-notification.png" mode="aspectFit"></image>
-            <text class="empty-text">{{ activeTab === 'all' ? '暂无通知消息' : '暂无未读消息' }}</text>
+            <text class="empty-text">暂无通知消息</text>
           </view>
         </scroll-view>
       </view>
@@ -81,7 +60,7 @@
 </template>
 
 <script>
-import api from '../../utils/api.js'
+import api from '/api/index'
 import CustomTabBar from '../../components/common/CustomTabBar.vue'
 
 export default {
@@ -90,7 +69,6 @@ export default {
   },
   data() {
     return {
-      activeTab: 'all',
       notifications: [],
       isLoading: false,
       isRefreshing: false,
@@ -98,17 +76,6 @@ export default {
       pageSize: 10,
       hasMore: false
     };
-  },
-  computed: {
-    allNotifications() {
-      return this.notifications;
-    },
-    unreadNotifications() {
-      return this.notifications.filter(notification => !notification.isRead);
-    },
-    currentNotifications() {
-      return this.activeTab === 'all' ? this.allNotifications : this.unreadNotifications;
-    }
   },
   onLoad() {
     // 加载通知数据
@@ -125,13 +92,33 @@ export default {
       api.notification.getList()
         .then(res => {
           if (res.code === 200 && res.data) {
+            // 确保res.data是数组，如果不是则使用空数组
+            const notificationData = Array.isArray(res.data) ? res.data : 
+                                    (res.data.list ? res.data.list : []);
+            
+            // 记录API返回的通知数据
+            console.log('API返回的通知数据:', res.data);
+            console.log('处理后的通知数据:', notificationData);
+            
+            // 确保每个通知都有id字段
+            const processedData = notificationData.map(notification => {
+              // 如果没有id字段，使用其他标识符作为id
+              if (!notification.id && notification.notifyId) {
+                notification.id = notification.notifyId;
+              } else if (!notification.id) {
+                // 生成临时ID（实际情况下应该从后端获取）
+                notification.id = notification.title ? notification.title.trim() : Date.now().toString();
+              }
+              return notification;
+            });
+            
             if (isRefresh) {
-              this.notifications = res.data;
+              this.notifications = processedData;
             } else {
-              this.notifications = [...this.notifications, ...res.data];
+              this.notifications = [...this.notifications, ...processedData];
             }
             
-            this.hasMore = res.data.length >= this.pageSize;
+            this.hasMore = notificationData.length >= this.pageSize;
           } else {
             uni.showToast({
               title: res.message || '获取通知失败',
@@ -191,66 +178,38 @@ export default {
       }
     },
     handleNotificationClick(notification) {
-      // 标记为已读
-      if (!notification.isRead) {
-        this.markAsRead(notification.id);
-      }
+      // 添加日志以便调试
+      console.log('点击了通知:', notification);
+      console.log('通知ID:', notification.id);
       
-      // 处理点击通知后的跳转逻辑
-      if (notification.relatedType === 'meeting' && notification.relatedId) {
-        uni.navigateTo({
-          url: `/pages/user/meeting/detail?id=${notification.relatedId}`
-        });
-      }
-    },
-    markAsRead(id) {
-      api.notification.markAsRead(id)
-        .then(res => {
-          if (res.code === 200) {
-            // 更新本地通知状态
-            const index = this.notifications.findIndex(item => item.id === id);
-            if (index !== -1) {
-              this.notifications[index].isRead = true;
-              this.$forceUpdate();
-            }
-          }
-        })
-        .catch(err => {
-          console.error('标记已读失败:', err);
-        });
-    },
-    markAllAsRead() {
-      if (this.unreadNotifications.length === 0) {
+      if (!notification.id) {
+        console.error('通知没有ID，无法跳转');
         uni.showToast({
-          title: '没有未读消息',
+          title: '无法查看通知详情',
           icon: 'none'
         });
         return;
       }
       
-      uni.showModal({
-        title: '确认操作',
-        content: '确定将所有消息标记为已读？',
-        success: (res) => {
-          if (res.confirm) {
-            uni.showLoading({ title: '处理中...' });
-            
-            // 在实际应用中应该调用API批量标记已读
-            // 这里简单模拟
-            setTimeout(() => {
-              this.notifications.forEach(item => {
-                item.isRead = true;
-              });
-              
-              uni.hideLoading();
-              uni.showToast({
-                title: '已全部标记为已读',
-                icon: 'success'
-              });
-            }, 500);
+      // 尝试直接导航到通知详情页
+      try {
+        uni.navigateTo({
+          url: `/pages/user/notification/detail?id=${notification.id}`,
+          fail: (err) => {
+            console.error('导航到通知详情页失败:', err);
+            uni.showToast({
+              title: '打开详情页失败',
+              icon: 'none'
+            });
           }
-        }
-      });
+        });
+      } catch (error) {
+        console.error('导航异常:', error);
+        uni.showToast({
+          title: '系统错误',
+          icon: 'none'
+        });
+      }
     },
     deleteNotification(id) {
       uni.showModal({
@@ -274,7 +233,7 @@ export default {
       });
     },
     clearAll() {
-      if (this.currentNotifications.length === 0) {
+      if (this.notifications.length === 0) {
         uni.showToast({
           title: '没有可清空的消息',
           icon: 'none'
@@ -284,16 +243,10 @@ export default {
       
       uni.showModal({
         title: '确认操作',
-        content: `确定要清空${this.activeTab === 'all' ? '所有' : '未读'}消息吗？`,
+        content: '确定要清空所有消息吗？',
         success: (res) => {
           if (res.confirm) {
-            // 在实际应用中应该调用API清空通知
-            // 这里简单模拟
-            if (this.activeTab === 'all') {
-              this.notifications = [];
-            } else {
-              this.notifications = this.notifications.filter(item => item.isRead);
-            }
+            this.notifications = [];
             
             uni.showToast({
               title: '清空成功',
@@ -352,10 +305,6 @@ export default {
   margin-left: 10px;
 }
 
-.read-all {
-  color: #3498db;
-}
-
 .clear-all {
   color: #e74c3c;
 }
@@ -364,52 +313,6 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-}
-
-.tab-header {
-  display: flex;
-  background-color: #fff;
-  border-bottom: 1px solid #eee;
-}
-
-.tab-item {
-  flex: 1;
-  text-align: center;
-  padding: 12px 0;
-  font-size: 15px;
-  color: #666;
-  position: relative;
-}
-
-.tab-item.active {
-  color: #3498db;
-  font-weight: bold;
-}
-
-.tab-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 30px;
-  height: 3px;
-  background-color: #3498db;
-  border-radius: 3px;
-}
-
-.badge {
-  display: inline-block;
-  background-color: #e74c3c;
-  color: #fff;
-  font-size: 12px;
-  min-width: 18px;
-  height: 18px;
-  line-height: 18px;
-  text-align: center;
-  border-radius: 9px;
-  padding: 0 5px;
-  margin-left: 5px;
 }
 
 .tab-content {
@@ -428,30 +331,13 @@ export default {
   position: relative;
 }
 
-.notification-item.unread {
-  background-color: #edf7ff;
-}
-
-.notification-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  background-color: #ddd;
-  margin-right: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.icon-dot {
-  position: absolute;
+.notification-type-indicator {
   width: 8px;
   height: 8px;
-  background-color: #e74c3c;
   border-radius: 4px;
-  top: 2px;
-  right: 2px;
+  margin-right: 12px;
+  margin-top: 6px;
+  flex-shrink: 0;
 }
 
 .icon-approve {
@@ -472,6 +358,10 @@ export default {
 
 .icon-system {
   background-color: #f39c12;
+}
+
+.icon-default {
+  background-color: #3498db;
 }
 
 .notification-content {

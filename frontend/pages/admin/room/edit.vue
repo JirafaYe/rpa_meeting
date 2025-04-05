@@ -1,60 +1,72 @@
 <template>
-  <view class="room-edit-container">
-    <view class="edit-card">
-      <view class="card-header">
-        <text class="header-title">{{isEdit ? '编辑会议室' : '添加会议室'}}</text>
-      </view>
-      <view class="card-body">
-        <view class="form-group">
-          <text class="form-label">会议室名称</text>
-          <input class="form-input" type="text" v-model="roomForm.name" placeholder="请输入会议室名称" />
+  <admin-layout 
+    :title="isEdit ? '编辑会议室' : '添加会议室'" 
+    active-path="/pages/admin/room/list"
+    parent-path="/pages/admin/room/list"
+    parent-title="会议室管理">
+    <view class="room-edit-container">
+      <view class="edit-card">
+        <view class="card-header">
+          <text class="header-title">{{isEdit ? '编辑会议室' : '添加会议室'}}</text>
         </view>
-        
-        <view class="form-group">
-          <text class="form-label">容量（人数）</text>
-          <input class="form-input" type="number" v-model="roomForm.capacity" placeholder="请输入会议室容量" />
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">位置</text>
-          <input class="form-input" type="text" v-model="roomForm.location" placeholder="请输入会议室位置" />
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">设备</text>
-          <view class="checkbox-group">
-            <view class="checkbox-item" v-for="(item, index) in equipmentOptions" :key="index">
-              <checkbox :checked="roomForm.equipment.includes(item.value)" @click="toggleEquipment(item.value)" />
-              <text class="checkbox-label">{{item.label}}</text>
+        <view class="card-body">
+          <view class="form-group">
+            <text class="form-label">会议室名称</text>
+            <input class="form-input" type="text" v-model="roomForm.name" placeholder="请输入会议室名称" />
+          </view>
+          
+          <view class="form-group">
+            <text class="form-label">容量（人数）</text>
+            <input class="form-input" type="number" v-model="roomForm.capacity" placeholder="请输入会议室容量" />
+          </view>
+          
+          <view class="form-group">
+            <text class="form-label">位置</text>
+            <input class="form-input" type="text" v-model="roomForm.location" placeholder="请输入会议室位置" />
+          </view>
+          
+          <view class="form-group">
+            <text class="form-label">设备</text>
+            <view class="checkbox-group">
+              <view class="checkbox-item" v-for="(item, index) in equipmentOptions" :key="index">
+                <checkbox :checked="roomForm.equipment.includes(item.value)" @click="toggleEquipment(item.value)" />
+                <text class="checkbox-label">{{item.label}}</text>
+              </view>
             </view>
           </view>
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">状态</text>
-          <picker @change="statusChange" :value="statusIndex" :range="statusOptions" range-key="label" class="form-picker">
-            <view class="picker-value">
-              {{statusOptions[statusIndex].label}}
-            </view>
-          </picker>
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">描述</text>
-          <textarea class="form-textarea" v-model="roomForm.description" placeholder="请输入会议室描述信息"></textarea>
-        </view>
-        
-        <view class="form-actions">
-          <button class="btn-save" @click="handleSave">保存</button>
-          <button class="btn-cancel" @click="handleCancel">取消</button>
+          
+          <view class="form-group">
+            <text class="form-label">状态</text>
+            <picker @change="statusChange" :value="statusIndex" :range="statusOptions" range-key="label" class="form-picker">
+              <view class="picker-value">
+                {{statusOptions[statusIndex].label}}
+              </view>
+            </picker>
+          </view>
+          
+          <view class="form-group">
+            <text class="form-label">描述</text>
+            <textarea class="form-textarea" v-model="roomForm.description" placeholder="请输入会议室描述信息"></textarea>
+          </view>
+          
+          <view class="form-actions">
+            <button class="btn-save" @click="handleSave">保存</button>
+            <button class="btn-cancel" @click="handleCancel">取消</button>
+          </view>
         </view>
       </view>
     </view>
-  </view>
+  </admin-layout>
 </template>
 
 <script>
+import AdminLayout from '../../../components/admin/AdminLayout.vue'
+import api from '../../../api/index.js'
+
 export default {
+  components: {
+    'admin-layout': AdminLayout
+  },
   data() {
     return {
       isEdit: false,
@@ -95,45 +107,65 @@ export default {
   },
   methods: {
     fetchRoomDetail() {
-      // 这里应该从API获取会议室详情
+      // 从API获取会议室详情
       uni.showLoading({
         title: '加载中...'
       });
       
-      setTimeout(() => {
-        uni.hideLoading();
-        
-        // 模拟获取数据
-        // 实际项目中应该调用API获取数据
-        if (this.roomId === '1') {
-          this.roomForm = {
-            name: '会议室A',
-            capacity: '20',
-            location: '3楼东侧',
-            equipment: ['projector', 'whiteboard'],
-            status: 'available',
-            description: '大型会议室，适合项目启动、培训等活动'
-          };
-        } else if (this.roomId === '2') {
-          this.roomForm = {
-            name: '会议室B',
-            capacity: '12',
-            location: '3楼西侧',
-            equipment: ['projector', 'video'],
-            status: 'available',
-            description: '中型会议室，设有视频会议系统'
-          };
-        } else if (this.roomId === '3') {
-          this.roomForm = {
-            name: '会议室C',
-            capacity: '8',
-            location: '4楼北侧',
-            equipment: ['eboard'],
-            status: 'maintenance',
-            description: '小型会议室，适合小组讨论'
-          };
-        }
-      }, 500);
+      // 调用API获取会议室详情
+      api.room.getRoomDetail(this.roomId)
+        .then(res => {
+          if (res && res.code === 200 && res.data) {
+            // 格式化数据
+            const room = res.data;
+            this.roomForm = {
+              name: room.name || '',
+              capacity: room.capacity ? room.capacity.toString() : '',
+              location: room.location || '',
+              equipment: this.parseEquipment(room.equipment || ''),
+              status: room.status || 'available',
+              description: room.description || ''
+            };
+            console.log('获取到的会议室详情:', this.roomForm);
+          } else {
+            uni.showToast({
+              title: res?.message || '获取会议室信息失败',
+              icon: 'none'
+            });
+            setTimeout(() => {
+              uni.navigateBack();
+            }, 1500);
+          }
+        })
+        .catch(err => {
+          console.error('获取会议室详情失败:', err);
+          uni.showToast({
+            title: '获取会议室信息失败',
+            icon: 'none'
+          });
+          setTimeout(() => {
+            uni.navigateBack();
+          }, 1500);
+        })
+        .finally(() => {
+          uni.hideLoading();
+        });
+    },
+    
+    // 解析设备字符串为数组
+    parseEquipment(equipmentStr) {
+      if (!equipmentStr) return [];
+      
+      // 如果已经是数组，直接返回
+      if (Array.isArray(equipmentStr)) return equipmentStr;
+      
+      // 字符串格式，按逗号分隔
+      return equipmentStr.split(',').map(item => item.trim()).filter(Boolean);
+    },
+    
+    // 将设备数组格式化为字符串
+    formatEquipment() {
+      return this.roomForm.equipment.join(', ');
     },
     toggleEquipment(value) {
       const index = this.roomForm.equipment.indexOf(value);
@@ -179,25 +211,60 @@ export default {
         return;
       }
       
+      // 准备提交的数据
+      const roomData = {
+        name: this.roomForm.name,
+        capacity: parseInt(this.roomForm.capacity),
+        location: this.roomForm.location,
+        equipment: this.formatEquipment(),
+        status: this.roomForm.status,
+        description: this.roomForm.description
+      };
+      
+      // 如果是编辑模式，添加ID
+      if (this.isEdit) {
+        roomData.id = this.roomId;
+      }
+      
       // 保存会议室信息
       uni.showLoading({
         title: '保存中...'
       });
       
-      setTimeout(() => {
-        uni.hideLoading();
+      // 根据是新增还是编辑，调用不同的API
+      const apiCall = this.isEdit 
+        ? api.room.updateRoom(roomData) 
+        : api.room.createRoom(roomData);
         
-        // 实际项目中应该调用API保存数据
-        uni.showToast({
-          title: this.isEdit ? '编辑成功' : '添加成功',
-          icon: 'success',
-          success: () => {
-            setTimeout(() => {
-              uni.navigateBack();
-            }, 1500);
+      apiCall
+        .then(res => {
+          if (res && res.code === 200) {
+            uni.showToast({
+              title: this.isEdit ? '编辑成功' : '添加成功',
+              icon: 'success',
+              success: () => {
+                setTimeout(() => {
+                  uni.navigateBack();
+                }, 1500);
+              }
+            });
+          } else {
+            uni.showToast({
+              title: res?.message || '保存失败',
+              icon: 'none'
+            });
           }
+        })
+        .catch(err => {
+          console.error('保存会议室失败:', err);
+          uni.showToast({
+            title: '保存失败，请稍后重试',
+            icon: 'none'
+          });
+        })
+        .finally(() => {
+          uni.hideLoading();
         });
-      }, 800);
     },
     handleCancel() {
       uni.navigateBack();

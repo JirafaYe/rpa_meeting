@@ -1,84 +1,95 @@
 <template>
-  <view class="user-edit-container">
-    <view class="edit-card">
-      <view class="card-header">
-        <text class="header-title">{{isEdit ? '编辑用户' : '添加用户'}}</text>
-      </view>
-      <view class="card-body">
-        <view class="form-group">
-          <text class="form-label">姓名</text>
-          <input class="form-input" type="text" v-model="userForm.name" placeholder="请输入姓名" />
+  <admin-layout 
+    :title="isEdit ? '编辑用户' : '添加用户'" 
+    active-path="/pages/admin/user/list"
+    parent-path="/pages/admin/user/list"
+    parent-title="用户管理">
+    <view class="user-edit-container">
+      <view class="edit-card">
+        <view class="card-header">
+          <text class="header-title">{{isEdit ? '编辑用户' : '添加用户'}}</text>
         </view>
-        
-        <view class="form-group">
-          <text class="form-label">用户名</text>
-          <input class="form-input" type="text" v-model="userForm.username" placeholder="请输入用户名" :disabled="isEdit" />
-          <text class="form-tips" v-if="isEdit">用户名不可修改</text>
-        </view>
-        
-        <view class="form-group" v-if="!isEdit">
-          <text class="form-label">密码</text>
-          <input class="form-input" type="password" v-model="userForm.password" placeholder="请输入密码" password />
-        </view>
-        
-        <view class="form-group" v-if="!isEdit">
-          <text class="form-label">确认密码</text>
-          <input class="form-input" type="password" v-model="userForm.confirmPassword" placeholder="请再次输入密码" password />
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">手机号码</text>
-          <input class="form-input" type="number" v-model="userForm.phone" placeholder="请输入手机号码" maxlength="11" />
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">邮箱</text>
-          <input class="form-input" type="text" v-model="userForm.email" placeholder="请输入邮箱地址" />
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">部门</text>
-          <picker @change="departmentChange" :value="departmentIndex" :range="departmentOptions" range-key="label" class="form-picker">
-            <view class="picker-value">
-              {{departmentOptions[departmentIndex].label}}
-            </view>
-          </picker>
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">角色</text>
-          <picker @change="roleChange" :value="roleIndex" :range="roleOptions" range-key="label" class="form-picker">
-            <view class="picker-value">
-              {{roleOptions[roleIndex].label}}
-            </view>
-          </picker>
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">状态</text>
-          <picker @change="statusChange" :value="statusIndex" :range="statusOptions" range-key="label" class="form-picker">
-            <view class="picker-value">
-              {{statusOptions[statusIndex].label}}
-            </view>
-          </picker>
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">备注</text>
-          <textarea class="form-textarea" v-model="userForm.remark" placeholder="请输入备注信息"></textarea>
-        </view>
-        
-        <view class="form-actions">
-          <button class="btn-save" @click="handleSave">保存</button>
-          <button class="btn-cancel" @click="handleCancel">取消</button>
+        <view class="card-body">
+          <view class="form-group">
+            <text class="form-label">姓名</text>
+            <input class="form-input" type="text" v-model="userForm.name" placeholder="请输入姓名" />
+          </view>
+          
+          <view class="form-group">
+            <text class="form-label">用户名</text>
+            <input class="form-input" type="text" v-model="userForm.username" placeholder="请输入用户名" :disabled="isEdit" />
+            <text class="form-tips" v-if="isEdit">用户名不可修改</text>
+          </view>
+          
+          <view class="form-group" v-if="!isEdit">
+            <text class="form-label">密码</text>
+            <input class="form-input" type="password" v-model="userForm.password" placeholder="请输入密码" password />
+          </view>
+          
+          <view class="form-group" v-if="!isEdit">
+            <text class="form-label">确认密码</text>
+            <input class="form-input" type="password" v-model="userForm.confirmPassword" placeholder="请再次输入密码" password />
+          </view>
+          
+          <view class="form-group">
+            <text class="form-label">手机号码</text>
+            <input class="form-input" type="number" v-model="userForm.phone" placeholder="请输入手机号码" maxlength="11" />
+          </view>
+          
+          <view class="form-group">
+            <text class="form-label">邮箱</text>
+            <input class="form-input" type="text" v-model="userForm.email" placeholder="请输入邮箱地址" />
+          </view>
+          
+          <view class="form-group">
+            <text class="form-label">部门</text>
+            <picker @change="departmentChange" :value="departmentIndex" :range="departmentOptions" range-key="label" class="form-picker">
+              <view class="picker-value">
+                {{departmentOptions[departmentIndex].label}}
+              </view>
+            </picker>
+          </view>
+          
+          <view class="form-group">
+            <text class="form-label">角色</text>
+            <picker @change="roleChange" :value="roleIndex" :range="roleOptions" range-key="label" class="form-picker">
+              <view class="picker-value">
+                {{roleOptions[roleIndex].label}}
+              </view>
+            </picker>
+          </view>
+          
+          <view class="form-group">
+            <text class="form-label">状态</text>
+            <picker @change="statusChange" :value="statusIndex" :range="statusOptions" range-key="label" class="form-picker">
+              <view class="picker-value">
+                {{statusOptions[statusIndex].label}}
+              </view>
+            </picker>
+          </view>
+          
+          <view class="form-group">
+            <text class="form-label">备注</text>
+            <textarea class="form-textarea" v-model="userForm.remark" placeholder="请输入备注信息"></textarea>
+          </view>
+          
+          <view class="form-actions">
+            <button class="btn-save" @click="handleSave">保存</button>
+            <button class="btn-cancel" @click="handleCancel">取消</button>
+          </view>
         </view>
       </view>
     </view>
-  </view>
+  </admin-layout>
 </template>
 
 <script>
+import AdminLayout from '../../../components/admin/AdminLayout.vue'
+
 export default {
+  components: {
+    'admin-layout': AdminLayout
+  },
   data() {
     return {
       isEdit: false,

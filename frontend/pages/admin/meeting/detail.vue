@@ -1,133 +1,139 @@
 <template>
-  <view class="meeting-detail-container">
-    <view class="detail-card">
-      <view class="card-header">
-        <text class="header-title">会议详情</text>
-        <view class="header-status">
-          <text class="badge" :class="getStatusClass(meeting.status)">{{meeting.statusText}}</text>
-        </view>
-      </view>
-      
-      <!-- 会议基本信息 -->
-      <view class="card-body">
-        <view class="detail-title">
-          <text>{{meeting.title}}</text>
+  <admin-layout 
+    title="会议详情" 
+    active-path="/pages/admin/meeting/list"
+    parent-path="/pages/admin/meeting/list"
+    parent-title="会议列表">
+    <view class="meeting-detail-container">
+      <view class="detail-card">
+        <view class="card-header">
+          <text class="card-header-title">会议详情</text>
+          <view class="header-actions">
+            <button class="btn-back" @click="handleBack">返回列表</button>
+            <view class="header-status">
+              <text class="badge" :class="getStatusClass(meeting.status)">{{meeting.status}}</text>
+            </view>
+          </view>
         </view>
         
-        <view class="info-group">
-          <view class="info-item">
-            <text class="info-label">会议时间</text>
-            <text class="info-value">{{meeting.date}} {{meeting.time}}</text>
+        <!-- 会议基本信息 -->
+        <view class="card-body">
+          <view class="detail-title">
+            <text>{{meeting.title}}</text>
           </view>
           
-          <view class="info-item">
-            <text class="info-label">会议室</text>
-            <text class="info-value">{{meeting.room}}</text>
+          <view class="info-group">
+            <view class="info-item">
+              <text class="info-label">会议时间</text>
+              <text class="info-value">{{meeting.date}} {{meeting.time}}</text>
+            </view>
+            
+            <view class="info-item">
+              <text class="info-label">会议室</text>
+              <text class="info-value">{{meeting.room}}</text>
+            </view>
+            
+            <view class="info-item">
+              <text class="info-label">预约人</text>
+              <text class="info-value">{{meeting.user}}</text>
+            </view>
+            
+            <view class="info-item">
+              <text class="info-label">参会人数</text>
+              <text class="info-value">{{meeting.attendees.length}}人</text>
+            </view>
+            
+            <view class="info-item full-width">
+              <text class="info-label">会议目的</text>
+              <text class="info-value">{{meeting.purpose}}</text>
+            </view>
           </view>
           
-          <view class="info-item">
-            <text class="info-label">预约人</text>
-            <text class="info-value">{{meeting.user}} ({{meeting.department}})</text>
+          <!-- 参会人员信息 -->
+          <view class="section-title">参会人员</view>
+          <view class="attendees-list">
+            <view class="attendee-item" v-for="(attendee, index) in meeting.attendees" :key="index">
+              <text class="attendee-name">{{attendee.name}}</text>
+            </view>
           </view>
           
-          <view class="info-item">
-            <text class="info-label">参会人数</text>
-            <text class="info-value">{{meeting.attendees.length}}人</text>
+          <!-- 会议设备需求 -->
+          <view class="section-title">设备需求</view>
+          <view class="equipment-list">
+            <view class="equipment-item" v-for="(item, index) in meeting.equipment" :key="index">
+              <text class="iconfont icon-check equipment-icon"></text>
+              <text>{{item}}</text>
+            </view>
+            <view class="no-data" v-if="meeting.equipment.length === 0">
+              <text>无特殊设备需求</text>
+            </view>
           </view>
           
-          <view class="info-item full-width">
-            <text class="info-label">会议目的</text>
-            <text class="info-value">{{meeting.purpose}}</text>
+          <!-- 备注信息 -->
+          <view class="section-title">备注信息</view>
+          <view class="remark-content">
+            <text v-if="meeting.remark">{{meeting.remark}}</text>
+            <text v-else class="no-data">无备注信息</text>
+          </view>
+          
+          <!-- 审批状态信息 -->
+          <view class="approval-info" v-if="meeting.approvalInfo">
+            <view class="section-title">审批信息</view>
+            <view class="info-item">
+              <text class="info-label">审批人</text>
+              <text class="info-value">{{meeting.approvalInfo.approver}}</text>
+            </view>
+            <view class="info-item">
+              <text class="info-label">审批时间</text>
+              <text class="info-value">{{meeting.approvalInfo.time}}</text>
+            </view>
+            <view class="info-item full-width" v-if="meeting.approvalInfo.comment">
+              <text class="info-label">审批备注</text>
+              <text class="info-value">{{meeting.approvalInfo.comment}}</text>
+            </view>
           </view>
         </view>
         
-        <!-- 参会人员信息 -->
-        <view class="section-title">参会人员</view>
-        <view class="attendees-list">
-          <view class="attendee-item" v-for="(attendee, index) in meeting.attendees" :key="index">
-            <text class="attendee-name">{{attendee.name}}</text>
-            <text class="attendee-role">{{attendee.department}} - {{attendee.role}}</text>
-          </view>
+        <!-- 操作按钮 -->
+        <view class="card-footer" v-if="meeting.status === '待审核'">
+          <button class="btn-approve" @click="handleApprove">通过申请</button>
+          <button class="btn-reject" @click="handleReject">拒绝申请</button>
         </view>
-        
-        <!-- 会议设备需求 -->
-        <view class="section-title">设备需求</view>
-        <view class="equipment-list">
-          <view class="equipment-item" v-for="(item, index) in meeting.equipment" :key="index">
-            <text class="iconfont icon-check equipment-icon"></text>
-            <text>{{item}}</text>
-          </view>
-          <view class="no-data" v-if="meeting.equipment.length === 0">
-            <text>无特殊设备需求</text>
-          </view>
+        <view class="card-footer" v-if="meeting.status === '已通过'">
+          <button class="btn-cancel" @click="handleCancel">取消会议</button>
         </view>
-        
-        <!-- 备注信息 -->
-        <view class="section-title">备注信息</view>
-        <view class="remark-content">
-          <text v-if="meeting.remark">{{meeting.remark}}</text>
-          <text v-else class="no-data">无备注信息</text>
-        </view>
-        
-        <!-- 审批状态信息 -->
-        <view class="approval-info" v-if="meeting.approvalInfo">
-          <view class="section-title">审批信息</view>
-          <view class="info-item">
-            <text class="info-label">审批人</text>
-            <text class="info-value">{{meeting.approvalInfo.approver}}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">审批时间</text>
-            <text class="info-value">{{meeting.approvalInfo.time}}</text>
-          </view>
-          <view class="info-item full-width" v-if="meeting.approvalInfo.comment">
-            <text class="info-label">审批备注</text>
-            <text class="info-value">{{meeting.approvalInfo.comment}}</text>
-          </view>
-        </view>
-      </view>
-      
-      <!-- 操作按钮 -->
-      <view class="card-footer" v-if="meeting.status === 'pending'">
-        <button class="btn-approve" @click="handleApprove">通过申请</button>
-        <button class="btn-reject" @click="handleReject">拒绝申请</button>
-      </view>
-      <view class="card-footer" v-if="meeting.status === 'approved'">
-        <button class="btn-cancel" @click="handleCancel">取消会议</button>
       </view>
     </view>
-  </view>
+  </admin-layout>
 </template>
 
 <script>
+import AdminLayout from '../../../components/admin/AdminLayout.vue'
+import api from '../../../api'
+import apiRequest from '../../../api/api'
+
 export default {
+  components: {
+    AdminLayout
+  },
   data() {
     return {
       id: null,
+      loading: false,
       meeting: {
-        id: 1,
-        title: '项目启动会议',
-        date: '2023-07-20',
-        time: '09:30 - 11:00',
-        room: '会议室A',
-        user: '张三',
-        department: '研发部',
-        purpose: '讨论新项目的目标、时间线和任务分配，确定项目组成员及职责。',
-        status: 'pending',
-        statusText: '待审批',
-        attendees: [
-          { name: '张三', department: '研发部', role: '项目经理' },
-          { name: '李四', department: '研发部', role: '技术负责人' },
-          { name: '王五', department: '产品部', role: '产品经理' },
-          { name: '赵六', department: '设计部', role: 'UI设计师' },
-          { name: '钱七', department: '测试部', role: '测试负责人' }
-        ],
-        equipment: [
-          '投影仪',
-          '白板',
-          'HDMI接口'
-        ],
-        remark: '请提前15分钟做好准备，会议文档已上传至共享文件夹。',
+        id: '',
+        title: '',
+        date: '',
+        time: '',
+        room: '',
+        user: '',
+        department: '',
+        purpose: '',
+        status: '',
+        statusText: '',
+        attendees: [],
+        equipment: [],
+        remark: '',
         approvalInfo: null
       }
     }
@@ -147,186 +153,290 @@ export default {
     }
   },
   methods: {
-    fetchMeetingDetail() {
+    async fetchMeetingDetail() {
+      this.loading = true;
       uni.showLoading({
         title: '加载中...'
       });
       
-      // 模拟网络请求
-      setTimeout(() => {
-        uni.hideLoading();
+      try {
+        // 获取会议列表，而不是直接获取详情
+        const targetId = Number(this.id);
+        console.log('正在查找ID为', targetId, '的会议');
         
-        // 实际项目中应该调用API获取会议详情
-        if (this.id === '2') {
-          this.meeting = {
-            id: 2,
-            title: '团队周会',
-            date: '2023-07-20',
-            time: '14:00 - 15:30',
-            room: '会议室B',
-            user: '李四',
-            department: '研发部',
-            purpose: '汇报本周工作进度，讨论遇到的问题，安排下周工作计划。',
-            status: 'approved',
-            statusText: '已通过',
-            attendees: [
-              { name: '李四', department: '研发部', role: '技术负责人' },
-              { name: '王五', department: '产品部', role: '产品经理' },
-              { name: '赵六', department: '设计部', role: 'UI设计师' },
-              { name: '钱七', department: '测试部', role: '测试负责人' }
-            ],
-            equipment: [
-              '投影仪',
-              '视频会议系统'
-            ],
-            remark: '需要各部门负责人准备周报。',
-            approvalInfo: {
-              approver: '管理员',
-              time: '2023-07-19 16:35',
-              comment: '已审批通过，请准时参加。'
+        // 获取所有会议，不使用ID参数(后端可能不支持)
+        const response = await apiRequest.getReservations({
+          pageSize: 100, // 设置较大的页码，提高找到目标会议的概率
+          sortBy: 'id'
+        });
+        
+        if (response.code === 200 && response.data && response.data.list) {
+          // 在返回的列表中查找目标ID的会议
+          const meetingList = response.data.list;
+          console.log('获取到', meetingList.length, '个会议，开始查找ID:', targetId);
+          
+          // 查找ID匹配的会议
+          const targetMeeting = meetingList.find(m => 
+            (m.id === targetId) || (m.id === this.id) || (String(m.id) === this.id)
+          );
+          
+          if (targetMeeting) {
+            console.log('找到匹配的会议:', targetMeeting);
+            
+            // 获取参会人员
+            let participants = [];
+            try {
+              const participantsResponse = await apiRequest.getParticipants(this.id);
+              if (participantsResponse.code === 200 && participantsResponse.data) {
+                participants = participantsResponse.data;
+              }
+            } catch (err) {
+              console.error('获取参会人员失败:', err);
             }
-          };
-        } else if (this.id === '3') {
-          this.meeting = {
-            id: 3,
-            title: '产品评审会议',
-            date: '2023-07-21',
-            time: '10:00 - 12:00',
-            room: '会议室C',
-            user: '王五',
-            department: '产品部',
-            purpose: '评审新版本产品原型，确认需求和功能点。',
-            status: 'rejected',
-            statusText: '已拒绝',
-            attendees: [
-              { name: '王五', department: '产品部', role: '产品经理' },
-              { name: '张三', department: '研发部', role: '项目经理' },
-              { name: '赵六', department: '设计部', role: 'UI设计师' }
-            ],
-            equipment: [
-              '电子白板'
-            ],
-            remark: '需要提前准备产品原型展示。',
-            approvalInfo: {
-              approver: '管理员',
-              time: '2023-07-19 17:20',
-              comment: '该时间段会议室已被预订，请选择其他时间或会议室。'
-            }
-          };
+            
+            // 构建会议数据对象
+            this.meeting = {
+              id: targetMeeting.id,
+              title: targetMeeting.topic || targetMeeting.title || '无标题会议',
+              date: targetMeeting.reserveDate || targetMeeting.date || '',
+              time: `${targetMeeting.startTime || ''} - ${targetMeeting.endTime || ''}`,
+              room: targetMeeting.roomName || targetMeeting.room || '',
+              user: targetMeeting.booker || targetMeeting.reservationUser || targetMeeting.username || '',
+              department: targetMeeting.department || '',
+              purpose: targetMeeting.description || targetMeeting.purpose || '',
+              status: this.getStatusFromMeeting(targetMeeting),
+              attendees: participants.map(p => ({
+                name: p.name || p.username || '',
+                department: p.department || '',
+                role: p.role || ''
+              })),
+              equipment: targetMeeting.equipment || [],
+              remark: targetMeeting.remark || '',
+              approvalInfo: targetMeeting.approvalInfo || null
+            };
+          } else {
+            console.error('未找到ID为', targetId, '的会议');
+            uni.showToast({
+              title: '未找到会议',
+              icon: 'none'
+            });
+          }
+        } else {
+          uni.showToast({
+            title: response.message || '获取会议列表失败',
+            icon: 'none'
+          });
         }
-      }, 500);
+      } catch (error) {
+        console.error('获取会议详情失败:', error);
+        uni.showToast({
+          title: '获取会议详情失败',
+          icon: 'none'
+        });
+      } finally {
+        this.loading = false;
+        uni.hideLoading();
+      }
     },
+
+    // 从会议数据中获取状态
+    getStatusFromMeeting(meeting) {
+      console.log('会议完整状态数据:', {
+        status: meeting.status,
+        isActive: meeting.isActive
+      });
+      
+      // 如果有status字段且是字符串，直接使用
+      if (typeof meeting.status === 'string' && meeting.status) {
+        return meeting.status;
+      }
+      
+      // 如果有isActive字段，处理isActive
+      if (meeting.isActive !== undefined && meeting.isActive !== null) {
+        if (meeting.isActive === 0) return '已通过';
+        if (meeting.isActive === 1) return '待审核';
+        if (meeting.isActive === 2) return '已拒绝';
+        if (meeting.isActive === 3) return '已取消';
+        // 数字转换
+        if (typeof meeting.isActive === 'number') {
+          const statusMap = {
+            0: '已通过',
+            1: '待审核',
+            2: '已拒绝',
+            3: '已取消'
+          };
+          return statusMap[meeting.isActive] || '待审核';
+        }
+      }
+      
+      // 如果status是数字，处理数字status
+      if (typeof meeting.status === 'number') {
+        const statusMap = {
+          0: '待审核',
+          1: '已通过',
+          2: '已拒绝',
+          3: '已取消'
+        };
+        return statusMap[meeting.status] || '待审核';
+      }
+      
+      // 默认返回
+      return '待审核';
+    },
+
     getStatusClass(status) {
       const statusMap = {
-        'pending': 'badge-warning',
-        'approved': 'badge-success',
-        'rejected': 'badge-danger',
-        'cancelled': 'badge-secondary'
+        '待审核': 'badge-warning',
+        '已通过': 'badge-success',
+        '已拒绝': 'badge-danger',
+        '已取消': 'badge-secondary',
+        '进行中': 'badge-info',
+        '已完成': 'badge-primary'
       };
       return statusMap[status] || 'badge-secondary';
     },
-    handleApprove() {
-      uni.showModal({
+    async handleApprove() {
+      try {
+        await uni.showModal({
         title: '确认通过',
         content: `确定要通过"${this.meeting.title}"的会议申请吗？`,
-        success: (res) => {
-          if (res.confirm) {
+        });
+        
             uni.showLoading({
               title: '处理中...'
             });
             
-            // 模拟网络请求
-            setTimeout(() => {
-              uni.hideLoading();
-              
-              // 更新会议状态
-              this.meeting.status = 'approved';
-              this.meeting.statusText = '已通过';
-              this.meeting.approvalInfo = {
-                approver: '管理员',
-                time: new Date().toLocaleString('zh-CN', { hour12: false }),
-                comment: '已审批通过，请准时参加。'
-              };
-              
+        const response = await apiRequest.approveReservation(this.id, true);
+        if (response.code === 200) {
               uni.showToast({
-                title: '已通过审批',
+            title: '已通过申请',
                 icon: 'success'
               });
+          
+          // 重新加载会议详情
+          setTimeout(() => {
+            this.fetchMeetingDetail();
             }, 500);
-          }
+        } else {
+          uni.showToast({
+            title: response.msg ,
+            icon: 'none'
+          });
         }
-      });
+      } catch (error) {
+        if (error.errMsg !== 'showModal:fail cancel') {
+          uni.showToast({
+            title: '操作失败',
+            icon: 'none'
+          });
+          console.error('审批失败:', error);
+        }
+      } finally {
+        uni.hideLoading();
+      }
     },
-    handleReject() {
-      uni.showModal({
-        title: '拒绝申请',
-        content: '请输入拒绝原因',
-        editable: true,
-        placeholderText: '请输入拒绝原因',
-        success: (res) => {
-          if (res.confirm) {
+    async handleReject() {
+      try {
+        await uni.showModal({
+          title: '确认拒绝',
+          content: `确定要拒绝"${this.meeting.title}"的会议申请吗？`,
+        });
+        
             uni.showLoading({
               title: '处理中...'
             });
             
-            // 模拟网络请求
-            setTimeout(() => {
-              uni.hideLoading();
-              
-              // 更新会议状态
-              this.meeting.status = 'rejected';
-              this.meeting.statusText = '已拒绝';
-              this.meeting.approvalInfo = {
-                approver: '管理员',
-                time: new Date().toLocaleString('zh-CN', { hour12: false }),
-                comment: res.content || '申请被拒绝'
-              };
-              
+        const response = await apiRequest.approveReservation(this.id, false);
+        if (response.code === 200) {
               uni.showToast({
                 title: '已拒绝申请',
                 icon: 'success'
               });
+          
+          // 重新加载会议详情
+          setTimeout(() => {
+            this.fetchMeetingDetail();
             }, 500);
-          }
+        } else {
+          uni.showToast({
+            title: response.msg,
+            icon: 'none'
+          });
         }
-      });
+      } catch (error) {
+        if (error.errMsg !== 'showModal:fail cancel') {
+          uni.showToast({
+            title: '操作失败',
+            icon: 'none'
+          });
+          console.error('拒绝失败:', error);
+        }
+      } finally {
+        uni.hideLoading();
+      }
     },
-    handleCancel() {
-      uni.showModal({
+    async handleCancel() {
+      try {
+        await uni.showModal({
         title: '确认取消',
         content: `确定要取消"${this.meeting.title}"的会议吗？`,
-        success: (res) => {
-          if (res.confirm) {
+        });
+        
             uni.showLoading({
               title: '处理中...'
             });
             
-            // 模拟网络请求
-            setTimeout(() => {
-              uni.hideLoading();
-              
-              // 更新会议状态
-              this.meeting.status = 'cancelled';
-              this.meeting.statusText = '已取消';
-              
+        const response = await apiRequest.cancelReservation(this.id);
+        if (response.code === 200) {
               uni.showToast({
                 title: '已取消会议',
                 icon: 'success'
               });
+          
+          // 重新加载会议详情
+          setTimeout(() => {
+            this.fetchMeetingDetail();
             }, 500);
-          }
+        } else {
+          uni.showToast({
+            title: response.msg || '操作失败',
+            icon: 'none'
+          });
         }
-      });
+      } catch (error) {
+        if (error.errMsg !== 'showModal:fail cancel') {
+          uni.showToast({
+            title: '操作失败',
+            icon: 'none'
+          });
+          console.error('取消失败:', error);
+        }
+      } finally {
+        uni.hideLoading();
+      }
+    },
+    handleBack() {
+      uni.navigateBack();
     }
   }
 }
 </script>
 
 <style>
+/* 这些样式不再需要了，因为我们使用了hideHeader属性
+.admin-header {
+  display: none !important;
+}
+
+.admin-main {
+  padding-top: 15px !important;
+  margin-top: 0 !important;
+}
+*/
+
 .meeting-detail-container {
   padding: 15px;
   background-color: #f5f7fa;
-  min-height: 100vh;
 }
 
 .detail-card {
@@ -343,12 +453,40 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: white;
 }
 
-.header-title {
-  color: #fff;
+.card-header-title {
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.header-status {
+  margin-left: 10px;
+}
+
+.btn-back {
+  background-color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: #3498db;
+  cursor: pointer;
+  font-weight: 500;
+  height: 32px;
+  line-height: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-back:hover {
+  background-color: #f8f9fa;
 }
 
 .badge {
@@ -373,6 +511,14 @@ export default {
 
 .badge-secondary {
   background-color: #95a5a6;
+}
+
+.badge-info {
+  background-color: #3498db;
+}
+
+.badge-primary {
+  background-color: #9b59b6;
 }
 
 .card-body {

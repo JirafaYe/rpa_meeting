@@ -1,137 +1,144 @@
 <template>
-  <view class="rpa-container">
-    <view class="status-card">
-      <view class="status-header">
-        <text class="status-title">RPA 服务状态</text>
-        <view class="status-indicator" :class="rpaStatus === 'running' ? 'status-running' : 'status-stopped'">
-          <text>{{rpaStatus === 'running' ? '运行中' : '已停止'}}</text>
+  <admin-layout title="RPA管理" active-path="/pages/admin/rpa/index">
+    <view class="rpa-container">
+      <view class="status-card">
+        <view class="status-header">
+          <text class="status-title">RPA 服务状态</text>
+          <view class="status-indicator" :class="rpaStatus === 'running' ? 'status-running' : 'status-stopped'">
+            <text>{{rpaStatus === 'running' ? '运行中' : '已停止'}}</text>
+          </view>
+        </view>
+        <view class="status-actions">
+          <button class="btn-action start" v-if="rpaStatus !== 'running'" @click="handleStartRpa">启动服务</button>
+          <button class="btn-action stop" v-else @click="handleStopRpa">停止服务</button>
+          <button class="btn-action restart" @click="handleRestartRpa">重启服务</button>
+        </view>
+        <view class="status-info">
+          <view class="info-item">
+            <text class="info-label">上次启动时间:</text>
+            <text class="info-value">{{rpaInfo.lastStartTime}}</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">运行时长:</text>
+            <text class="info-value">{{rpaInfo.runningTime}}</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">处理任务数:</text>
+            <text class="info-value">{{rpaInfo.processedTasks}}</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">RPA版本:</text>
+            <text class="info-value">{{rpaInfo.version}}</text>
+          </view>
         </view>
       </view>
-      <view class="status-actions">
-        <button class="btn-action start" v-if="rpaStatus !== 'running'" @click="handleStartRpa">启动服务</button>
-        <button class="btn-action stop" v-else @click="handleStopRpa">停止服务</button>
-        <button class="btn-action restart" @click="handleRestartRpa">重启服务</button>
+
+      <!-- 任务配置卡片 -->
+      <view class="config-card">
+        <view class="card-header">
+          <text class="card-title">任务配置</text>
+        </view>
+        <view class="card-body">
+          <view class="form-group">
+            <text class="form-label">执行间隔 (分钟)</text>
+            <view class="input-row">
+              <slider :value="config.interval" :min="1" :max="60" :step="1" show-value @change="intervalChange" />
+              <input type="number" class="form-input narrow" v-model="config.interval" />
+            </view>
+          </view>
+
+          <view class="form-group">
+            <text class="form-label">每日执行时间范围</text>
+            <view class="time-range">
+              <view class="time-picker">
+                <picker mode="time" :value="config.startTime" @change="startTimeChange" class="form-picker">
+                  <view class="picker-value">{{config.startTime}}</view>
+                </picker>
+              </view>
+              <text class="time-separator">至</text>
+              <view class="time-picker">
+                <picker mode="time" :value="config.endTime" @change="endTimeChange" class="form-picker">
+                  <view class="picker-value">{{config.endTime}}</view>
+                </picker>
+              </view>
+            </view>
+          </view>
+
+          <view class="form-group">
+            <text class="form-label">最大重试次数</text>
+            <input type="number" class="form-input" v-model="config.maxRetries" />
+          </view>
+
+          <view class="form-group">
+            <text class="form-label">超时时间 (秒)</text>
+            <input type="number" class="form-input" v-model="config.timeout" />
+          </view>
+
+          <view class="form-group">
+            <text class="form-label">要执行的任务</text>
+            <view class="checkbox-group">
+              <view class="checkbox-item" v-for="(task, index) in tasks" :key="index">
+                <checkbox :checked="task.enabled" @click="toggleTask(index)" />
+                <text class="checkbox-label">{{task.name}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="form-group">
+            <text class="form-label">邮件通知</text>
+            <switch :checked="config.emailNotification" @change="toggleEmailNotification" />
+          </view>
+
+          <view class="form-group" v-if="config.emailNotification">
+            <text class="form-label">通知邮箱</text>
+            <input type="text" class="form-input" v-model="config.notificationEmail" placeholder="输入接收通知的邮箱" />
+          </view>
+
+          <view class="form-actions">
+            <button class="btn-save" @click="saveConfig">保存配置</button>
+            <button class="btn-reset" @click="resetConfig">重置</button>
+          </view>
+        </view>
       </view>
-      <view class="status-info">
-        <view class="info-item">
-          <text class="info-label">上次启动时间:</text>
-          <text class="info-value">{{rpaInfo.lastStartTime}}</text>
+
+      <!-- 任务记录 -->
+      <view class="log-card">
+        <view class="card-header">
+          <text class="card-title">任务记录</text>
+          <view class="header-actions">
+            <button class="btn-small" @click="refreshLogs">刷新</button>
+            <button class="btn-small" @click="clearLogs">清空</button>
+          </view>
         </view>
-        <view class="info-item">
-          <text class="info-label">运行时长:</text>
-          <text class="info-value">{{rpaInfo.runningTime}}</text>
-        </view>
-        <view class="info-item">
-          <text class="info-label">处理任务数:</text>
-          <text class="info-value">{{rpaInfo.processedTasks}}</text>
-        </view>
-        <view class="info-item">
-          <text class="info-label">RPA版本:</text>
-          <text class="info-value">{{rpaInfo.version}}</text>
+        <view class="card-body">
+          <view class="logs-list" v-if="logs.length > 0">
+            <view class="log-item" v-for="(log, index) in logs" :key="index">
+              <view class="log-header">
+                <text class="log-time">{{log.time}}</text>
+                <text class="log-status" :class="getStatusClass(log.status)">{{log.statusText}}</text>
+              </view>
+              <view class="log-content">
+                <text class="log-title">{{log.title}}</text>
+                <text class="log-message">{{log.message}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="no-logs" v-else>
+            <text>暂无任务记录</text>
+          </view>
         </view>
       </view>
     </view>
-
-    <!-- 任务配置卡片 -->
-    <view class="config-card">
-      <view class="card-header">
-        <text class="card-title">任务配置</text>
-      </view>
-      <view class="card-body">
-        <view class="form-group">
-          <text class="form-label">执行间隔 (分钟)</text>
-          <view class="input-row">
-            <slider :value="config.interval" :min="1" :max="60" :step="1" show-value @change="intervalChange" />
-            <input type="number" class="form-input narrow" v-model="config.interval" />
-          </view>
-        </view>
-
-        <view class="form-group">
-          <text class="form-label">每日执行时间范围</text>
-          <view class="time-range">
-            <view class="time-picker">
-              <picker mode="time" :value="config.startTime" @change="startTimeChange" class="form-picker">
-                <view class="picker-value">{{config.startTime}}</view>
-              </picker>
-            </view>
-            <text class="time-separator">至</text>
-            <view class="time-picker">
-              <picker mode="time" :value="config.endTime" @change="endTimeChange" class="form-picker">
-                <view class="picker-value">{{config.endTime}}</view>
-              </picker>
-            </view>
-          </view>
-        </view>
-
-        <view class="form-group">
-          <text class="form-label">最大重试次数</text>
-          <input type="number" class="form-input" v-model="config.maxRetries" />
-        </view>
-
-        <view class="form-group">
-          <text class="form-label">超时时间 (秒)</text>
-          <input type="number" class="form-input" v-model="config.timeout" />
-        </view>
-
-        <view class="form-group">
-          <text class="form-label">要执行的任务</text>
-          <view class="checkbox-group">
-            <view class="checkbox-item" v-for="(task, index) in tasks" :key="index">
-              <checkbox :checked="task.enabled" @click="toggleTask(index)" />
-              <text class="checkbox-label">{{task.name}}</text>
-            </view>
-          </view>
-        </view>
-
-        <view class="form-group">
-          <text class="form-label">邮件通知</text>
-          <switch :checked="config.emailNotification" @change="toggleEmailNotification" />
-        </view>
-
-        <view class="form-group" v-if="config.emailNotification">
-          <text class="form-label">通知邮箱</text>
-          <input type="text" class="form-input" v-model="config.notificationEmail" placeholder="输入接收通知的邮箱" />
-        </view>
-
-        <view class="form-actions">
-          <button class="btn-save" @click="saveConfig">保存配置</button>
-          <button class="btn-reset" @click="resetConfig">重置</button>
-        </view>
-      </view>
-    </view>
-
-    <!-- 任务记录 -->
-    <view class="log-card">
-      <view class="card-header">
-        <text class="card-title">任务记录</text>
-        <view class="header-actions">
-          <button class="btn-small" @click="refreshLogs">刷新</button>
-          <button class="btn-small" @click="clearLogs">清空</button>
-        </view>
-      </view>
-      <view class="card-body">
-        <view class="logs-list" v-if="logs.length > 0">
-          <view class="log-item" v-for="(log, index) in logs" :key="index">
-            <view class="log-header">
-              <text class="log-time">{{log.time}}</text>
-              <text class="log-status" :class="getStatusClass(log.status)">{{log.statusText}}</text>
-            </view>
-            <view class="log-content">
-              <text class="log-title">{{log.title}}</text>
-              <text class="log-message">{{log.message}}</text>
-            </view>
-          </view>
-        </view>
-        <view class="no-logs" v-else>
-          <text>暂无任务记录</text>
-        </view>
-      </view>
-    </view>
-  </view>
+  </admin-layout>
 </template>
 
 <script>
+import AdminLayout from '../../../components/admin/AdminLayout.vue'
+
 export default {
+  components: {
+    AdminLayout
+  },
   data() {
     return {
       rpaStatus: 'stopped', // 'running' 或 'stopped'

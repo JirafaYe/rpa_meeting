@@ -7,21 +7,20 @@
     "dev": "cross-env NODE_ENV=development",
     "dev:h5": "uni",
     "dev:app": "uni",
-    "dev:custom": "uni",
-    "dev:webpack": "webpack serve --mode development --open",
-    "build:webpack": "webpack --mode production"
+    "dev:custom": "uni"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "axios": "^1.8.4",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
     "@babel/preset-env": "^7.26.9",
-    "@dcloudio/uni-app": "latest",
+    "@dcloudio/uni-app": "^2.0.2-4050720250324001",
     "@dcloudio/uni-automator": "latest",
     "@dcloudio/uni-cli-shared": "latest",
     "@dcloudio/uni-h5": "latest",
@@ -35,18 +34,9 @@
     "@vue/test-utils": "^2.4.6",
     "@vue/vue3-jest": "^29.2.6",
     "babel-jest": "^29.7.0",
-    "babel-loader": "^9.2.1",
     "cross-env": "^7.0.3",
-    "css-loader": "^6.11.0",
-    "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.6.3",
     "jest": "^29.7.0",
-    "style-loader": "^3.3.4",
     "vue": "^3.5.13",
-    "vue-loader": "^17.4.2",
-    "vue-router": "^4.5.0",
-    "webpack": "^5.98.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.2.0"
+    "vue-router": "^4.5.0"
   }
 }
