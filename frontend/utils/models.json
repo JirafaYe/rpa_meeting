@@ -1,0 +1,327 @@
+{
+  "userModels": {
+    "UserListViewModel": {
+      "description": "用户列表页数据模型，用于admin/user/list.vue页面",
+      "fields": {
+        "total": "用户总数",
+        "list": [
+          {
+            "id": "用户ID",
+            "name": "用户名称",
+            "username": "登录用户名",
+            "department": "部门",
+            "role": "角色",
+            "status": "状态",
+            "email": "电子邮件",
+            "phone": "电话号码",
+            "lastLoginTime": "最后登录时间",
+            "statusText": "状态文本描述",
+            "roleText": "角色文本描述",
+            "statusType": "状态类型（用于UI样式）"
+          }
+        ],
+        "page": "当前页码",
+        "limit": "每页条数"
+      }
+    },
+    "UserDetailViewModel": {
+      "description": "用户详情数据模型，用于admin/user/edit.vue和user/profile.vue页面",
+      "fields": {
+        "id": "用户ID",
+        "name": "用户名称",
+        "username": "登录用户名",
+        "department": "部门",
+        "role": "角色",
+        "status": "状态",
+        "email": "电子邮件",
+        "phone": "电话号码",
+        "avatar": "头像URL",
+        "lastLoginTime": "最后登录时间",
+        "createTime": "创建时间"
+      }
+    }
+  },
+  "meetingModels": {
+    "MeetingListViewModel": {
+      "description": "会议列表页数据模型，用于admin/meeting/list.vue和user/meeting/list.vue页面",
+      "fields": {
+        "total": "会议总数",
+        "list": [
+          {
+            "id": "会议ID",
+            "title": "会议标题",
+            "description": "会议描述",
+            "roomId": "会议室ID",
+            "roomName": "会议室名称",
+            "startTime": "开始时间",
+            "endTime": "结束时间",
+            "createTime": "创建时间",
+            "updateTime": "更新时间",
+            "status": "状态",
+            "type": "会议类型",
+            "organizer": "组织者信息",
+            "participants": "参会人员列表",
+            "attachments": "附件列表",
+            "isRpa": "是否RPA会议",
+            "rpaConfig": "RPA配置信息",
+            "statusText": "状态文本描述",
+            "statusType": "状态类型（用于UI样式）",
+            "durationText": "时长文本",
+            "dateText": "日期文本",
+            "timeText": "时间文本",
+            "canEdit": "是否可编辑",
+            "canCancel": "是否可取消",
+            "canView": "是否可查看"
+          }
+        ],
+        "page": "当前页码",
+        "limit": "每页条数"
+      }
+    },
+    "MeetingDetailViewModel": {
+      "description": "会议详情页数据模型，用于admin/meeting/detail.vue和user/meeting/detail.vue页面",
+      "fields": {
+        "id": "会议ID",
+        "title": "会议标题",
+        "description": "会议描述",
+        "roomId": "会议室ID",
+        "roomName": "会议室名称",
+        "startTime": "开始时间",
+        "endTime": "结束时间",
+        "createTime": "创建时间",
+        "updateTime": "更新时间",
+        "status": "状态",
+        "type": "会议类型",
+        "organizer": "组织者信息",
+        "participants": "参会人员列表",
+        "attachments": "附件列表",
+        "isRpa": "是否RPA会议",
+        "rpaConfig": "RPA配置信息",
+        "statusText": "状态文本描述",
+        "statusType": "状态类型（用于UI样式）",
+        "durationText": "时长文本",
+        "dateText": "日期文本",
+        "timeText": "时间文本",
+        "canEdit": "是否可编辑",
+        "canCancel": "是否可取消",
+        "canJoin": "是否可加入",
+        "participantList": [
+          {
+            "id": "参会人员ID",
+            "name": "参会人员姓名",
+            "avatar": "参会人员头像",
+            "department": "参会人员部门",
+            "isOnline": "是否在线"
+          }
+        ],
+        "attachmentList": [
+          {
+            "id": "附件ID",
+            "name": "附件名称",
+            "type": "附件类型",
+            "size": "附件大小",
+            "url": "附件URL",
+            "uploadTime": "上传时间",
+            "uploadTimeText": "上传时间文本",
+            "sizeText": "大小文本",
+            "iconClass": "图标类名"
+          }
+        ]
+      }
+    },
+    "MeetingRoomViewModel": {
+      "description": "会议室页面数据模型，用于user/meeting/room.vue页面",
+      "fields": {
+        "meetingId": "会议ID",
+        "meeting": {
+          "title": "会议标题",
+          "status": "会议状态",
+          "startTime": "开始时间",
+          "endTime": "结束时间",
+          "organizer": "组织者信息"
+        },
+        "currentTab": "当前选中的标签",
+        "tabs": [
+          {
+            "id": "标签ID",
+            "name": "标签名称"
+          }
+        ],
+        "currentUser": "当前用户姓名",
+        "isCreator": "是否创建者",
+        "isMeetingActive": "会议是否进行中",
+        "meetingStatusText": "会议状态文本",
+        "meetingStatusClass": "会议状态样式类",
+        "messages": "聊天消息列表",
+        "agendaItems": "议题列表",
+        "fileItems": "文件列表",
+        "recordingItems": "录音列表"
+      }
+    }
+  },
+  "roomModels": {
+    "RoomListViewModel": {
+      "description": "会议室列表页数据模型，用于admin/room/list.vue和user/room/list.vue页面",
+      "fields": {
+        "total": "会议室总数",
+        "list": [
+          {
+            "id": "会议室ID",
+            "name": "会议室名称",
+            "location": "位置",
+            "capacity": "容量",
+            "facilities": "设施列表",
+            "status": "状态",
+            "currentMeeting": "当前会议信息",
+            "statusText": "状态文本描述",
+            "statusType": "状态类型（用于UI样式）",
+            "facilitiesText": "设施文本描述",
+            "currentMeetingText": "当前会议文本描述",
+            "imageUrl": "会议室图片URL"
+          }
+        ],
+        "page": "当前页码",
+        "limit": "每页条数"
+      }
+    }
+  },
+  "adminModels": {
+    "AdminDashboardViewModel": {
+      "description": "管理员主页统计数据模型，用于admin/home.vue页面",
+      "fields": {
+        "totalMeetings": "会议总数",
+        "pendingMeetings": "待审批会议数",
+        "completedMeetings": "已完成会议数",
+        "totalRooms": "会议室总数",
+        "meetingStats": [
+          {
+            "date": "日期",
+            "count": "会议总数",
+            "approved": "已通过数量",
+            "rejected": "已拒绝数量",
+            "pending": "待审批数量"
+          }
+        ],
+        "upcomingMeetings": [
+          {
+            "id": "会议ID",
+            "title": "会议标题",
+            "roomName": "会议室名称",
+            "startTime": "开始时间",
+            "endTime": "结束时间",
+            "timeText": "时间文本",
+            "dateText": "日期文本",
+            "status": "状态",
+            "statusText": "状态文本",
+            "organizerName": "组织者姓名",
+            "statusType": "状态类型（用于UI样式）"
+          }
+        ]
+      }
+    },
+    "StatisticsViewModel": {
+      "description": "统计分析页数据模型，用于admin/statistics/index.vue页面",
+      "fields": {
+        "basicStats": {
+          "totalMeetings": "会议总数",
+          "approvalRate": "审批通过率",
+          "avgMeetingLength": "平均会议时长",
+          "totalRooms": "会议室总数"
+        },
+        "statusData": [
+          {
+            "name": "状态名称",
+            "value": "数量",
+            "percentage": "百分比",
+            "color": "颜色"
+          }
+        ],
+        "dailyTrend": [
+          {
+            "date": "日期",
+            "count": "会议总数",
+            "approved": "已通过数量",
+            "rejected": "已拒绝数量",
+            "pending": "待审批数量"
+          }
+        ],
+        "roomUsage": [
+          {
+            "id": "会议室ID",
+            "name": "会议室名称",
+            "usage": "使用率",
+            "meetings": "会议数量"
+          }
+        ],
+        "topRooms": [
+          {
+            "id": "会议室ID",
+            "name": "会议室名称",
+            "count": "使用次数",
+            "usage": "使用率"
+          }
+        ],
+        "topUsers": [
+          {
+            "id": "用户ID",
+            "name": "用户姓名",
+            "department": "部门",
+            "count": "预约次数"
+          }
+        ]
+      }
+    }
+  },
+  "notificationModels": {
+    "NotificationViewModel": {
+      "description": "通知页面数据模型，用于user/notification.vue页面",
+      "fields": {
+        "total": "通知总数",
+        "list": [
+          {
+            "id": "通知ID",
+            "title": "通知标题",
+            "content": "通知内容",
+            "type": "通知类型",
+            "status": "状态",
+            "createTime": "创建时间",
+            "createTimeText": "创建时间文本",
+            "typeText": "类型文本",
+            "typeIcon": "类型图标",
+            "isRead": "是否已读"
+          }
+        ],
+        "page": "当前页码",
+        "limit": "每页条数",
+        "unreadCount": "未读数量"
+      }
+    }
+  },
+  "rpaModels": {
+    "RpaTaskViewModel": {
+      "description": "RPA任务数据模型，用于admin/rpa/index.vue页面",
+      "fields": {
+        "total": "任务总数",
+        "list": [
+          {
+            "id": "任务ID",
+            "name": "任务名称",
+            "meetingId": "会议ID",
+            "meetingTitle": "会议标题",
+            "status": "状态",
+            "createTime": "创建时间",
+            "updateTime": "更新时间",
+            "completedTime": "完成时间",
+            "actions": "任务动作列表",
+            "statusText": "状态文本",
+            "statusType": "状态类型（用于UI样式）",
+            "createTimeText": "创建时间文本",
+            "completedTimeText": "完成时间文本"
+          }
+        ],
+        "page": "当前页码",
+        "limit": "每页条数"
+      }
+    }
+  }
+} 

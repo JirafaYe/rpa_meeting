@@ -1,0 +1,31 @@
+.default-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  position: relative;
+  overflow: hidden;
+}
+
+.default-avatar::before {
+  content: "";
+  position: absolute;
+  width: 40%;
+  height: 40%;
+  border-radius: 50%;
+  background-color: #a0a0a0;
+  top: 25%;
+  left: 30%;
+}
+
+.default-avatar::after {
+  content: "";
+  position: absolute;
+  width: 60%;
+  height: 35%;
+  background-color: #a0a0a0;
+  bottom: 0;
+  left: 20%;
+  border-top-left-radius: 50%;
+  border-top-right-radius: 50%;
+} 

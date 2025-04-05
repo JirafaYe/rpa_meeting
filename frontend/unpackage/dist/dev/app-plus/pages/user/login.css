@@ -1,0 +1,184 @@
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  padding: 0 30px;
+}
+.logo-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+  margin-bottom: 15px;
+}
+.logo-image {
+  width: 80px;
+  height: 80px;
+}
+.app-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 10px;
+}
+.form-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.tab-item {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #666;
+  border-bottom: 2px solid transparent;
+  margin: 0 10px;
+}
+.tab-item.active {
+  color: #3498db;
+  border-bottom-color: #3498db;
+  font-weight: bold;
+}
+.login-form {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.input-group {
+  margin-bottom: 20px;
+}
+.captcha-group {
+  margin-bottom: 20px;
+}
+.captcha-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+.captcha-input {
+  flex: 1;
+  height: 44px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 0 15px;
+  font-size: 14px;
+}
+.captcha-wrapper {
+  position: relative;
+  width: 120px;
+  height: 44px;
+  margin-left: 10px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+.captcha-image {
+  width: 100%;
+  height: 100%;
+  background-color: #f9f9f9;
+}
+.refresh-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-size: 12px;
+  padding: 2px 5px;
+  border-top-left-radius: 4px;
+}
+.input-label {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+}
+.input-field {
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0 15px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.remember-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.remember-label {
+  color: #666;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+.forget-password {
+  color: #3498db;
+  font-size: 14px;
+}
+.login-button {
+  height: 40px;
+  background-color: #3498db;
+  color: white;
+  border-radius: 6px;
+  font-size: 16px;
+  width: 100%;
+}
+.quick-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.quick-action-text {
+  color: #3498db;
+  font-size: 14px;
+}
+.divider {
+  margin: 0 10px;
+  color: #ddd;
+}
+.support-info {
+  margin-top: auto;
+  text-align: center;
+  padding: 20px 0;
+}
+.support-text, .version-text {
+  color: #999;
+  font-size: 12px;
+  line-height: 2;
+}
+.mock-tips {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px dashed #ddd;
+}
+.mock-tip-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+}
+.mock-tip-item {
+  display: flex;
+  margin-bottom: 4px;
+}
+.mock-tip-label {
+  color: #666;
+  font-size: 13px;
+  width: 70px;
+}
+.mock-tip-content {
+  color: #3498db;
+  font-size: 13px;
+  font-family: monospace;
+}

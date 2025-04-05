@@ -1,0 +1,371 @@
+
+.meeting-detail-container {
+  background-color: #f5f7fa;
+  padding-bottom: 80px;
+  padding-top: 10px;
+}
+.breadcrumb {
+  display: flex;
+  padding: 10px 15px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #666;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  margin: 0 10px 15px;
+  border-radius: 4px;
+}
+.breadcrumb-item {
+  color: #3498db;
+  cursor: pointer;
+}
+.breadcrumb-item:last-child {
+  color: #333;
+  font-weight: 500;
+  cursor: default;
+}
+.breadcrumb-separator {
+  margin: 0 8px;
+  color: #ccc;
+}
+.status-bar {
+  padding: 15px;
+  text-align: center;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+  margin: 0 10px 15px;
+  border-radius: 4px;
+}
+.status-pending {
+  background-color: #f39c12;
+}
+.status-approved {
+  background-color: #2ecc71;
+}
+.status-rejected {
+  background-color: #e74c3c;
+}
+.status-canceled {
+  background-color: #95a5a6;
+}
+.status-text {
+  font-size: 16px;
+}
+.meeting-header {
+  padding: 20px 15px;
+  background-color: #fff;
+  margin: 0 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+.meeting-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+.info-card {
+  margin: 15px 10px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+.card-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  padding-left: 10px;
+  border-left: 3px solid #3498db;
+}
+.info-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 15px;
+}
+.info-item {
+  display: flex;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+.info-icon {
+  margin-right: 12px;
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+.info-content {
+  flex: 1;
+}
+.info-label {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 5px;
+  display: block;
+}
+.info-value {
+  font-size: 15px;
+  color: #333;
+  line-height: 1.4;
+  word-break: break-all;
+}
+.description {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.5;
+  padding: 5px;
+}
+.attendees-list {
+  margin: 15px 10px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+.section-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  padding-left: 10px;
+  border-left: 3px solid #3498db;
+}
+.attendees-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 15px;
+}
+.attendee-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+  width: calc(50% - 6px);
+  box-sizing: border-box;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+.attendee-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f0f7ff;
+}
+.attendee-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 12px;
+  background-color: #f5f5f5;
+  border: 2px solid #eaeaea;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+}
+.attendee-info {
+  flex: 1;
+}
+.attendee-name {
+  font-size: 15px;
+  color: #333;
+  line-height: 1.4;
+  font-weight: 500;
+}
+.empty-attendees {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  color: #999;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #ddd;
+  margin-top: 15px;
+}
+.equipment-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+.equipment-item {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 20px;
+}
+.equipment-icon {
+  margin-right: 5px;
+  font-size: 16px;
+}
+.equipment-name {
+  font-size: 14px;
+  color: #666;
+}
+.attachment-list {
+  margin-top: 10px;
+}
+.attachment-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background-color: #f8f9fa;
+}
+.attachment-item:last-child {
+  margin-bottom: 0;
+}
+.attachment-icon {
+  font-size: 20px;
+  margin-right: 10px;
+}
+.attachment-info {
+  flex: 1;
+}
+.attachment-name {
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 5px;
+  display: block;
+}
+.attachment-size {
+  font-size: 12px;
+  color: #999;
+}
+.reject-reason {
+  font-size: 15px;
+  color: #e74c3c;
+  line-height: 1.5;
+  padding: 10px;
+  background-color: #fef0f0;
+  border-radius: 6px;
+}
+.approval-info {
+  font-size: 14px;
+  color: #666;
+}
+.approval-item {
+  margin-bottom: 8px;
+  display: flex;
+}
+.approval-label {
+  color: #999;
+  width: 80px;
+}
+.approval-value {
+  flex: 1;
+}
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 15px;
+  background-color: #fff;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-around;
+  z-index: 100;
+}
+.action-btn {
+  flex: 1;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-radius: 20px;
+  font-size: 15px;
+  margin: 0 5px;
+}
+.cancel-btn {
+  background-color: #fff;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+}
+.primary-btn {
+  background-color: #3498db;
+  color: #fff;
+}
+.enter-btn {
+  background-color: #2ecc71;
+  color: #fff;
+}
+.start-btn {
+  background-color: #f39c12;
+  color: #fff;
+}
+.minutes-btn {
+  background-color: #9b59b6;
+  color: #fff;
+}
+.status-in-progress {
+  background-color: #3498db;
+}
+.status-completed {
+  background-color: #27ae60;
+}
+
+/* 议程列表样式 */
+.agenda-list {
+  margin-top: 10px;
+}
+.agenda-item {
+  display: flex;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+.agenda-time {
+  min-width: 60px;
+  color: #666;
+  font-weight: bold;
+  padding-right: 10px;
+}
+.agenda-content {
+  flex: 1;
+}
+.agenda-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.agenda-description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.agenda-files {
+  margin-top: 10px;
+}
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+.file-icon {
+  font-size: 20px;
+  margin-right: 10px;
+}
+.file-info {
+  flex: 1;
+}
+.file-name {
+  display: block;
+  font-size: 14px;
+}
+.file-size {
+  display: block;
+  font-size: 12px;
+  color: #999;
+}
+@media screen and (max-width: 500px) {
+.attendee-item {
+    width: 100%;
+}
+}

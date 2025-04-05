@@ -1,0 +1,165 @@
+
+.custom-tab-bar[data-v-416b8ca7] {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background-color: #fff;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  padding-bottom: constant(safe-area-inset-bottom); /* iOS 11.0 */
+  padding-bottom: env(safe-area-inset-bottom); /* iOS 11.2+ */
+}
+.tab-item[data-v-416b8ca7] {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #7A7E83;
+  padding-top: 5px;
+}
+.tab-item.active[data-v-416b8ca7] {
+  color: #3498db;
+}
+.emoji-icon[data-v-416b8ca7] {
+  font-size: 24px;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.tab-text[data-v-416b8ca7] {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+
+.notification-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  padding-bottom: 50px;
+}
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+.actions {
+  display: flex;
+}
+.action-btn {
+  font-size: 14px;
+  color: #666;
+  padding: 5px 10px;
+  margin-left: 10px;
+}
+.clear-all {
+  color: #e74c3c;
+}
+.tab-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.tab-content {
+  flex: 1;
+}
+.notification-list {
+  height: 100%;
+}
+.notification-item {
+  display: flex;
+  padding: 15px;
+  background-color: #fff;
+  margin-bottom: 1px;
+  position: relative;
+}
+.notification-type-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  margin-right: 12px;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.icon-approve {
+  background-color: #2ecc71;
+}
+.icon-reject {
+  background-color: #e74c3c;
+}
+.icon-reminder {
+  background-color: #3498db;
+}
+.icon-cancel {
+  background-color: #95a5a6;
+}
+.icon-system {
+  background-color: #f39c12;
+}
+.icon-default {
+  background-color: #3498db;
+}
+.notification-content {
+  flex: 1;
+}
+.notification-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+.notification-body {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.notification-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.notification-time {
+  font-size: 12px;
+  color: #999;
+}
+.notification-delete {
+  font-size: 12px;
+  color: #999;
+  padding: 5px;
+}
+.load-more {
+  text-align: center;
+  padding: 15px 0;
+  color: #666;
+  font-size: 14px;
+}
+.empty-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 15px;
+}
+.empty-icon {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 15px;
+}
+.empty-text {
+  font-size: 16px;
+  color: #999;
+  text-align: center;
+}

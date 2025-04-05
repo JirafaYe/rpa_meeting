@@ -1,0 +1,163 @@
+
+.custom-tab-bar[data-v-416b8ca7] {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background-color: #fff;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  padding-bottom: constant(safe-area-inset-bottom); /* iOS 11.0 */
+  padding-bottom: env(safe-area-inset-bottom); /* iOS 11.2+ */
+}
+.tab-item[data-v-416b8ca7] {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #7A7E83;
+  padding-top: 5px;
+}
+.tab-item.active[data-v-416b8ca7] {
+  color: #3498db;
+}
+.emoji-icon[data-v-416b8ca7] {
+  font-size: 24px;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.tab-text[data-v-416b8ca7] {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+
+.profile-container {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  padding-bottom: 3.75rem;
+}
+.profile-header {
+  background-color: #3498db;
+  padding: 0.9375rem;
+  border-bottom-left-radius: 0.625rem;
+  border-bottom-right-radius: 0.625rem;
+  margin-bottom: 0.625rem;
+}
+.avatar-section {
+  display: flex;
+  align-items: center;
+}
+.avatar {
+  width: 3.125rem;
+  height: 3.125rem;
+  border-radius: 50%;
+  border: 0.125rem solid rgba(255, 255, 255, 0.8);
+  margin-right: 0.625rem;
+}
+.user-name {
+  font-size: 1rem;
+  color: #ffffff;
+  font-weight: bold;
+}
+.menu-section {
+  background-color: #ffffff;
+  border-radius: 0.3125rem;
+  margin: 0 0.625rem;
+  overflow: hidden;
+}
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.78125rem 0.9375rem;
+  border-bottom: 0.03125rem solid #f0f0f0;
+}
+.menu-item:last-child {
+  border-bottom: none;
+}
+.menu-left {
+  display: flex;
+  align-items: center;
+}
+.menu-label {
+  font-size: 0.875rem;
+  color: #333;
+}
+.menu-arrow {
+  color: #ccc;
+  font-size: 0.875rem;
+}
+.button-group {
+  padding: 0.9375rem;
+  margin-top: 0.9375rem;
+}
+.logout-btn {
+  background-color: #ff6b6b;
+  color: white;
+  padding: 0.625rem 0;
+  border-radius: 0.3125rem;
+  border: none;
+  font-size: 0.875rem;
+}
+
+/* 密码修改弹窗样式 */
+.password-form {
+  width: 260px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.password-form-title {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+.password-form-item {
+  margin-bottom: 15px;
+}
+.password-label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #333;
+}
+.password-input {
+  width: 90%;
+  height: 40px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  background-color: #f5f7fa;
+}
+.password-form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.cancel-btn, .confirm-btn {
+  width: 45%;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-radius: 4px;
+  font-size: 14px;
+  margin: 0;
+}
+.cancel-btn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+.confirm-btn {
+  background-color: #3498db;
+  color: #fff;
+}

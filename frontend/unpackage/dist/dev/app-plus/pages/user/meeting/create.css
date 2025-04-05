@@ -1,0 +1,447 @@
+
+.create-meeting-container {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  padding-bottom: 30px;
+}
+.breadcrumb {
+  display: flex;
+  padding: 10px 15px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #666;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  margin: 0 10px 15px;
+  border-radius: 4px;
+}
+.breadcrumb-item {
+  color: #3498db;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+.breadcrumb-item:active {
+  background-color: #f0f0f0;
+}
+.breadcrumb-item:last-child {
+  color: #333;
+  font-weight: 500;
+  cursor: default;
+}
+.breadcrumb-item:last-child:active {
+  background-color: transparent;
+}
+.breadcrumb-separator {
+  margin: 0 8px;
+  color: #ccc;
+}
+.form-section {
+  background-color: #ffffff;
+  margin: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.form-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  padding-left: 10px;
+  border-left: 3px solid #3498db;
+}
+.form-item {
+  margin-bottom: 15px;
+}
+.form-label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+.required::after {
+  content: ' *';
+  color: #e74c3c;
+}
+.form-input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 0 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.form-picker {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 0 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+.picker-value {
+  color: #333;
+}
+.room-selection {
+  margin-top: 10px;
+}
+.loading-text {
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+  padding: 20px 0;
+}
+.room-list {
+  max-height: 250px;
+}
+.room-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+.room-item.selected {
+  background-color: #e6f7ff;
+}
+.room-info {
+  flex: 1;
+}
+.room-name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.room-detail {
+  display: flex;
+  font-size: 12px;
+  color: #666;
+}
+.room-capacity {
+  margin-right: 15px;
+}
+.attendees-selection {
+  margin-top: 10px;
+}
+.selected-attendees {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.attendee-tag {
+  display: flex;
+  align-items: center;
+  background-color: #e6f7ff;
+  border-radius: 15px;
+  padding: 5px 10px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+.attendee-name {
+  font-size: 14px;
+  color: #333;
+}
+.remove-btn {
+  margin-left: 5px;
+  color: #999;
+  font-size: 16px;
+}
+.add-attendee, .add-attachment {
+  display: flex;
+  align-items: center;
+  color: #3498db;
+  font-size: 14px;
+}
+.add-icon {
+  font-size: 18px;
+  margin-right: 5px;
+}
+.equipment-list {
+  margin-top: 10px;
+}
+.equipment-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.equipment-name {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #333;
+}
+.form-textarea {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.attachments-area {
+  margin-top: 10px;
+}
+.attachment-list {
+  margin-bottom: 10px;
+}
+.attachment-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.file-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  color: white;
+}
+.icon-doc {
+  background-color: #2a5699;
+}
+.icon-excel {
+  background-color: #217346;
+}
+.icon-ppt {
+  background-color: #d24726;
+}
+.icon-pdf {
+  background-color: #f40f02;
+}
+.icon-image {
+  background-color: #f9a825;
+}
+.icon-other {
+  background-color: #757575;
+}
+.file-info {
+  flex: 1;
+}
+.file-name {
+  font-size: 14px;
+  color: #333;
+}
+.file-size {
+  font-size: 12px;
+  color: #999;
+}
+.attachment-hint {
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
+}
+.submit-section {
+  margin: 20px 15px;
+}
+.submit-btn {
+  background-color: #3498db;
+  color: white;
+  border-radius: 5px;
+  height: 45px;
+  line-height: 45px;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+.cancel-btn {
+  background-color: #f8f9fa;
+  color: #666;
+  border-radius: 5px;
+  height: 45px;
+  line-height: 45px;
+  font-size: 16px;
+}
+.agenda-list {
+  margin-top: 10px;
+}
+.agenda-items {
+  margin-bottom: 15px;
+}
+.agenda-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+.agenda-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.agenda-time {
+  flex: 1;
+}
+.time-input {
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 0 10px;
+  font-size: 14px;
+  background-color: #fff;
+}
+.agenda-actions {
+  display: flex;
+  align-items: center;
+}
+.move-up-btn, .move-down-btn, .delete-btn {
+  margin: 0 5px;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+  color: #666;
+  font-size: 16px;
+}
+.delete-btn {
+  color: #e74c3c;
+}
+.agenda-content {
+  margin-bottom: 10px;
+}
+.content-input {
+  width: 100%;
+  min-height: 80px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+.agenda-speaker {
+  margin-top: 5px;
+}
+.speaker-input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 0 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+.add-agenda {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  color: #3498db;
+  font-size: 14px;
+  background-color: #f0f7fc;
+  border-radius: 8px;
+  border: 1px dashed #a6d0ee;
+  justify-content: center;
+}
+.add-agenda .add-icon {
+  margin-right: 5px;
+  font-size: 18px;
+  font-weight: bold;
+}
+.status-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.status-pending {
+  background-color: #faad14;
+}
+.status-approved {
+  background-color: #52c41a;
+}
+.status-rejected {
+  background-color: #f5222d;
+}
+.status-cancelled {
+  background-color: #bfbfbf;
+}
+.priority-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.priority-normal {
+  background-color: #52c41a;
+}
+.priority-important {
+  background-color: #faad14;
+}
+.priority-urgent {
+  background-color: #f5222d;
+}
+
+/* 议程文件相关样式 */
+.agenda-files {
+  margin-top: 10px;
+  padding: 5px 0;
+}
+.files-list {
+  margin-bottom: 10px;
+}
+.file-item {
+  display: flex;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.file-name {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+.file-size {
+  font-size: 12px;
+  color: #999;
+  margin-right: 15px;
+}
+.file-item .delete-btn {
+  font-size: 16px;
+  color: #ff4d4f;
+  padding: 0 8px;
+}
+.add-file-btn {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f0f8ff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.add-file-btn:active {
+  background-color: #e6f2ff;
+}
+.add-file-btn .add-icon {
+  margin-right: 5px;
+  font-size: 16px;
+  color: #1890ff;
+}
+.add-file-btn uni-text {
+  font-size: 14px;
+  color: #1890ff;
+}

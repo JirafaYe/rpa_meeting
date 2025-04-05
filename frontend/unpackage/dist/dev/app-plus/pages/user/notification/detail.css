@@ -1,0 +1,147 @@
+
+.notification-detail-container {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 44px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #eeeeee;
+  padding: 0 15px;
+}
+.back-button {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-back {
+  font-size: 18px;
+  color: #333333;
+}
+.title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333333;
+}
+.right-placeholder {
+  width: 30px;
+}
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eeeeee;
+  font-size: 13px;
+}
+.breadcrumb-item {
+  color: #666666;
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+}
+.breadcrumb-item .iconfont {
+  font-size: 14px;
+  margin-right: 3px;
+}
+.breadcrumb-item.active {
+  color: #3498db;
+  font-weight: bold;
+}
+.breadcrumb-separator {
+  color: #cccccc;
+  margin: 0 5px;
+}
+.content-wrapper {
+  flex: 1;
+  padding: 20px 15px;
+  background-color: #ffffff;
+  margin: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.notification-header {
+  margin-bottom: 20px;
+}
+.notification-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 10px;
+  display: block;
+}
+.notification-time {
+  font-size: 12px;
+  color: #999999;
+  display: block;
+}
+.notification-meta {
+  margin-bottom: 15px;
+}
+.meta-item {
+  display: flex;
+  margin-bottom: 8px;
+}
+.meta-label {
+  color: #666666;
+  font-size: 14px;
+  width: 70px;
+}
+.meta-value {
+  color: #333333;
+  font-size: 14px;
+  flex: 1;
+}
+.divider {
+  height: 1px;
+  background-color: #eeeeee;
+  margin: 15px 0;
+}
+.notification-content {
+  padding: 10px 0;
+}
+.content-text {
+  font-size: 15px;
+  color: #333333;
+  line-height: 1.6;
+}
+.actions {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+.action-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  color: #999999;
+}
+.error-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 20px;
+}
+.error-text {
+  color: #e74c3c;
+  font-size: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+}
