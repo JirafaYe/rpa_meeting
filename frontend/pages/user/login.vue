@@ -85,8 +85,8 @@
       <view class="quick-actions">
         <template v-if="isLoginMode">
           <text class="quick-action-text" @click="switchToRegister">注册账号</text>
-          <text class="divider">|</text>
-          <text class="quick-action-text" @click="navigateToAdminLogin">管理员登录</text>
+          <!-- <text class="divider">|</text> -->
+          <!-- <text class="quick-action-text" @click="navigateToAdminLogin">管理员登录</text> -->
         </template>
         <template v-else>
           <text class="quick-action-text" @click="switchToLogin">返回登录</text>
