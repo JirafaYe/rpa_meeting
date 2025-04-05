@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 
 /**
  * 会议预约
@@ -85,11 +87,17 @@ public class ReservationController {
      * @return
      */
     @PostMapping("/book")
-    public Result<String> book(@RequestBody ReservationBody body){
+    public Result<Object> book(@RequestBody ReservationBody body){
         Integer userId = SecurityUtils.getUserId();
         String msg = reservationService.book(body, userId);
-        return StringUtils.isBlank(msg)
-                ?Result.ok():Result.fail(msg);
+        Result<Object> result;
+        try {
+            int id = Integer.parseInt(msg);
+            result = Result.ok(new HashMap<String, Integer>() {{ put("id", id); }});
+        } catch (NumberFormatException e) {
+            result=Result.fail(msg);
+        }
+        return result;
     }
 
     /**

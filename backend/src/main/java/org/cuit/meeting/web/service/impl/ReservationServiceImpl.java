@@ -226,7 +226,7 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
                     .collect(Collectors.toList());
 
             participantsService.saveBatch(participants);
-            return msg.toString();
+            return reservation.getId().toString();
         } finally {
             lock.unlock();
         }
